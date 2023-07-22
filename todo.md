@@ -7,7 +7,6 @@
         - to separate sounds from the entities, use global events?
     - make ball go in the direction the paddle hit it
     - small bug: if ball gets hit with paddle right after it has hit a wall. collision checking is bit wonky.
-
 - animated textures
 - background textures
 - sounds, soundmixer / audiomanager
