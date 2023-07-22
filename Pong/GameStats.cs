@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using GameEngine.Core.GameEngine.FileManagement;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -65,14 +66,12 @@ namespace Pong
 
         public int PlayerLives = Globals.PLAYER_LIVES_AT_START;
         public int PlayerScore = 0;
-
         private static string highScoreFileName = "highscores.json";
-
-        public List<PongScoreStats> highScores = new(); // TODO: load from file/memory.
+        public List<PongScoreStats> highScores = new();
 
         public void LoadHighScores()
         {
-            highScores = File.Exists(highScoreFileName) ? JsonSerializer.Deserialize<List<PongScoreStats>>(File.ReadAllText(highScoreFileName)) : new();
+            highScores = FileSystem.LoadFromJson<List<PongScoreStats>>(highScoreFileName);
         }
 
         public void SaveNewHighScore(string name)
@@ -87,7 +86,7 @@ namespace Pong
                 .OrderByDescending(highScores => highScores.Score)
                 .ToList();
 
-            File.WriteAllText(highScoreFileName, JsonSerializer.Serialize(highScores));
+            FileSystem.SaveAsJson(highScoreFileName, highScores); // simple json saving for now.
         }
 
         public bool IsNewHighScore()

@@ -3,8 +3,6 @@ using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Diagnostics;
 using static Pong.Globals;
 
 namespace Pong
@@ -26,8 +24,6 @@ namespace Pong
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, GraphicsDeviceManager graphics, EntityManager entityManager)
         {
-            //Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
             if (Position.Y - Sprite.Texture.Height/2 < 0)
             {
                 Velocity.Y = -Velocity.Y;
@@ -41,20 +37,17 @@ namespace Pong
             if (Position.X - Sprite.Texture.Width / 2 < 0)
             {
                 Velocity.X = -Velocity.X;
-                Debug.WriteLine("Hit left wall, score to right paddle");
                 GameStats.Instance.PlayerLives -= 1;
             }
 
             if (Position.X +  Sprite.Texture.Width /2 > graphics.PreferredBackBufferWidth)
             {
                 Velocity.X = -Velocity.X;
-                Debug.WriteLine("Hit right wall, score to left paddle");
                 GameStats.Instance.PlayerScore += SCORE_ON_WALL_HIT;
             }
 
             if (IsColliding("leftPaddle", entityManager))
             {
-                Debug.WriteLine("hit left paddle");
                 Velocity.X = -Velocity.X * 1.1f;
                 Velocity.Y *= 1.1f;
                 GameStats.Instance.PlayerScore += SCORE_ON_PADDLE_HIT;
@@ -62,7 +55,6 @@ namespace Pong
 
             if (IsColliding("rightPaddle", entityManager))
             {
-                Debug.WriteLine("hit right paddle");
                 Velocity.X = -Velocity.X * 1.1f;
                 Velocity.Y *= 1.1f;
             }
