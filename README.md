@@ -1,2 +1,3 @@
 # GameEngine
- Game engine made on top of MonoGame and XNA with C#
+Public version of GameEngine for my portfolio. Made in C# using MonoGame- and XNA-framework.
+
