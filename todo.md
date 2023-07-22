@@ -1,6 +1,6 @@
 # TODO
 
-- pong game: example at: https://github.com/MonoGame/MonoGame.Samples/tree/3.8.1/AutoPong/AutoPong.Core
+- pong game:
     - background 
     - particles
     - sound effects
