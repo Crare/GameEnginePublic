@@ -256,8 +256,10 @@ namespace Pong
             _textDrawer.Draw(highscores, new Vector2(_graphics.PreferredBackBufferWidth / 2, 100), Alignment.Center);
             for (int i = 0; i < GameStats.Instance.highScores.Count;i++)
             {
-                string highscoresContent = $"{i+1} {GameStats.Instance.highScores[i].Name} : {GameStats.Instance.highScores[i].Score}";
-                _textDrawer.Draw(highscoresContent, new Vector2(_graphics.PreferredBackBufferWidth / 2 - 40, 125 + i * 20), Alignment.Right);
+                string name = $"{i + 1}. {GameStats.Instance.highScores[i].Name}";
+                string score = $"{GameStats.Instance.highScores[i].Score}";
+                _textDrawer.Draw(name, new Vector2(_graphics.PreferredBackBufferWidth / 2 - 40, 125 + i * 20), Alignment.Right);
+                _textDrawer.Draw(score, new Vector2(_graphics.PreferredBackBufferWidth / 2 + 20, 125 + i * 20), Alignment.Right);
             }
         }
     }
