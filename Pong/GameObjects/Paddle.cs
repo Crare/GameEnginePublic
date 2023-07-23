@@ -9,6 +9,7 @@ namespace Pong
 {
     public class Paddle : Entity
     {
+        private Vector2 startingPosition;
         private readonly Texture2D Texture;
         private readonly int Width, Height;
         private readonly bool IsPlayerControlled;
@@ -16,11 +17,19 @@ namespace Pong
         public Paddle(Texture2D texture, int width, int height, Vector2 position, string tag, Rectangle boundingBox, bool isPlayerControlled) 
             : base(position, boundingBox, (float)SpriteLayers.PLAYER, PADDLE_BASE_SPEED)
         {
+            startingPosition = position;
             Texture = texture;
             Width = width;
             Height = height;
             Tag = tag;
             IsPlayerControlled = isPlayerControlled;
+
+            PongEventSystem.OnGameOver += OnGameOver;
+        }
+        private void OnGameOver()
+        {
+            Position = startingPosition;
+            BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width / 2, (int)Position.Y - BoundingBox.Height / 2, BoundingBox.Width, BoundingBox.Height);
         }
 
         public override void Render(SpriteBatch spriteBatch)

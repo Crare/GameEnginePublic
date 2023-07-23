@@ -1,12 +1,15 @@
 ﻿using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.Audio;
 using GameEngine.Core.GameEngine.InputManagement;
 using GameEngine.Core.GameEngine.Particles;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Pong
@@ -42,6 +45,7 @@ namespace Pong
 
         private void OnGameOver()
         {
+            AudioManager.Instance.PlaySound((int)PongSoundEffects.GameOver);
             ParticleEvents.ParticlesReset();
             if (GameStats.Instance.IsNewHighScore())
             {
@@ -121,6 +125,27 @@ namespace Pong
                 false
             );
             _entityManager.AddEntity(rightPaddle);
+
+            // add audio
+            Dictionary<int, SoundEffect> soundEffects = new()
+            {
+                {
+                    (int)PongSoundEffects.BallHit, Content.Load<SoundEffect>("Audio/hit")
+                },
+                {
+                    (int)PongSoundEffects.PaddleHit, Content.Load<SoundEffect>("Audio/paddle")
+                },
+                {
+                    (int)PongSoundEffects.GameOver, Content.Load<SoundEffect>("Audio/gameOver")
+                },
+                {
+                    (int)PongSoundEffects.LiveLost, Content.Load<SoundEffect>("Audio/liveLost")
+                },
+                {
+                    (int)PongSoundEffects.Scored, Content.Load<SoundEffect>("Audio/scored")
+                }
+            };
+            AudioManager.Instance.Init(soundEffects);
 
             Debug.WriteLine("Loading content done!");
         }
