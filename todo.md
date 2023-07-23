@@ -5,6 +5,7 @@
     - powerups:
       - speedboost to paddle
       - multiple balls
+      - smaller balls
       - speedball that vanishes after hitting either side of wall.
     - make ball go in the direction the paddle hit it, as in changing it's direction slightly.
 - animated textures
