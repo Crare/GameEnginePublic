@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Pong.GameObjects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,6 +18,7 @@ namespace Pong
     public class Game1 : Game
     {
         Texture2D debugTexture;
+        ScrollingBackground starBackground;
         Color debugColor;
 
         public string PlayerInputText = "";
@@ -90,6 +92,7 @@ namespace Pong
             debugTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
             debugTexture.SetData(new Color[] { Color.White });
 
+            starBackground = new ScrollingBackground(_graphics);
             //var paddleTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
             //paddleTexture.SetData(new Color[] { Color.Blue });
 
@@ -184,7 +187,7 @@ namespace Pong
 
             if (_currentGameState == PongGameState.GameLoop)
             {
-
+                starBackground.Update(gameTime, _graphics);
                 _entityManager.UpdateEntities(gameTime, keyboardState);
                 ParticleSystem.Instance.Update(gameTime);
 
@@ -232,6 +235,7 @@ namespace Pong
 
             if (_currentGameState == PongGameState.GameLoop)
             {
+                starBackground.Render(_spriteBatch);
                 _entityManager.RenderEntities();
                 ParticleSystem.Instance.Draw();
 
