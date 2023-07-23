@@ -1,4 +1,6 @@
-﻿namespace Pong
+﻿using System.Numerics;
+
+namespace Pong
 {
     public static class Globals
     {

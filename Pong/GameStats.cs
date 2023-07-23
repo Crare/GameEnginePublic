@@ -17,43 +17,12 @@ namespace Pong
     {
         private static GameStats instance = null; // singleton
         private static readonly object padlock = new();
-
-        GameStats() {
-            // dummy data
-            highScores = new List<PongScoreStats> {
-                new PongScoreStats()
-                {
-                    Score = 100,
-                    Name = "nub"
-                },
-                new PongScoreStats()
-                {
-                    Score = 200,
-                    Name = "cas"
-                },
-                new PongScoreStats()
-                {
-                    Score = 1000,
-                    Name = "pro"
-                }
-            }.OrderByDescending(s => s.Score).ToList();
-
-            PongEventSystem.OnNewGame += OnNewGame;
-        }
-
-        private void OnNewGame()
-        {
-            PlayerLives = Globals.PLAYER_LIVES_AT_START;
-            PlayerScore = 0;
-            PongEventSystem.GameStateChanged(PongGameState.GameLoop);
-        }
-
         public static GameStats Instance
         {
             get
             {
                 // locks the Singleton instance to be once created by locking one of its objects.
-                lock (padlock) 
+                lock (padlock)
                 {
                     if (instance == null)
                     {
@@ -62,6 +31,17 @@ namespace Pong
                     return instance;
                 }
             }
+        }
+
+        GameStats() {
+            PongEventSystem.OnNewGame += OnNewGame;
+        }
+
+        private void OnNewGame()
+        {
+            PlayerLives = Globals.PLAYER_LIVES_AT_START;
+            PlayerScore = 0;
+            PongEventSystem.GameStateChanged(PongGameState.GameLoop);
         }
 
         public int PlayerLives = Globals.PLAYER_LIVES_AT_START;

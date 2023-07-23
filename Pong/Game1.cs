@@ -1,5 +1,6 @@
 ﻿using GameEngine.Core.EntityManagement;
 using GameEngine.Core.GameEngine.InputManagement;
+using GameEngine.Core.GameEngine.Particles;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
@@ -21,10 +22,11 @@ namespace Pong
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private EntityManager _entityManager;
-        private TextDrawer _textDrawer;
         private KeyboardState keyboardState;
         private KeyboardState lastKeyboardState;
+
+        private EntityManager _entityManager;
+        private TextDrawer _textDrawer;
 
         private PongGameState _currentGameState = PongGameState.Scoreboard;
 
@@ -40,6 +42,7 @@ namespace Pong
 
         private void OnGameOver()
         {
+            ParticleEvents.ParticlesReset();
             if (GameStats.Instance.IsNewHighScore())
             {
                 PongEventSystem.GameStateChanged(PongGameState.AddNewHighScore);
@@ -61,6 +64,7 @@ namespace Pong
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _entityManager = new EntityManager(_spriteBatch, _graphics);
+            ParticleSystem.Instance.Init(_spriteBatch, _graphics);
             GameStats.Instance.LoadHighScores();
 
             base.Initialize();
@@ -135,6 +139,7 @@ namespace Pong
             {
 
                 _entityManager.UpdateEntities(gameTime, keyboardState);
+                ParticleSystem.Instance.Update(gameTime);
 
                 if (GameStats.Instance.PlayerLives <= 0)
                 {
@@ -181,6 +186,7 @@ namespace Pong
             if (_currentGameState == PongGameState.GameLoop)
             {
                 _entityManager.RenderEntities();
+                ParticleSystem.Instance.Draw();
 
                 if (Globals.DEBUG_DRAW)
                 {
