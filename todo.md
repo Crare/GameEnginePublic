@@ -4,7 +4,6 @@
     - custom font
     - fullscreen, windowed mode, scaling
     - use spritesheet for textures
-    - background: scrolling background of stars?
     - powerups:
       - speedboost to paddle
       - multiple balls
