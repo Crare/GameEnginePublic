@@ -5,6 +5,7 @@
     - fullscreen, windowed mode, scaling
     - use spritesheet for textures
     - powerups:
+      - requires Timer-class to handle boost-lifespan? store effects globally or by per paddle/ball?
       - speedboost to paddle
       - multiple balls
       - smaller balls
