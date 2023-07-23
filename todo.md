@@ -1,18 +1,17 @@
 # TODO
 
 - pong game:
-    - background 
-    - particles
-    - sound effects
-        - to separate sounds from the entities, use global events?
-    - make ball go in the direction the paddle hit it
-    - small bug: if ball gets hit with paddle right after it has hit a wall. collision checking is bit wonky.
+    - background: scrolling background of stars?
+    - powerups:
+      - speedboost to paddle
+      - multiple balls
+      - speedball that vanishes after hitting either side of wall.
+    - make ball go in the direction the paddle hit it, as in changing it's direction slightly.
 - animated textures
-- background textures
-- sounds, soundmixer / audiomanager
 - gamepad input / controller support. https://docs.monogame.net/api/Microsoft.Xna.Framework.Input.html
 
-- particleSystem
 - UI elements
-- 
+    - menu buttons
+        - allow using keyboard & gamepad to select (WASD or arrow keys to navigate, ESC to go back, Enter to select)
+        - allow using mouse to select (Pressing buttons does the action)
 
