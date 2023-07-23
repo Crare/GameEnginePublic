@@ -185,9 +185,10 @@ namespace Pong
                 ToggleDebugMode();
             }
 
+            starBackground.Update(gameTime, _graphics);
+
             if (_currentGameState == PongGameState.GameLoop)
             {
-                starBackground.Update(gameTime, _graphics);
                 _entityManager.UpdateEntities(gameTime, keyboardState);
                 ParticleSystem.Instance.Update(gameTime);
 
@@ -230,12 +231,13 @@ namespace Pong
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
+
+            starBackground.Render(_spriteBatch);
 
             if (_currentGameState == PongGameState.GameLoop)
             {
-                starBackground.Render(_spriteBatch);
                 _entityManager.RenderEntities();
                 ParticleSystem.Instance.Draw();
 

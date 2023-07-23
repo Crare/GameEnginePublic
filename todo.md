@@ -1,6 +1,7 @@
 # TODO
 
 - pong game:
+    - custom font
     - fullscreen, windowed mode, scaling
     - use spritesheet for textures
     - background: scrolling background of stars?
