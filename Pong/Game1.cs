@@ -160,6 +160,20 @@ namespace Pong
                 Exit();
             }
 
+            // ctrl + shift + D
+            if (keyboardState.IsKeyDown(Keys.D) 
+                && (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
+                && (keyboardState.IsKeyDown(Keys.LeftControl) || keyboardState.IsKeyDown(Keys.RightControl))
+                &&
+                    !(lastKeyboardState.IsKeyDown(Keys.D) 
+                    && (lastKeyboardState.IsKeyDown(Keys.LeftShift) || lastKeyboardState.IsKeyDown(Keys.RightShift))
+                    && (lastKeyboardState.IsKeyDown(Keys.LeftControl) || lastKeyboardState.IsKeyDown(Keys.RightControl))
+                    )
+                )
+            {
+                ToggleDebugMode();
+            }
+
             if (_currentGameState == PongGameState.GameLoop)
             {
 
@@ -261,6 +275,11 @@ namespace Pong
                 _textDrawer.Draw(name, new Vector2(_graphics.PreferredBackBufferWidth / 2 - 40, 125 + i * 20), Alignment.Right);
                 _textDrawer.Draw(score, new Vector2(_graphics.PreferredBackBufferWidth / 2 + 20, 125 + i * 20), Alignment.Right);
             }
+        }
+
+        private void ToggleDebugMode()
+        {
+            Globals.DEBUG_DRAW = !Globals.DEBUG_DRAW;
         }
     }
 }
