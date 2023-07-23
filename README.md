@@ -6,8 +6,8 @@ Contains a game of Pong and a core code that is suppose to work for other games 
 
 ### Pong
 gameplay. Entities, collision, particles, sounds, particle physics.
-![alt tag](https://github.com/Crare/GameEnginePublic/blob/master/screenshots/screenshot_pong2.PNG)
+![screenshot of pong game with gameplay shown](https://github.com/Crare/GameEnginePublic/blob/main/screenshots/screenshot_pong2.PNG)
 
 highscores
-![alt tag](https://github.com/Crare/GameEnginePublic/blob/master/screenshots/screenshot_pong1.PNG)
+![screenshot of pong game with highscores shown](https://github.com/Crare/GameEnginePublic/blob/main/screenshots/screenshot_pong1.PNG)
 
