@@ -15,7 +15,8 @@ namespace Pong
         public Vector2 Velocity;
         private Particle particle;
 
-        public Ball(Vector2 position, Rectangle boundingBox, Sprite sprite) : base(position, boundingBox, (float)SpriteLayers.PLAYER, BALL_BASE_SPEED, sprite)
+        public Ball(Vector2 position, Rectangle boundingBox, Sprite sprite) 
+            : base(position, boundingBox, (float)SpriteLayers.PLAYER, BALL_BASE_SPEED, sprite)
         {
             startingPosition = position;
             Velocity = new Vector2(-Speed, Speed);

@@ -1,6 +1,7 @@
 # TODO
 
 - pong game:
+    - use spritesheet for textures
     - background: scrolling background of stars?
     - powerups:
       - speedboost to paddle

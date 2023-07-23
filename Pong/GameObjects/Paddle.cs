@@ -1,8 +1,10 @@
 ﻿using GameEngine.Core.EntityManagement;
+using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Diagnostics;
 using static Pong.Globals;
 
 namespace Pong
@@ -13,6 +15,18 @@ namespace Pong
         private readonly Texture2D Texture;
         private readonly int Width, Height;
         private readonly bool IsPlayerControlled;
+        public Paddle(Sprite sprite, int width, int height, Vector2 position, string tag, Rectangle boundingBox, bool isPlayerControlled)
+            : base(position, boundingBox, (float)SpriteLayers.PLAYER, PADDLE_BASE_SPEED, sprite)
+        {
+            startingPosition = position;
+            //Texture = texture;
+            Width = width;
+            Height = height;
+            Tag = tag;
+            IsPlayerControlled = isPlayerControlled;
+
+            PongEventSystem.OnGameOver += OnGameOver;
+        }
 
         public Paddle(Texture2D texture, int width, int height, Vector2 position, string tag, Rectangle boundingBox, bool isPlayerControlled) 
             : base(position, boundingBox, (float)SpriteLayers.PLAYER, PADDLE_BASE_SPEED)
@@ -26,6 +40,7 @@ namespace Pong
 
             PongEventSystem.OnGameOver += OnGameOver;
         }
+
         private void OnGameOver()
         {
             Position = startingPosition;
@@ -35,17 +50,29 @@ namespace Pong
         public override void Render(SpriteBatch spriteBatch)
         {
             // draws rectangle
-            spriteBatch.Draw(
-                    Texture,
-                    Position,
-                    new Rectangle(0, 0, Width, Height),
-                    Color.Blue,
-                    0f,
-                    Vector2.Zero,
-                    1.0f,
-                    SpriteEffects.None,
-                    DepthLayer
-                );
+            if (Sprite != null)
+            {
+                Sprite.Render(
+                    spriteBatch, 
+                    new Vector2(Position.X + Width / 2, Position.Y + Height / 2), 
+                    DepthLayer, false);
+            } else if (Texture != null)
+            {
+                spriteBatch.Draw(
+                        Texture,
+                        Position,
+                        new Rectangle(0, 0, Width, Height),
+                        Color.Blue,
+                        0f,
+                        Vector2.Zero,
+                        1.0f,
+                        SpriteEffects.None,
+                        DepthLayer
+                    );
+            } else
+            {
+                Debug.WriteLine("No Texture or Sprite applied to Paddle!");
+            }
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, GraphicsDeviceManager graphics, EntityManager entityManager)

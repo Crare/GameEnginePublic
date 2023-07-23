@@ -16,7 +16,6 @@ namespace Pong
 {
     public class Game1 : Game
     {
-        Texture2D ballTexture;
         Texture2D debugTexture;
         Color debugColor;
 
@@ -84,14 +83,15 @@ namespace Pong
             _textDrawer = new TextDrawer(_spriteBatch, font, defaultTextColor);
 
             // load textures
-            ballTexture = Content.Load<Texture2D>("Sprites/ball");
+            var ballTexture = Content.Load<Texture2D>("Sprites/ball");
+            var paddleTexture = Content.Load<Texture2D>("Sprites/paddle");
 
             // generated textures
             debugTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
             debugTexture.SetData(new Color[] { Color.White });
 
-            var paddleTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
-            paddleTexture.SetData(new Color[] { Color.Blue });
+            //var paddleTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
+            //paddleTexture.SetData(new Color[] { Color.Blue });
 
             // set colors
             debugColor = new Color(1f, 0f, 0f, 0.3f);
@@ -105,23 +105,31 @@ namespace Pong
             _entityManager.AddEntity(ballEntity);
 
             var leftPaddle = new Paddle(
-                paddleTexture,
-                10,
-                100,
-                new Vector2(5, _graphics.PreferredBackBufferHeight / 2),
+                new Sprite(paddleTexture),
+                paddleTexture.Width,
+                paddleTexture.Height,
+                new Vector2(0, _graphics.PreferredBackBufferHeight / 2),
                 "leftPaddle",
-                new Rectangle(5, _graphics.PreferredBackBufferHeight / 2, 10, 100),
+                new Rectangle(
+                    _graphics.PreferredBackBufferWidth - paddleTexture.Width,
+                    _graphics.PreferredBackBufferHeight / 2,
+                    paddleTexture.Width,
+                    paddleTexture.Height),
                 true
             );
             _entityManager.AddEntity(leftPaddle);
 
             var rightPaddle = new Paddle(
-                paddleTexture,
-                10,
-                100,
-                new Vector2(_graphics.PreferredBackBufferWidth - 15, _graphics.PreferredBackBufferHeight / 2),
+                new Sprite(paddleTexture),
+                paddleTexture.Width,
+                paddleTexture.Height,
+                new Vector2(_graphics.PreferredBackBufferWidth - paddleTexture.Width, _graphics.PreferredBackBufferHeight / 2),
                 "rightPaddle",
-                new Rectangle(_graphics.PreferredBackBufferWidth - 15, _graphics.PreferredBackBufferHeight / 2, 10, 100),
+                new Rectangle(
+                    _graphics.PreferredBackBufferWidth - paddleTexture.Width,
+                    _graphics.PreferredBackBufferHeight / 2,
+                    paddleTexture.Width, 
+                    paddleTexture.Height),
                 false
             );
             _entityManager.AddEntity(rightPaddle);
