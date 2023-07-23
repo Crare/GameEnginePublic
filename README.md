@@ -10,7 +10,7 @@ gameplay. Entities, collision, particles, sounds, particle physics.
 
 ![screenshot of pong game with gameplay shown](https://github.com/Crare/GameEnginePublic/blob/main/screenshots/screenshot_pong2.PNG)
 
-highscores
+highscores, saving and loading to json when new score is added.
 
 ![screenshot of pong game with highscores shown](https://github.com/Crare/GameEnginePublic/blob/main/screenshots/screenshot_pong1.PNG)
 
