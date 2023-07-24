@@ -2,6 +2,7 @@
 using GameEngine.Core.GameEngine.Audio;
 using GameEngine.Core.GameEngine.InputManagement;
 using GameEngine.Core.GameEngine.Particles;
+using GameEngine.Core.GameEngine.Sprites;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
@@ -19,6 +20,7 @@ namespace Pong
     {
         Texture2D debugTexture;
         ScrollingBackground starBackground;
+        Texture2D pongSpritesheet;
         Color debugColor;
 
         public string PlayerInputText = "";
@@ -87,53 +89,60 @@ namespace Pong
             // load textures
             var ballTexture = Content.Load<Texture2D>("Sprites/ball");
             var paddleTexture = Content.Load<Texture2D>("Sprites/paddle");
+            pongSpritesheet = Content.Load<Texture2D>("Sprites/pong_spritesheet");
 
             // generated textures
             debugTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
             debugTexture.SetData(new Color[] { Color.White });
 
             starBackground = new ScrollingBackground(_graphics);
-            //var paddleTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
-            //paddleTexture.SetData(new Color[] { Color.Blue });
 
             // set colors
             debugColor = new Color(1f, 0f, 0f, 0.3f);
 
+            var starAmount = 100;
+            for (int i = 0; i < starAmount; i++)
+            {
+                var rnd = new Random();
+                var randX = rnd.Next(100, _graphics.PreferredBackBufferWidth - 100);
+                var randY = rnd.Next(100, _graphics.PreferredBackBufferHeight - 100);
+                var starAnimationRects = new Rectangle[4];
+                starAnimationRects[0] = new Rectangle(16, 16, 2, 2);
+                starAnimationRects[1] = new Rectangle(26, 18, 4, 4);
+                starAnimationRects[2] = new Rectangle(18, 16, 6, 6);
+                starAnimationRects[3] = new Rectangle(24, 16, 8, 8);
+
+                var star = new Star(new Vector2(randX, randY), new Rectangle(randX-2, randY-2, 4,4), new SpriteAnimation(pongSpritesheet, 0, 16, true, starAnimationRects));
+                _entityManager.AddEntity(star);
+            }
+
             // assign entities
-            var ballEntity = new Ball(
+            var ball = new Ball(
                 new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2),
                 new Rectangle(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, ballTexture.Width, ballTexture.Height),
                 new Sprite(ballTexture)
             );
-            _entityManager.AddEntity(ballEntity);
+            _entityManager.AddEntity(ball);
 
-            var leftPaddle = new Paddle(
+            var leftPaddle = new PlayerPaddle(
                 new Sprite(paddleTexture),
-                paddleTexture.Width,
-                paddleTexture.Height,
                 new Vector2(0, _graphics.PreferredBackBufferHeight / 2),
-                "leftPaddle",
                 new Rectangle(
                     _graphics.PreferredBackBufferWidth - paddleTexture.Width,
                     _graphics.PreferredBackBufferHeight / 2,
                     paddleTexture.Width,
-                    paddleTexture.Height),
-                true
+                    paddleTexture.Height)
             );
             _entityManager.AddEntity(leftPaddle);
 
-            var rightPaddle = new Paddle(
+            var rightPaddle = new AIPaddle(
                 new Sprite(paddleTexture),
-                paddleTexture.Width,
-                paddleTexture.Height,
                 new Vector2(_graphics.PreferredBackBufferWidth - paddleTexture.Width, _graphics.PreferredBackBufferHeight / 2),
-                "rightPaddle",
                 new Rectangle(
                     _graphics.PreferredBackBufferWidth - paddleTexture.Width,
                     _graphics.PreferredBackBufferHeight / 2,
                     paddleTexture.Width, 
-                    paddleTexture.Height),
-                false
+                    paddleTexture.Height)
             );
             _entityManager.AddEntity(rightPaddle);
 
@@ -154,6 +163,9 @@ namespace Pong
                 },
                 {
                     (int)PongSoundEffects.Scored, Content.Load<SoundEffect>("Audio/scored")
+                },
+                {
+                    (int)PongSoundEffects.StarPicked, Content.Load<SoundEffect>("Audio/starPicked")
                 }
             };
             AudioManager.Instance.Init(soundEffects);

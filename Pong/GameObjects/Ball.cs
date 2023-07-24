@@ -20,7 +20,7 @@ namespace Pong
         {
             startingPosition = position;
             Velocity = new Vector2(-Speed, Speed);
-            Tag = "ball";
+            Tag = (int)PongTags.ball;
             particle = new Particle(1, Sprite.Texture, new Vector2(4, 4), Position, Color.White, DepthLayer);
 
             PongEventSystem.OnGameOver += OnGameOver;
@@ -85,7 +85,7 @@ namespace Pong
                 }
             }
 
-            if (IsColliding("leftPaddle", entityManager))
+            if (IsColliding(PongTags.leftPaddle, entityManager))
             {
                 if (Velocity.X < 0)
                 {
@@ -98,7 +98,7 @@ namespace Pong
                 }
             }
 
-            if (IsColliding("rightPaddle", entityManager))
+            if (IsColliding(PongTags.rightPaddle, entityManager))
             {
                 if (Velocity.X > 0)
                 {
@@ -140,9 +140,9 @@ namespace Pong
             ParticleSystem.Instance.Spawn(newParticle, amount, 16, 20);
         }
 
-        private bool IsColliding(string tag, EntityManager entityManager)
+        private bool IsColliding(PongTags tag, EntityManager entityManager)
         {
-            return entityManager.IsColliding(this, tag);
+            return entityManager.IsColliding(this, (int)tag);
         }
     }
 }

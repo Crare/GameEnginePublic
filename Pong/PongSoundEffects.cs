@@ -6,6 +6,7 @@
         PaddleHit,
         GameOver,
         LiveLost,
-        Scored
+        Scored,
+        StarPicked
     }
 }

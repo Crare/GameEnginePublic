@@ -10,7 +10,7 @@ namespace GameEngine.Core.EntityManagement
     public class EntityManager
     {
         public List<Entity> entities = new();
-
+        public long lastEntityId = 0;
         public SpriteBatch SpriteBatch { get; private set; }
         public GraphicsDeviceManager Graphics { get; private set; }
 
@@ -25,12 +25,19 @@ namespace GameEngine.Core.EntityManagement
 
         public void AddEntity(Entity entity)
         {
+            entity.Id = NewEntityId();
             entities.Add(entity);
         }
 
-        public void RemoveEntity(int index)
+        public long NewEntityId()
         {
-            entities.RemoveAt(index);
+            lastEntityId++;
+            return lastEntityId;
+        }
+
+        public void RemoveEntity(long id)
+        {
+            entities = entities.Where(e => e.Id != id).ToList();
         }
 
         public void UpdateEntities(GameTime gameTime, KeyboardState keyboardState)
@@ -57,7 +64,7 @@ namespace GameEngine.Core.EntityManagement
             });
         }
 
-        public bool IsColliding(Entity current, string tag)
+        public bool IsColliding(Entity current, int tag)
         {
             return entities.Any(e => 
                 e.Tag == tag 
@@ -65,9 +72,14 @@ namespace GameEngine.Core.EntityManagement
             );
         }
 
-        public Entity? GetEntityByTag(string tag)
+        public TEntity GetEntityByTag<TEntity>(int tag) where TEntity : Entity
         {
-            return entities.FirstOrDefault(e => e.Tag == tag);
+            var result = entities.FirstOrDefault(e => e.Tag == tag);
+            if (result == null)
+            {
+                return default;
+            }
+            return result as TEntity;
         }
     }
 }

@@ -7,15 +7,17 @@ namespace GameEngine.Core.EntityManagement
 {
     public class Entity
     {
+        public long Id { get; internal set; }
+
         public Rectangle BoundingBox { get; set; }
         public Vector2 Position { get; set; }
         public float DepthLayer { get; set; }
         public float Speed { get; set; }
         public bool HorizontalFlipped { get; set; }
         public Sprite Sprite { get; set; }
-        public string Tag { get; set; }
+        public int Tag { get; set; }
 
-        public Entity(Vector2 position, Rectangle boundingBox, float layer, float speed = 0, Sprite sprite = null, string tag = null)
+        public Entity(Vector2 position, Rectangle boundingBox, float layer, float speed = 0, Sprite sprite = null, int tag = 0)
         {
             Position = position;
             BoundingBox = boundingBox;

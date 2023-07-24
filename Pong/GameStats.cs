@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.GameEngine.FileManagement;
+﻿using GameEngine.Core.GameEngine.Audio;
+using GameEngine.Core.GameEngine.FileManagement;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,6 +36,13 @@ namespace Pong
 
         GameStats() {
             PongEventSystem.OnNewGame += OnNewGame;
+            PongEventSystem.OnStarPicked += OnStarPicked;
+        }
+
+        private void OnStarPicked()
+        {
+            PlayerScore += Globals.SCORE_ON_STAR_PICKED;
+            AudioManager.Instance.PlaySound((int)PongSoundEffects.StarPicked);
         }
 
         private void OnNewGame()

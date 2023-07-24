@@ -15,11 +15,20 @@ namespace Pong
 
         public static readonly int SCORE_ON_WALL_HIT = 100;
         public static readonly int SCORE_ON_PADDLE_HIT = 50;
+        public static readonly int SCORE_ON_STAR_PICKED = 33;
 
         public enum SpriteLayers {
             BACKGROUND,
             PLAYER,
             FOREGROUND
+        }
+
+        public enum PongTags {
+            NotSet = 0,
+            ball,
+            leftPaddle,
+            rightPaddle,
+            star
         }
     }
 }

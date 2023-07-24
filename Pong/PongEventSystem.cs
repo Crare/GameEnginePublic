@@ -16,5 +16,8 @@ namespace Pong
 
         public static event Action OnNewGame;
         public static void NewGame() => OnNewGame?.Invoke();
+
+        public static event Action OnStarPicked;
+        public static void StarPicked() => OnStarPicked?.Invoke();
     }
 }
