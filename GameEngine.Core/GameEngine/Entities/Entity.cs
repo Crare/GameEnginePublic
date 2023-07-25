@@ -27,7 +27,7 @@ namespace GameEngine.Core.EntityManagement
             Tag = tag;
         }
 
-        public virtual void Update(GameTime gameTime, KeyboardState keyboardState, GraphicsDeviceManager graphics, EntityManager entityManager)
+        public virtual void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
 
         }

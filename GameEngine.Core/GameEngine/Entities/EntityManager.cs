@@ -12,11 +12,12 @@ namespace GameEngine.Core.EntityManagement
         public List<Entity> entities = new();
         public long lastEntityId = 0;
         public SpriteBatch SpriteBatch { get; private set; }
-        public GraphicsDeviceManager Graphics { get; private set; }
+        public RenderTarget2D RenderTarget { get; private set; }
 
-        public EntityManager(SpriteBatch spriteBatch, GraphicsDeviceManager graphics) {
+        public EntityManager(SpriteBatch spriteBatch, RenderTarget2D renderTarget)
+        {
             SpriteBatch = spriteBatch;
-            Graphics = graphics;
+            RenderTarget = renderTarget;
         }
 
         // TODO: load and save entities
@@ -44,7 +45,7 @@ namespace GameEngine.Core.EntityManagement
         {
             entities.ForEach(e =>
             {
-                e.Update(gameTime, keyboardState, Graphics, this);
+                e.Update(gameTime, keyboardState, RenderTarget, this);
             });
         }
 

@@ -14,13 +14,13 @@ namespace Pong.GameObjects
         private Random Rnd;
         private Color[] data;
 
-        public ScrollingBackground(GraphicsDeviceManager graphics)
+        public ScrollingBackground(RenderTarget2D renderTarget2D)
         {
-            Texture = new Texture2D(graphics.GraphicsDevice, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            Texture = new Texture2D(renderTarget2D.GraphicsDevice, renderTarget2D.Width, renderTarget2D.Height);
 
             Rnd = new Random();
             //the array holds the color for each pixel in the texture
-            data = new Color[graphics.PreferredBackBufferWidth * graphics.PreferredBackBufferHeight];
+            data = new Color[renderTarget2D.Width * renderTarget2D.Height];
             for (int pixel = 0; pixel < data.Count(); pixel++)
             {
                 //the function applies the color according to the specified pixel
@@ -34,7 +34,7 @@ namespace Pong.GameObjects
             spriteBatch.Draw(Texture, Vector2.Zero, Color.White);
         }
 
-        internal void Update(GameTime gameTime, GraphicsDeviceManager graphics)
+        internal void Update(GameTime gameTime, RenderTarget2D renderTarget2D)
         {
             if (!((int)gameTime.ElapsedGameTime.TotalSeconds % 10 == 0))
             {
@@ -42,7 +42,7 @@ namespace Pong.GameObjects
             }
             
             //the array holds the color for new row of pixels
-            Color[] newRow = new Color[graphics.PreferredBackBufferWidth];
+            Color[] newRow = new Color[renderTarget2D.Width];
 
             for (int pixel = 0; pixel < newRow.Count(); pixel++)
             {
@@ -50,12 +50,12 @@ namespace Pong.GameObjects
                 newRow[pixel] = Rnd.Next(0, 1000) == 0 ? Color.White : Color.Black;
             }
             
-            for (int pixel = graphics.PreferredBackBufferWidth * graphics.PreferredBackBufferHeight-1; pixel > 0; pixel--)
+            for (int pixel = renderTarget2D.Width * renderTarget2D.Height-1; pixel > 0; pixel--)
             {
-                if (pixel >= graphics.PreferredBackBufferWidth)
+                if (pixel >= renderTarget2D.Width)
                 {
                     // move old rows of pixels down on array
-                    data[pixel] = data[pixel - graphics.PreferredBackBufferWidth];
+                    data[pixel] = data[pixel - renderTarget2D.Width];
                 } else
                 { 
                     // add newRow to the start of the array

@@ -17,7 +17,7 @@ namespace Pong.GameObjects
             Animation = animation;
         }
 
-        public override void Update(GameTime gameTime, KeyboardState keyboardState, GraphicsDeviceManager graphics, EntityManager entityManager)
+        public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
             Animation.Update(gameTime);
 

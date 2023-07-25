@@ -18,18 +18,25 @@ namespace Pong
 {
     public class Game1 : Game
     {
-        Texture2D debugTexture;
-        ScrollingBackground starBackground;
-        Texture2D pongSpritesheet;
-        Color debugColor;
+        Point _gameResolution = new Point(800, 480);
+        RenderTarget2D _renderTarget;
+        Rectangle _renderTargetDestination;
+        Color _letterboxingColor = Color.Black;
 
-        public string PlayerInputText = "";
+        Texture2D _debugTexture;
+        ScrollingBackground _starBackground;
+        Texture2D _pongSpritesheet;
+        Color _debugColor = new Color(1f, 0f, 0f, 0.3f);
+
+        private bool playOneUpdateOnPaused = false;
+
+        public string _playerInputText = "";
 
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private KeyboardState keyboardState;
-        private KeyboardState lastKeyboardState;
+        private KeyboardState _keyboardState;
+        private KeyboardState _lastKeyboardState;
 
         private EntityManager _entityManager;
         private TextDrawer _textDrawer;
@@ -69,8 +76,16 @@ namespace Pong
         {
             Debug.WriteLine("Initializing...");
 
+            _graphics.PreferredBackBufferWidth = _gameResolution.X;
+            _graphics.PreferredBackBufferHeight = _gameResolution.Y;
+            _graphics.ApplyChanges();
+
+            _renderTarget = new RenderTarget2D(GraphicsDevice, _gameResolution.X, _gameResolution.Y);
+            _renderTargetDestination = GetRenderTargetDestination(_gameResolution, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _entityManager = new EntityManager(_spriteBatch, _graphics);
+            _entityManager = new EntityManager(_spriteBatch, _renderTarget);
+
             ParticleSystem.Instance.Init(_spriteBatch, _graphics);
             GameStats.Instance.LoadHighScores();
 
@@ -89,16 +104,13 @@ namespace Pong
             // load textures
             //var ballTexture = Content.Load<Texture2D>("Sprites/ball");
             //var paddleTexture = Content.Load<Texture2D>("Sprites/paddle");
-            pongSpritesheet = Content.Load<Texture2D>("Sprites/pong_spritesheet");
+            _pongSpritesheet = Content.Load<Texture2D>("Sprites/pong_spritesheet");
 
             // generated textures
-            debugTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
-            debugTexture.SetData(new Color[] { Color.White });
+            _debugTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
+            _debugTexture.SetData(new Color[] { Color.White });
 
-            starBackground = new ScrollingBackground(_graphics);
-
-            // set colors
-            debugColor = new Color(1f, 0f, 0f, 0.3f);
+            _starBackground = new ScrollingBackground(_renderTarget);
 
             // assign entities
             var starAmount = 100;
@@ -106,8 +118,8 @@ namespace Pong
             for (int i = 0; i < starAmount; i++)
             {
                 var rnd = new Random();
-                var randX = rnd.Next(edgePadding, _graphics.PreferredBackBufferWidth - edgePadding);
-                var randY = rnd.Next(edgePadding, _graphics.PreferredBackBufferHeight - edgePadding);
+                var randX = rnd.Next(edgePadding, _renderTarget.Width - edgePadding);
+                var randY = rnd.Next(edgePadding, _renderTarget.Height - edgePadding);
                 var randFrame = rnd.Next(0, 4);
                 var starAnimationRects = new Rectangle[4];
                 starAnimationRects[0] = new Rectangle(16, 16, 2, 2);
@@ -118,36 +130,37 @@ namespace Pong
                 var star = new Star(
                     new Vector2(randX, randY), 
                     new Rectangle(randX-2, randY-2, 4,4), 
-                    new SpriteAnimation(pongSpritesheet, randFrame, 16, true, starAnimationRects));
+                    new SpriteAnimation(_pongSpritesheet, randFrame, 16, true, starAnimationRects));
                 _entityManager.AddEntity(star);
             }
-
+            var ballDimensions = new Point(16,16);
             var ball = new Ball(
-                new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2),
-                new Rectangle(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 16, 16),
-                new Sprite(pongSpritesheet, new Rectangle(16,0, 16,16))
+                new Vector2(_renderTarget.Width / 2, _renderTarget.Height / 2),
+                new Rectangle(_renderTarget.Width / 2, _renderTarget.Height / 2, ballDimensions.X, ballDimensions.Y),
+                new Sprite(_pongSpritesheet, new Rectangle(16,0, 16,16))
             );
             _entityManager.AddEntity(ball);
 
+            var paddleDimensions = new Point(16, 96);
             var leftPaddle = new PlayerPaddle(
-                new Sprite(pongSpritesheet, new Rectangle(0,0, 15, 95)),
-                new Vector2(0, _graphics.PreferredBackBufferHeight / 2),
+                new Sprite(_pongSpritesheet, new Rectangle(0,0, paddleDimensions.X, paddleDimensions.Y)),
+                new Vector2(0, _renderTarget.Height / 2),
                 new Rectangle(
-                    _graphics.PreferredBackBufferWidth - 15 / 2,
-                    _graphics.PreferredBackBufferHeight / 2,
-                    15,
-                    95)
+                    _renderTarget.Width - paddleDimensions.X / 2,
+                    _renderTarget.Height / 2,
+                    paddleDimensions.X,
+                    paddleDimensions.Y)
             );
             _entityManager.AddEntity(leftPaddle);
 
             var rightPaddle = new AIPaddle(
-                new Sprite(pongSpritesheet, new Rectangle(0, 0, 15, 95)),
-                new Vector2(_graphics.PreferredBackBufferWidth - 15, _graphics.PreferredBackBufferHeight / 2),
+                new Sprite(_pongSpritesheet, new Rectangle(0, 0, paddleDimensions.X, paddleDimensions.Y)),
+                new Vector2(_renderTarget.Width - paddleDimensions.X, _renderTarget.Height / 2),
                 new Rectangle(
-                    _graphics.PreferredBackBufferWidth - 15 / 2,
-                    _graphics.PreferredBackBufferHeight / 2,
-                    15,
-                    95)
+                    _renderTarget.Width - paddleDimensions.X / 2,
+                    _renderTarget.Height / 2,
+                    paddleDimensions.X,
+                    paddleDimensions.Y)
             );
             _entityManager.AddEntity(rightPaddle);
 
@@ -180,17 +193,17 @@ namespace Pong
 
         protected override void Update(GameTime gameTime)
         {
-            keyboardState = Keyboard.GetState();
+            _keyboardState = Keyboard.GetState();
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed 
-                || keyboardState.IsKeyDown(Keys.Escape))
+                || _keyboardState.IsKeyDown(Keys.Escape))
             {
                 Exit();
             }
 
-            // Toggle Pause state: ctrl + shift + D
-            if (keyboardState.IsKeyDown(Keys.P) 
-                && !lastKeyboardState.IsKeyDown(Keys.P) 
+            // Toggle Pause state: P
+            if (_keyboardState.IsKeyDown(Keys.P) 
+                && !_lastKeyboardState.IsKeyDown(Keys.P) 
                 && (_currentGameState == PongGameState.GameLoop || _currentGameState == PongGameState.GamePaused))
             {
                 var newState = _currentGameState == PongGameState.GamePaused ? PongGameState.GameLoop : PongGameState.GamePaused;
@@ -198,32 +211,43 @@ namespace Pong
             }
 
             // Toggle Debug mode: ctrl + shift + D
-            if (keyboardState.IsKeyDown(Keys.D) 
-                && (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
-                && (keyboardState.IsKeyDown(Keys.LeftControl) || keyboardState.IsKeyDown(Keys.RightControl))
+            if (_keyboardState.IsKeyDown(Keys.D) 
+                && (_keyboardState.IsKeyDown(Keys.LeftShift) || _keyboardState.IsKeyDown(Keys.RightShift))
+                && (_keyboardState.IsKeyDown(Keys.LeftControl) || _keyboardState.IsKeyDown(Keys.RightControl))
                 &&
-                    !(lastKeyboardState.IsKeyDown(Keys.D) 
-                    && (lastKeyboardState.IsKeyDown(Keys.LeftShift) || lastKeyboardState.IsKeyDown(Keys.RightShift))
-                    && (lastKeyboardState.IsKeyDown(Keys.LeftControl) || lastKeyboardState.IsKeyDown(Keys.RightControl))
+                    !(_lastKeyboardState.IsKeyDown(Keys.D) 
+                    && (_lastKeyboardState.IsKeyDown(Keys.LeftShift) || _lastKeyboardState.IsKeyDown(Keys.RightShift))
+                    && (_lastKeyboardState.IsKeyDown(Keys.LeftControl) || _lastKeyboardState.IsKeyDown(Keys.RightControl))
                     )
                 )
             {
                 ToggleDebugMode();
             }
 
-            // Pause mode on: no updates to be done!
-            if (_currentGameState == PongGameState.GamePaused)
+            if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11))
             {
-                lastKeyboardState = keyboardState;
+                ToggleFullScreen();
+            }
+
+            if (_keyboardState.IsKeyDown(Keys.O) && !_lastKeyboardState.IsKeyDown(Keys.O))
+            {
+                playOneUpdateOnPaused = true;
+            }
+
+            // Pause mode on: no updates to be done!
+            if (_currentGameState == PongGameState.GamePaused && !playOneUpdateOnPaused)
+            {
+                _lastKeyboardState = _keyboardState;
                 base.Update(gameTime);
                 return;
             }
 
-            starBackground.Update(gameTime, _graphics);
+            _starBackground.Update(gameTime, _renderTarget);
 
-            if (_currentGameState == PongGameState.GameLoop)
+            if (_currentGameState == PongGameState.GameLoop 
+                || (_currentGameState == PongGameState.GamePaused && playOneUpdateOnPaused))
             {
-                _entityManager.UpdateEntities(gameTime, keyboardState);
+                _entityManager.UpdateEntities(gameTime, _keyboardState);
                 ParticleSystem.Instance.Update(gameTime);
 
                 if (GameStats.Instance.PlayerLives <= 0)
@@ -233,42 +257,48 @@ namespace Pong
 
             } else if (_currentGameState == PongGameState.Scoreboard)
             {
-                if (keyboardState.IsKeyDown(Keys.Space))
+                if (_keyboardState.IsKeyDown(Keys.Space))
                 {
                     PongEventSystem.NewGame();
                 }
             } else if (_currentGameState == PongGameState.AddNewHighScore)
             {
 
-                if (TextInputHelper.TryGetPressedKey(keyboardState, lastKeyboardState, out string key))
+                if (TextInputHelper.TryGetPressedKey(_keyboardState, _lastKeyboardState, out string key))
                 {
                     // allow only 3 letters to be added.
-                    if (key == "backspace" && PlayerInputText.Length > 0)
+                    if (key == "backspace" && _playerInputText.Length > 0)
                     {
-                        PlayerInputText = PlayerInputText.Substring(0, PlayerInputText.Length-1);
-                    } else if (key != "backspace" && PlayerInputText.Length < 3)
+                        _playerInputText = _playerInputText.Substring(0, _playerInputText.Length-1);
+                    } else if (key != "backspace" && _playerInputText.Length < 3)
                     {
-                        PlayerInputText += key;
+                        _playerInputText += key;
                     }
                 }
-                if (PlayerInputText.Length == 3 && keyboardState.IsKeyDown(Keys.Enter))
+                if (_playerInputText.Length == 3 && _keyboardState.IsKeyDown(Keys.Enter))
                 {
-                    GameStats.Instance.SaveNewHighScore(PlayerInputText);
+                    GameStats.Instance.SaveNewHighScore(_playerInputText);
                     PongEventSystem.GameStateChanged(PongGameState.Scoreboard);
                 }
             }
 
-            lastKeyboardState = keyboardState;
+            _lastKeyboardState = _keyboardState;
 
             base.Update(gameTime);
+
+            if (playOneUpdateOnPaused) {
+                playOneUpdateOnPaused = false;
+            }
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.SetRenderTarget(_renderTarget);
+            GraphicsDevice.Clear(_letterboxingColor);
             _spriteBatch.Begin();
+            // draw code below
 
-            starBackground.Render(_spriteBatch);
+            _starBackground.Render(_spriteBatch);
 
             if (_currentGameState == PongGameState.GameLoop || _currentGameState == PongGameState.GamePaused)
             {
@@ -277,7 +307,7 @@ namespace Pong
 
                 if (Globals.DEBUG_DRAW)
                 {
-                    _entityManager.DebugRenderEntities(debugTexture, debugColor);
+                    _entityManager.DebugRenderEntities(_debugTexture, _debugColor);
                 }
 
                 DrawCurrentScore();
@@ -288,24 +318,33 @@ namespace Pong
                 DrawHighScores();
 
                 string help = $"Start new game by pressing 'Space'";
-                _textDrawer.Draw(help, new Vector2(_graphics.PreferredBackBufferWidth / 2, 60), Alignment.Center);
+                _textDrawer.Draw(help, new Vector2(_renderTarget.Width / 2, 60), Alignment.Center);
             }
             else if (_currentGameState == PongGameState.AddNewHighScore)
             {
                 string help1 = $"You got a new highscore!";
                 string help2 = $"Please enter 3 characters and press 'Enter':";
-                string help3 = $"{PlayerInputText}";
-                _textDrawer.Draw(help1, new Vector2(_graphics.PreferredBackBufferWidth / 2, 60), Alignment.Center);
-                _textDrawer.Draw(help2, new Vector2(_graphics.PreferredBackBufferWidth / 2, 80), Alignment.Center);
-                _textDrawer.Draw(help3, new Vector2(_graphics.PreferredBackBufferWidth / 2, 100), Alignment.Center);
+                string help3 = $"{_playerInputText}";
+                _textDrawer.Draw(help1, new Vector2(_renderTarget.Width / 2, 60), Alignment.Center);
+                _textDrawer.Draw(help2, new Vector2(_renderTarget.Width / 2, 80), Alignment.Center);
+                _textDrawer.Draw(help3, new Vector2(_renderTarget.Width / 2, 100), Alignment.Center);
             }
 
             if (_currentGameState == PongGameState.GamePaused)
             {
                 string paused = $"Game paused";
-                _textDrawer.Draw(paused, new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2), Alignment.Center);
+                _textDrawer.Draw(paused, new Vector2(_renderTarget.Width / 2, _renderTarget.Height / 2), Alignment.Center);
             }
 
+            // end of draw code
+            _spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(_letterboxingColor);
+
+            //_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
+            _spriteBatch.Begin(samplerState: SamplerState.PointClamp); // renders clear pixels, no antialiasing
+            //_spriteBatch.Begin();
+            _spriteBatch.Draw(_renderTarget, _renderTargetDestination, Color.White);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
@@ -314,26 +353,75 @@ namespace Pong
         {
             string lives = $"lives: {GameStats.Instance.PlayerLives}";
             string score = $"score: {GameStats.Instance.PlayerScore}";
-            _textDrawer.Draw(lives, new Vector2(_graphics.PreferredBackBufferWidth / 2, 10), Alignment.Center);
-            _textDrawer.Draw(score, new Vector2(_graphics.PreferredBackBufferWidth / 2, 30), Alignment.Center);
+            _textDrawer.Draw(lives, new Vector2(_renderTarget.Width / 2, 10), Alignment.Center);
+            _textDrawer.Draw(score, new Vector2(_renderTarget.Width / 2, 30), Alignment.Center);
         }
 
         private void DrawHighScores()
         {
             string highscores = $"highscores:";
-            _textDrawer.Draw(highscores, new Vector2(_graphics.PreferredBackBufferWidth / 2, 100), Alignment.Center);
+            _textDrawer.Draw(highscores, new Vector2(_renderTarget.Width / 2, 100), Alignment.Center);
             for (int i = 0; i < GameStats.Instance.highScores.Count;i++)
             {
                 string name = $"{i + 1}. {GameStats.Instance.highScores[i].Name}";
                 string score = $"{GameStats.Instance.highScores[i].Score}";
-                _textDrawer.Draw(name, new Vector2(_graphics.PreferredBackBufferWidth / 2 - 40, 125 + i * 20), Alignment.Right);
-                _textDrawer.Draw(score, new Vector2(_graphics.PreferredBackBufferWidth / 2 + 20, 125 + i * 20), Alignment.Right);
+                _textDrawer.Draw(name, new Vector2(_renderTarget.Width / 2 - 40, 125 + i * 20), Alignment.Right);
+                _textDrawer.Draw(score, new Vector2(_renderTarget.Width / 2 + 20, 125 + i * 20), Alignment.Right);
             }
         }
 
         private void ToggleDebugMode()
         {
             Globals.DEBUG_DRAW = !Globals.DEBUG_DRAW;
+        }
+
+        private void ToggleFullScreen()
+        {
+            if (!_graphics.IsFullScreen)
+            {
+                _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            }
+            else
+            {
+                _graphics.PreferredBackBufferWidth = _gameResolution.X;
+                _graphics.PreferredBackBufferHeight = _gameResolution.Y;
+            }
+            _graphics.IsFullScreen = !_graphics.IsFullScreen;
+            _graphics.ApplyChanges();
+
+            _renderTargetDestination = GetRenderTargetDestination(_gameResolution, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+        }
+
+        private Rectangle GetRenderTargetDestination(Point resolution, int preferredBackBufferWidth, int preferredBackBufferHeight)
+        {
+            float resolutionRatio = (float)resolution.X / resolution.Y;
+            float screenRatio;
+            Point bounds = new Point(preferredBackBufferWidth, preferredBackBufferHeight);
+            screenRatio = (float)bounds.X / bounds.Y;
+            float scale;
+            Rectangle rectangle = new Rectangle();
+
+            if (resolutionRatio < screenRatio)
+                scale = (float)bounds.Y / resolution.Y;
+            else if (resolutionRatio > screenRatio)
+                scale = (float)bounds.X / resolution.X;
+            else
+            {
+                // Resolution and window/screen share aspect ratio
+                rectangle.Size = bounds;
+                return rectangle;
+            }
+            rectangle.Width = (int)(resolution.X * scale);
+            rectangle.Height = (int)(resolution.Y * scale);
+            return CenterRectangle(new Rectangle(Point.Zero, bounds), rectangle);
+        }
+
+        static Rectangle CenterRectangle(Rectangle outerRectangle, Rectangle innerRectangle)
+        {
+            Point delta = outerRectangle.Center - innerRectangle.Center;
+            innerRectangle.Offset(delta);
+            return innerRectangle;
         }
     }
 }

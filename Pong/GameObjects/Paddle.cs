@@ -3,8 +3,6 @@ using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Diagnostics;
 using static Pong.Globals;
 
 namespace Pong
@@ -16,7 +14,7 @@ namespace Pong
         {
         }
 
-        public override void Update(GameTime gameTime, KeyboardState keyboardState, GraphicsDeviceManager graphics, EntityManager entityManager)
+        public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
             var velocity = new Vector2(0, 0);
 
@@ -38,9 +36,9 @@ namespace Pong
 
             // keep in window limits
             float yPos = Position.Y;
-            if (Position.Y > graphics.PreferredBackBufferHeight - Height)
+            if (Position.Y > renderTarget2D.Height - Height)
             {
-                yPos = graphics.PreferredBackBufferHeight - Height;
+                yPos = renderTarget2D.Height - Height;
             }
             else if (Position.Y < 0)
             {
@@ -59,7 +57,7 @@ namespace Pong
         {
         }
 
-        public override void Update(GameTime gameTime, KeyboardState keyboardState, GraphicsDeviceManager graphics, EntityManager entityManager)
+        public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
             var ball = entityManager.GetEntityByTag<Ball>((int)PongTags.ball);
             if (ball != null)
