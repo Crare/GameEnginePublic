@@ -1,7 +1,7 @@
 # TODO
 
 - pong game:
-    - fullscreen, windowed mode, scaling
+    - scaleable windowed mode: https://community.monogame.net/t/handling-user-controlled-window-resizing/7828
     - powerups:
       - requires Timer-class to handle boost-lifespan? store effects globally or by per paddle/ball?
       - speedboost to paddle
