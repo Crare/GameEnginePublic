@@ -39,46 +39,46 @@ namespace Pong
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, GraphicsDeviceManager graphics, EntityManager entityManager)
         {
-            if (Position.Y - Sprite.Texture.Height/2 < 0)
+            if (Position.Y - BoundingBox.Height/2 < 0)
             {
                 // ball hit top wall
                 Velocity.Y = -Velocity.Y;
-                var hitPosition = new Vector2(Position.X + Sprite.Texture.Width / 2, Position.Y);
+                var hitPosition = new Vector2(Position.X + BoundingBox.Width / 2, Position.Y);
                 SpawnParticlesAtPosition(hitPosition, 5);
                 AudioManager.Instance.PlaySound((int)PongSoundEffects.BallHit);
             }
 
-            if (Position.Y + Sprite.Texture.Height / 2 > graphics.PreferredBackBufferHeight)
+            if (Position.Y + BoundingBox.Height / 2 > graphics.PreferredBackBufferHeight)
             {
                 // ball hit bottom wall
                 Velocity.Y = -Velocity.Y;
-                var hitPosition = new Vector2(Position.X + Sprite.Texture.Width / 2, graphics.PreferredBackBufferHeight);
+                var hitPosition = new Vector2(Position.X + BoundingBox.Width / 2, graphics.PreferredBackBufferHeight);
                 SpawnParticlesAtPosition(hitPosition, 5);
                 AudioManager.Instance.PlaySound((int)PongSoundEffects.BallHit);
             }
 
-            if (Position.X - Sprite.Texture.Width / 2 < 0)
+            if (Position.X - BoundingBox.Width / 2 < 0)
             {
                 // ball hit left wall
                 if (Velocity.X < 0)
                 {
                     Velocity.X = -Velocity.X;
                     GameStats.Instance.PlayerLives -= 1;
-                    var hitPosition = new Vector2(0, Position.Y + Sprite.Texture.Height / 2);
+                    var hitPosition = new Vector2(0, Position.Y + BoundingBox.Height / 2);
                     SpawnParticlesAtPosition(hitPosition, 5);
                     AudioManager.Instance.PlaySound((int)PongSoundEffects.LiveLost);
                     AudioManager.Instance.PlaySound((int)PongSoundEffects.BallHit);
                 }
             }
 
-            if (Position.X +  Sprite.Texture.Width /2 > graphics.PreferredBackBufferWidth)
+            if (Position.X + BoundingBox.Width /2 > graphics.PreferredBackBufferWidth)
             {
                 // ball hit right wall
                 if (Velocity.X > 0)
                 {
                     Velocity.X = -Velocity.X;
                     GameStats.Instance.PlayerScore += SCORE_ON_WALL_HIT;
-                    var hitPosition = new Vector2(graphics.PreferredBackBufferWidth, Position.Y + Sprite.Texture.Height / 2);
+                    var hitPosition = new Vector2(graphics.PreferredBackBufferWidth, Position.Y + BoundingBox.Height / 2);
                     SpawnParticlesAtPosition(hitPosition, 5);
                     AudioManager.Instance.PlaySound((int)PongSoundEffects.Scored);
                     AudioManager.Instance.PlaySound((int)PongSoundEffects.BallHit);
@@ -92,7 +92,7 @@ namespace Pong
                     Velocity.X = -Velocity.X * 1.1f;
                     Velocity.Y *= 1.1f;
                     GameStats.Instance.PlayerScore += SCORE_ON_PADDLE_HIT;
-                    var hitPosition = new Vector2(Position.X, Position.Y + Sprite.Texture.Height / 2);
+                    var hitPosition = new Vector2(Position.X, Position.Y + BoundingBox.Height / 2);
                     SpawnParticlesAtPosition(hitPosition, 15);
                     AudioManager.Instance.PlaySound((int)PongSoundEffects.PaddleHit);
                 }
@@ -104,7 +104,7 @@ namespace Pong
                 {
                     Velocity.X = -Velocity.X * 1.1f;
                     Velocity.Y *= 1.1f;
-                    var hitPosition = new Vector2(Position.X + BoundingBox.Width, Position.Y + Sprite.Texture.Height / 2);
+                    var hitPosition = new Vector2(Position.X + BoundingBox.Width, Position.Y + BoundingBox.Height / 2);
                     SpawnParticlesAtPosition(hitPosition, 15);
                     AudioManager.Instance.PlaySound((int)PongSoundEffects.PaddleHit);
                 }

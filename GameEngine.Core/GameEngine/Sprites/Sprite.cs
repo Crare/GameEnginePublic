@@ -22,17 +22,33 @@ namespace GameEngine.Core.SpriteManagement
         public void Render(SpriteBatch spriteBatch, Vector2 entityPosition, float depthLayer, bool horizontalFlipped)
         {
             // use whole texture
-            spriteBatch.Draw(
-                Texture,
-                entityPosition,
-                SourceRectangle,
-                Color.White,
-                0f, // rotation
-                new Vector2(Texture.Width / 2, Texture.Height / 2), // origin
-                Vector2.One, // scale
-                horizontalFlipped ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
-                depthLayer
-            );
+            if (SourceRectangle == null)
+            {
+                spriteBatch.Draw(
+                    Texture,
+                    entityPosition,
+                    null,
+                    Color.White,
+                    0f, // rotation
+                    new Vector2(Texture.Width / 2, Texture.Height / 2), // origin
+                    Vector2.One, // scale
+                    horizontalFlipped ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                    depthLayer
+                );
+            } else
+            {
+                spriteBatch.Draw(
+                    Texture,
+                    entityPosition,
+                    SourceRectangle,
+                    Color.White,
+                    0f, // rotation
+                    new Vector2(SourceRectangle.Value.Width / 2, SourceRectangle.Value.Height / 2), // origin
+                    Vector2.One, // scale
+                    horizontalFlipped ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                    depthLayer
+                );
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Pong
     {
         Scoreboard,
         GameLoop,
+        GamePaused,
         AddNewHighScore
     }
 }

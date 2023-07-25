@@ -87,8 +87,8 @@ namespace Pong
             _textDrawer = new TextDrawer(_spriteBatch, font, defaultTextColor);
 
             // load textures
-            var ballTexture = Content.Load<Texture2D>("Sprites/ball");
-            var paddleTexture = Content.Load<Texture2D>("Sprites/paddle");
+            //var ballTexture = Content.Load<Texture2D>("Sprites/ball");
+            //var paddleTexture = Content.Load<Texture2D>("Sprites/paddle");
             pongSpritesheet = Content.Load<Texture2D>("Sprites/pong_spritesheet");
 
             // generated textures
@@ -100,49 +100,54 @@ namespace Pong
             // set colors
             debugColor = new Color(1f, 0f, 0f, 0.3f);
 
+            // assign entities
             var starAmount = 100;
+            var edgePadding = 20;
             for (int i = 0; i < starAmount; i++)
             {
                 var rnd = new Random();
-                var randX = rnd.Next(100, _graphics.PreferredBackBufferWidth - 100);
-                var randY = rnd.Next(100, _graphics.PreferredBackBufferHeight - 100);
+                var randX = rnd.Next(edgePadding, _graphics.PreferredBackBufferWidth - edgePadding);
+                var randY = rnd.Next(edgePadding, _graphics.PreferredBackBufferHeight - edgePadding);
+                var randFrame = rnd.Next(0, 4);
                 var starAnimationRects = new Rectangle[4];
                 starAnimationRects[0] = new Rectangle(16, 16, 2, 2);
                 starAnimationRects[1] = new Rectangle(26, 18, 4, 4);
                 starAnimationRects[2] = new Rectangle(18, 16, 6, 6);
                 starAnimationRects[3] = new Rectangle(24, 16, 8, 8);
 
-                var star = new Star(new Vector2(randX, randY), new Rectangle(randX-2, randY-2, 4,4), new SpriteAnimation(pongSpritesheet, 0, 16, true, starAnimationRects));
+                var star = new Star(
+                    new Vector2(randX, randY), 
+                    new Rectangle(randX-2, randY-2, 4,4), 
+                    new SpriteAnimation(pongSpritesheet, randFrame, 16, true, starAnimationRects));
                 _entityManager.AddEntity(star);
             }
 
-            // assign entities
             var ball = new Ball(
                 new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2),
-                new Rectangle(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, ballTexture.Width, ballTexture.Height),
-                new Sprite(ballTexture)
+                new Rectangle(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 16, 16),
+                new Sprite(pongSpritesheet, new Rectangle(16,0, 16,16))
             );
             _entityManager.AddEntity(ball);
 
             var leftPaddle = new PlayerPaddle(
-                new Sprite(paddleTexture),
+                new Sprite(pongSpritesheet, new Rectangle(0,0, 15, 95)),
                 new Vector2(0, _graphics.PreferredBackBufferHeight / 2),
                 new Rectangle(
-                    _graphics.PreferredBackBufferWidth - paddleTexture.Width,
+                    _graphics.PreferredBackBufferWidth - 15 / 2,
                     _graphics.PreferredBackBufferHeight / 2,
-                    paddleTexture.Width,
-                    paddleTexture.Height)
+                    15,
+                    95)
             );
             _entityManager.AddEntity(leftPaddle);
 
             var rightPaddle = new AIPaddle(
-                new Sprite(paddleTexture),
-                new Vector2(_graphics.PreferredBackBufferWidth - paddleTexture.Width, _graphics.PreferredBackBufferHeight / 2),
+                new Sprite(pongSpritesheet, new Rectangle(0, 0, 15, 95)),
+                new Vector2(_graphics.PreferredBackBufferWidth - 15, _graphics.PreferredBackBufferHeight / 2),
                 new Rectangle(
-                    _graphics.PreferredBackBufferWidth - paddleTexture.Width,
+                    _graphics.PreferredBackBufferWidth - 15 / 2,
                     _graphics.PreferredBackBufferHeight / 2,
-                    paddleTexture.Width, 
-                    paddleTexture.Height)
+                    15,
+                    95)
             );
             _entityManager.AddEntity(rightPaddle);
 
@@ -183,7 +188,16 @@ namespace Pong
                 Exit();
             }
 
-            // ctrl + shift + D
+            // Toggle Pause state: ctrl + shift + D
+            if (keyboardState.IsKeyDown(Keys.P) 
+                && !lastKeyboardState.IsKeyDown(Keys.P) 
+                && (_currentGameState == PongGameState.GameLoop || _currentGameState == PongGameState.GamePaused))
+            {
+                var newState = _currentGameState == PongGameState.GamePaused ? PongGameState.GameLoop : PongGameState.GamePaused;
+                PongEventSystem.GameStateChanged(newState);
+            }
+
+            // Toggle Debug mode: ctrl + shift + D
             if (keyboardState.IsKeyDown(Keys.D) 
                 && (keyboardState.IsKeyDown(Keys.LeftShift) || keyboardState.IsKeyDown(Keys.RightShift))
                 && (keyboardState.IsKeyDown(Keys.LeftControl) || keyboardState.IsKeyDown(Keys.RightControl))
@@ -195,6 +209,14 @@ namespace Pong
                 )
             {
                 ToggleDebugMode();
+            }
+
+            // Pause mode on: no updates to be done!
+            if (_currentGameState == PongGameState.GamePaused)
+            {
+                lastKeyboardState = keyboardState;
+                base.Update(gameTime);
+                return;
             }
 
             starBackground.Update(gameTime, _graphics);
@@ -248,7 +270,7 @@ namespace Pong
 
             starBackground.Render(_spriteBatch);
 
-            if (_currentGameState == PongGameState.GameLoop)
+            if (_currentGameState == PongGameState.GameLoop || _currentGameState == PongGameState.GamePaused)
             {
                 _entityManager.RenderEntities();
                 ParticleSystem.Instance.Draw();
@@ -276,6 +298,12 @@ namespace Pong
                 _textDrawer.Draw(help1, new Vector2(_graphics.PreferredBackBufferWidth / 2, 60), Alignment.Center);
                 _textDrawer.Draw(help2, new Vector2(_graphics.PreferredBackBufferWidth / 2, 80), Alignment.Center);
                 _textDrawer.Draw(help3, new Vector2(_graphics.PreferredBackBufferWidth / 2, 100), Alignment.Center);
+            }
+
+            if (_currentGameState == PongGameState.GamePaused)
+            {
+                string paused = $"Game paused";
+                _textDrawer.Draw(paused, new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2), Alignment.Center);
             }
 
             _spriteBatch.End();
