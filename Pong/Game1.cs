@@ -209,7 +209,7 @@ namespace Pong
                 var newState = _currentGameState == PongGameState.GamePaused ? PongGameState.GameLoop : PongGameState.GamePaused;
                 PongEventSystem.GameStateChanged(newState);
             }
-
+#if DEBUG
             // Toggle Debug mode: ctrl + shift + D
             if (_keyboardState.IsKeyDown(Keys.D) 
                 && (_keyboardState.IsKeyDown(Keys.LeftShift) || _keyboardState.IsKeyDown(Keys.RightShift))
@@ -223,16 +223,19 @@ namespace Pong
             {
                 ToggleDebugMode();
             }
+#endif
 
             if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11))
             {
                 ToggleFullScreen();
             }
 
+#if DEBUG
             if (_keyboardState.IsKeyDown(Keys.O) && !_lastKeyboardState.IsKeyDown(Keys.O))
             {
                 playOneUpdateOnPaused = true;
             }
+#endif
 
             // Pause mode on: no updates to be done!
             if (_currentGameState == PongGameState.GamePaused && !playOneUpdateOnPaused)

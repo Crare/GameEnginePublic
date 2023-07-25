@@ -59,7 +59,7 @@ namespace Pong
 
         public void LoadHighScores()
         {
-            highScores = FileSystem.LoadFromJson<List<PongScoreStats>>(highScoreFileName);
+            highScores = FileSystem.LoadFromJson<List<PongScoreStats>>(highScoreFileName) ?? new();
         }
 
         public void SaveNewHighScore(string name)
