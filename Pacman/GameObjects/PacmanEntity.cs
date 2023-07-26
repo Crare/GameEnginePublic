@@ -40,7 +40,7 @@ namespace Pacman.GameObjects
             DeathAnimation = new SpriteAnimation(texture, 0, 15, false, pacmanDeath);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             if (AnimationState == 0)
             {

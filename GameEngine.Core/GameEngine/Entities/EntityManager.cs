@@ -49,11 +49,11 @@ namespace GameEngine.Core.EntityManagement
             });
         }
 
-        public void DrawEntities()
+        public void DrawEntities(GameTime gameTime)
         {
             entities.ForEach(e =>
             {
-                e.Draw(SpriteBatch);
+                e.Draw(SpriteBatch, gameTime);
             });
         }
 

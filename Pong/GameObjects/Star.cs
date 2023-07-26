@@ -28,7 +28,7 @@ namespace Pong.GameObjects
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             Animation.Draw(spriteBatch, Position, HorizontalFlipped, DepthLayer);
         }

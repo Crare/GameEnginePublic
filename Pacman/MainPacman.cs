@@ -78,6 +78,7 @@ namespace Pacman
                 Exit();
 
             // TODO: Add your update logic here
+            _entityManager.UpdateEntities(gameTime, _keyboardState);
 
             _lastKeyboardState = _keyboardState;
             base.Update(gameTime);
@@ -88,7 +89,7 @@ namespace Pacman
             _window.StartDrawToRenderTarget(_spriteBatch);
             // draw code below
 
-            // TODO: Add your drawing code here
+            _entityManager.DrawEntities(gameTime);
 
             // end of draw code
             _window.EndDrawToRenderTarget(_spriteBatch);

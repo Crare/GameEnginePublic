@@ -32,7 +32,7 @@ namespace GameEngine.Core.EntityManagement
 
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             Sprite.Draw(spriteBatch, Position, DepthLayer, HorizontalFlipped);
         }

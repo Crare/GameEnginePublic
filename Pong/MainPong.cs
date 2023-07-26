@@ -278,7 +278,7 @@ namespace Pong
 
             if (_currentGameState == PongGameState.GameLoop || _currentGameState == PongGameState.GamePaused)
             {
-                _entityManager.DrawEntities();
+                _entityManager.DrawEntities(gameTime);
                 ParticleSystem.Instance.Draw();
 
                 if (Globals.DEBUG_DRAW)
