@@ -26,7 +26,7 @@ namespace Pacman.GameObjects
             pacmanEat[0] = new Rectangle(0, 0, 16, 16);
             pacmanEat[1] = new Rectangle(16, 0, 16, 16);
             pacmanEat[2] = new Rectangle(32, 0, 16, 16);
-            EatAnimation = new SpriteAnimation(texture, 0, 15, true, pacmanEat);
+            EatAnimation = new SpriteAnimation(texture, 0, 10, true, pacmanEat);
 
             var pacmanDeath = new Rectangle[9];
             pacmanDeath[0] = new Rectangle(48, 0, 16, 16);
@@ -38,17 +38,17 @@ namespace Pacman.GameObjects
             pacmanDeath[6] = new Rectangle(144, 0, 16, 16);
             pacmanDeath[7] = new Rectangle(160, 0, 16, 16);
             pacmanDeath[8] = new Rectangle(176, 0, 16, 16);
-            DeathAnimation = new SpriteAnimation(texture, 0, 15, false, pacmanDeath);
+            DeathAnimation = new SpriteAnimation(texture, 0, 10, false, pacmanDeath);
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             if (AnimationState == 0)
             {
-                EatAnimation.Draw(spriteBatch, Position, false, DepthLayer);
+                EatAnimation.Draw(spriteBatch, Position, false, DepthLayer, Color.White, 0f, Vector2.One);
             } else
             {
-                DeathAnimation.Draw(spriteBatch, Position, false, DepthLayer);
+                DeathAnimation.Draw(spriteBatch, Position, false, DepthLayer, Color.White, 0f, Vector2.One);
             }
         }
 
@@ -62,6 +62,9 @@ namespace Pacman.GameObjects
             {
                 var animationEnded = DeathAnimation.Update(gameTime);
             }
+
+            // check keyboardState to change rotation and start moving in that direction if there is no wall.
+
         }
     }
 }

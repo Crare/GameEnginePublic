@@ -9,6 +9,7 @@ namespace Pacman
     public static class Globals
     {
         public static int PACMAN_SPEED = 100;
+        public static int GHOST_SPEED = 100;
 
         public enum SpriteLayers
         {

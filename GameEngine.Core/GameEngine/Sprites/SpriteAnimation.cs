@@ -38,6 +38,38 @@ namespace GameEngine.Core.GameEngine.Sprites
                 );
         }
 
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, bool horizontalFlipped, float depthLayer, Color colorTint, float rotation)
+        {
+            var rect = SourceRectangles[Frame];
+            spriteBatch.Draw(
+                    Texture,
+                    position,
+                    rect, // sourceRectangle
+                    colorTint,
+                    rotation,
+                    new Vector2(rect.Width / 2, rect.Height / 2), // origin
+                    Vector2.One, // scale
+                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                    depthLayer
+                );
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, bool horizontalFlipped, float depthLayer, Color colorTint, float rotation, Vector2 scale)
+        {
+            var rect = SourceRectangles[Frame];
+            spriteBatch.Draw(
+                    Texture,
+                    position,
+                    rect, // sourceRectangle
+                    colorTint,
+                    rotation,
+                    new Vector2(rect.Width / 2, rect.Height / 2), // origin
+                    scale,
+                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                    depthLayer
+                );
+        }
+
         /// <summary>
         /// Updates the Sprite to next one based on framerate.
         /// </summary>

@@ -56,14 +56,54 @@ namespace Pacman
 
             // load textures
             var pacmanTexture = Content.Load<Texture2D>("sprites/pacman");
+            var ghostTexture = Content.Load<Texture2D>("sprites/pacman_ghost");
 
             // assign entities
-            var pacmanDimensions = new Point(16,16);
             var pacman = new PacmanEntity(
-                new Rectangle(_window.RenderTarget.Width / 2, _window.RenderTarget.Height / 2, pacmanDimensions.X, pacmanDimensions.Y),
-                pacmanTexture
-                );
+                new Rectangle(
+                    _window.RenderTarget.Width / 2, 
+                    _window.RenderTarget.Height / 2, 
+                    16,
+                    16),
+                pacmanTexture);
             _entityManager.AddEntity(pacman);
+
+            var redGhost = new Ghost(
+                new Rectangle(
+                    _window.RenderTarget.Width / 2,
+                    _window.RenderTarget.Height / 2 + 16,
+                    16,
+                    16),
+                ghostTexture,
+                Color.Red);
+            _entityManager.AddEntity(redGhost);
+            var blueGhost = new Ghost(
+                new Rectangle(
+                    _window.RenderTarget.Width / 2 + 16,
+                    _window.RenderTarget.Height / 2 + 16,
+                    16,
+                    16),
+                ghostTexture,
+                Color.Blue);
+            _entityManager.AddEntity(blueGhost);
+            var OrangeGhost = new Ghost(
+                new Rectangle(
+                    _window.RenderTarget.Width / 2 + 32,
+                    _window.RenderTarget.Height / 2 + 16,
+                    16,
+                    16),
+                ghostTexture,
+                Color.Orange);
+            _entityManager.AddEntity(OrangeGhost);
+            var pinkGhost = new Ghost(
+                new Rectangle(
+                    _window.RenderTarget.Width / 2 - 16,
+                    _window.RenderTarget.Height / 2 + 16,
+                    16,
+                    16),
+                ghostTexture,
+                Color.Pink);
+            _entityManager.AddEntity(pinkGhost);
 
             // add audio
             // TODO: AUDIO
