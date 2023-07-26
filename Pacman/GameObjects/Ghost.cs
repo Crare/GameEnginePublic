@@ -1,23 +1,74 @@
 ﻿using GameEngine.Core.EntityManagement;
 using GameEngine.Core.GameEngine.Sprites;
-using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pacman.GameObjects
 {
+    public class RedGhost : Ghost
+    {
+        public RedGhost(Vector2 position, Texture2D texture) 
+            : base(position, texture, Color.Red)
+        {
+        }
+
+        public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
+        {
+            // TODO: red ghost logic
+            base.Update(gameTime, keyboardState, renderTarget2D, entityManager);
+        }
+    }
+
+    public class BlueGhost : Ghost
+    {
+        public BlueGhost(Vector2 position, Texture2D texture)
+            : base(position, texture, Color.Blue)
+        {
+        }
+
+        public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
+        {
+            // TODO: blue ghost logic
+            base.Update(gameTime, keyboardState, renderTarget2D, entityManager);
+        }
+    }
+
+    public class OrangeGhost : Ghost
+    {
+        public OrangeGhost(Vector2 position, Texture2D texture)
+            : base(position, texture, Color.Orange)
+        {
+        }
+
+        public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
+        {
+            // TODO: orange ghost logic
+            base.Update(gameTime, keyboardState, renderTarget2D, entityManager);
+        }
+    }
+
+    public class PinkGhost : Ghost
+    {
+        public PinkGhost(Vector2 position, Texture2D texture)
+            : base(position, texture, Color.Pink)
+        {
+        }
+
+        public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
+        {
+            // TODO: pink ghost logic
+            base.Update(gameTime, keyboardState, renderTarget2D, entityManager);
+        }
+    }
+
     public class Ghost : Entity
     {
         private SpriteAnimation Animation;
         private Color ColorTint;
-        public Ghost(Rectangle boundingBox, Texture2D texture, Color colorTint)
-            : base(new Vector2(boundingBox.X, boundingBox.Y), boundingBox, (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.GHOST_SPEED, null, (int)Globals.PacmanTags.Ghost)
+
+        public Ghost(Vector2 position, Texture2D texture, Color colorTint)
+            : base(position, new Rectangle((int)position.X, (int)position.Y, 16, 16), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.GHOST_SPEED, null, (int)Globals.PacmanTags.Ghost)
         {
             ColorTint = colorTint;
             var anim = new Rectangle[4];

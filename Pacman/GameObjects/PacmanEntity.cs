@@ -18,9 +18,10 @@ namespace Pacman.GameObjects
         SpriteAnimation DeathAnimation;
         private int AnimationState = 0; // 0 = eat, 1 = death
         private int Direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
+        private float rotation = 0f; // in radians
 
-        public PacmanEntity(Rectangle boundingBox, Texture2D texture) 
-            : base(new Vector2(boundingBox.X, boundingBox.Y), boundingBox, (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.PACMAN_SPEED, null, (int)Globals.PacmanTags.Pacman)
+        public PacmanEntity(Vector2 position, Texture2D texture) 
+            : base(position, new Rectangle((int)position.X, (int)position.Y, 16, 16), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.PACMAN_SPEED, null, (int)Globals.PacmanTags.Pacman)
         {
             var pacmanEat = new Rectangle[3];
             pacmanEat[0] = new Rectangle(0, 0, 16, 16);
@@ -45,10 +46,10 @@ namespace Pacman.GameObjects
         {
             if (AnimationState == 0)
             {
-                EatAnimation.Draw(spriteBatch, Position, false, DepthLayer, Color.White, 0f, Vector2.One);
+                EatAnimation.Draw(spriteBatch, Position, HorizontalFlipped, DepthLayer, Color.White, rotation, Vector2.One);
             } else
             {
-                DeathAnimation.Draw(spriteBatch, Position, false, DepthLayer, Color.White, 0f, Vector2.One);
+                DeathAnimation.Draw(spriteBatch, Position, HorizontalFlipped, DepthLayer, Color.White, rotation, Vector2.One);
             }
         }
 
@@ -63,8 +64,30 @@ namespace Pacman.GameObjects
                 var animationEnded = DeathAnimation.Update(gameTime);
             }
 
-            // check keyboardState to change rotation and start moving in that direction if there is no wall.
-
+            if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
+            {
+                Direction = 3;
+                rotation = MathHelper.ToRadians(270);
+                HorizontalFlipped = false;
+            }
+            if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
+            {
+                Direction = 1;
+                rotation = MathHelper.ToRadians(90);
+                HorizontalFlipped = false;
+            }
+            if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.A))
+            {
+                Direction = 2;
+                rotation = 0;
+                HorizontalFlipped = true;
+            }
+            if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
+            {
+                Direction = 0;
+                rotation = 0;
+                HorizontalFlipped = false;
+            }
         }
     }
 }

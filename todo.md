@@ -1,5 +1,7 @@
 # TODO
 
+make game collection screen to choose game from?
+
 refactor: 
 - window logic to own class.
 
@@ -7,6 +9,11 @@ refactor:
   - tilemap: TileMap to manage tiles and calling their functions.
     - tiles Tile -class
       - contains own Render() and Update() methods.
+  - ghosts logic
+  - pacman logic
+  - sounds
+  - scoreboard
+  - particle effects
 
 - pong game:
   - fix: particles are now from the whole texture, they should be from the area the ball sprite is.

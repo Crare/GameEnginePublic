@@ -22,7 +22,7 @@ namespace GameEngine.Core.GameEngine.Sprites
             SourceRectangles = sourceRectangles;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, bool horizontalFlipped, float depthLayer)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, bool flipHorizontally, float depthLayer)
         {
             var rect = SourceRectangles[Frame];
             spriteBatch.Draw(
@@ -33,12 +33,12 @@ namespace GameEngine.Core.GameEngine.Sprites
                     0f, // rotation
                     new Vector2(rect.Width / 2, rect.Height / 2), // origin
                     Vector2.One, // scale
-                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                    flipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                     depthLayer
                 );
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, bool horizontalFlipped, float depthLayer, Color colorTint, float rotation)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, bool flipHorizontally, float depthLayer, Color colorTint, float rotation)
         {
             var rect = SourceRectangles[Frame];
             spriteBatch.Draw(
@@ -49,12 +49,12 @@ namespace GameEngine.Core.GameEngine.Sprites
                     rotation,
                     new Vector2(rect.Width / 2, rect.Height / 2), // origin
                     Vector2.One, // scale
-                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                    flipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                     depthLayer
                 );
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position, bool horizontalFlipped, float depthLayer, Color colorTint, float rotation, Vector2 scale)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, bool flipHorizontally, float depthLayer, Color colorTint, float rotation, Vector2 scale)
         {
             var rect = SourceRectangles[Frame];
             spriteBatch.Draw(
@@ -65,7 +65,7 @@ namespace GameEngine.Core.GameEngine.Sprites
                     rotation,
                     new Vector2(rect.Width / 2, rect.Height / 2), // origin
                     scale,
-                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                    flipHorizontally ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                     depthLayer
                 );
         }

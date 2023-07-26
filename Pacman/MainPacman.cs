@@ -60,49 +60,25 @@ namespace Pacman
 
             // assign entities
             var pacman = new PacmanEntity(
-                new Rectangle(
-                    _window.RenderTarget.Width / 2, 
-                    _window.RenderTarget.Height / 2, 
-                    16,
-                    16),
+                new Vector2(_window.RenderTarget.Width / 2, _window.RenderTarget.Height / 2),
                 pacmanTexture);
             _entityManager.AddEntity(pacman);
 
-            var redGhost = new Ghost(
-                new Rectangle(
-                    _window.RenderTarget.Width / 2,
-                    _window.RenderTarget.Height / 2 + 16,
-                    16,
-                    16),
-                ghostTexture,
-                Color.Red);
+            var redGhost = new RedGhost(
+                new Vector2(_window.RenderTarget.Width / 2 + 16, _window.RenderTarget.Height / 2),
+                ghostTexture);
             _entityManager.AddEntity(redGhost);
-            var blueGhost = new Ghost(
-                new Rectangle(
-                    _window.RenderTarget.Width / 2 + 16,
-                    _window.RenderTarget.Height / 2 + 16,
-                    16,
-                    16),
-                ghostTexture,
-                Color.Blue);
+            var blueGhost = new BlueGhost(
+                new Vector2(_window.RenderTarget.Width / 2 + 32, _window.RenderTarget.Height / 2 ),
+                ghostTexture);
             _entityManager.AddEntity(blueGhost);
-            var OrangeGhost = new Ghost(
-                new Rectangle(
-                    _window.RenderTarget.Width / 2 + 32,
-                    _window.RenderTarget.Height / 2 + 16,
-                    16,
-                    16),
-                ghostTexture,
-                Color.Orange);
+            var OrangeGhost = new OrangeGhost(
+                new Vector2(_window.RenderTarget.Width / 2 - 16, _window.RenderTarget.Height / 2),
+                ghostTexture);
             _entityManager.AddEntity(OrangeGhost);
-            var pinkGhost = new Ghost(
-                new Rectangle(
-                    _window.RenderTarget.Width / 2 - 16,
-                    _window.RenderTarget.Height / 2 + 16,
-                    16,
-                    16),
-                ghostTexture,
-                Color.Pink);
+            var pinkGhost = new PinkGhost(
+                new Vector2(_window.RenderTarget.Width / 2 - 32, _window.RenderTarget.Height / 2 ),
+                ghostTexture);
             _entityManager.AddEntity(pinkGhost);
 
             // add audio
@@ -116,6 +92,11 @@ namespace Pacman
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11))
+            {
+                _window.ToggleFullScreen();
+            }
 
             // TODO: Add your update logic here
             _entityManager.UpdateEntities(gameTime, _keyboardState);
