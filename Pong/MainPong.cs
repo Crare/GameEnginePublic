@@ -4,6 +4,7 @@ using GameEngine.Core.GameEngine.InputManagement;
 using GameEngine.Core.GameEngine.Particles;
 using GameEngine.Core.GameEngine.Sprites;
 using GameEngine.Core.GameEngine.Utils;
+using GameEngine.Core.GameEngine.Window;
 using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -16,12 +17,13 @@ using System.Diagnostics;
 
 namespace Pong
 {
-    public class Game1 : Game
+    public class MainPong : Game
     {
+        public Window _window;
         Point _gameResolution = new Point(800, 480);
-        RenderTarget2D _renderTarget;
-        Rectangle _renderTargetDestination;
-        Color _letterboxingColor = Color.Black;
+        //RenderTarget2D _renderTarget;
+        //Rectangle _renderTargetDestination;
+        //Color _letterboxingColor = Color.Black;
 
         Texture2D _debugTexture;
         ScrollingBackground _starBackground;
@@ -43,7 +45,7 @@ namespace Pong
 
         private PongGameState _currentGameState = PongGameState.Scoreboard;
 
-        public Game1()
+        public MainPong()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -75,16 +77,13 @@ namespace Pong
         protected override void Initialize()
         {
             Debug.WriteLine("Initializing...");
-
-            _graphics.PreferredBackBufferWidth = _gameResolution.X;
-            _graphics.PreferredBackBufferHeight = _gameResolution.Y;
-            _graphics.ApplyChanges();
-
-            _renderTarget = new RenderTarget2D(GraphicsDevice, _gameResolution.X, _gameResolution.Y);
-            _renderTargetDestination = GetRenderTargetDestination(_gameResolution, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            _window = new Window(_gameResolution,
+                    new RenderTarget2D(GraphicsDevice, _gameResolution.X, _gameResolution.Y),
+                    _graphics
+                );
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _entityManager = new EntityManager(_spriteBatch, _renderTarget);
+            _entityManager = new EntityManager(_spriteBatch, _window.RenderTarget);
 
             ParticleSystem.Instance.Init(_spriteBatch, _graphics);
             GameStats.Instance.LoadHighScores();
@@ -110,7 +109,7 @@ namespace Pong
             _debugTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
             _debugTexture.SetData(new Color[] { Color.White });
 
-            _starBackground = new ScrollingBackground(_renderTarget);
+            _starBackground = new ScrollingBackground(_window.RenderTarget);
 
             // assign entities
             var starAmount = 100;
@@ -118,8 +117,8 @@ namespace Pong
             for (int i = 0; i < starAmount; i++)
             {
                 var rnd = new Random();
-                var randX = rnd.Next(edgePadding, _renderTarget.Width - edgePadding);
-                var randY = rnd.Next(edgePadding, _renderTarget.Height - edgePadding);
+                var randX = rnd.Next(edgePadding, _window.RenderTarget.Width - edgePadding);
+                var randY = rnd.Next(edgePadding, _window.RenderTarget.Height - edgePadding);
                 var randFrame = rnd.Next(0, 4);
                 var starAnimationRects = new Rectangle[4];
                 starAnimationRects[0] = new Rectangle(16, 16, 2, 2);
@@ -135,8 +134,8 @@ namespace Pong
             }
             var ballDimensions = new Point(16,16);
             var ball = new Ball(
-                new Vector2(_renderTarget.Width / 2, _renderTarget.Height / 2),
-                new Rectangle(_renderTarget.Width / 2, _renderTarget.Height / 2, ballDimensions.X, ballDimensions.Y),
+                new Vector2(_window.RenderTarget.Width / 2, _window.RenderTarget.Height / 2),
+                new Rectangle(_window.RenderTarget.Width / 2, _window.RenderTarget.Height / 2, ballDimensions.X, ballDimensions.Y),
                 new Sprite(_pongSpritesheet, new Rectangle(16,0, 16,16))
             );
             _entityManager.AddEntity(ball);
@@ -144,10 +143,10 @@ namespace Pong
             var paddleDimensions = new Point(16, 96);
             var leftPaddle = new PlayerPaddle(
                 new Sprite(_pongSpritesheet, new Rectangle(0,0, paddleDimensions.X, paddleDimensions.Y)),
-                new Vector2(0, _renderTarget.Height / 2),
+                new Vector2(0, _window.RenderTarget.Height / 2),
                 new Rectangle(
-                    _renderTarget.Width - paddleDimensions.X / 2,
-                    _renderTarget.Height / 2,
+                    _window.RenderTarget.Width - paddleDimensions.X / 2,
+                    _window.RenderTarget.Height / 2,
                     paddleDimensions.X,
                     paddleDimensions.Y)
             );
@@ -155,10 +154,10 @@ namespace Pong
 
             var rightPaddle = new AIPaddle(
                 new Sprite(_pongSpritesheet, new Rectangle(0, 0, paddleDimensions.X, paddleDimensions.Y)),
-                new Vector2(_renderTarget.Width - paddleDimensions.X, _renderTarget.Height / 2),
+                new Vector2(_window.RenderTarget.Width - paddleDimensions.X, _window.RenderTarget.Height / 2),
                 new Rectangle(
-                    _renderTarget.Width - paddleDimensions.X / 2,
-                    _renderTarget.Height / 2,
+                    _window.RenderTarget.Width - paddleDimensions.X / 2,
+                    _window.RenderTarget.Height / 2,
                     paddleDimensions.X,
                     paddleDimensions.Y)
             );
@@ -227,7 +226,7 @@ namespace Pong
 
             if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11))
             {
-                ToggleFullScreen();
+                _window.ToggleFullScreen();
             }
 
 #if DEBUG
@@ -245,7 +244,7 @@ namespace Pong
                 return;
             }
 
-            _starBackground.Update(gameTime, _renderTarget);
+            _starBackground.Update(gameTime, _window.RenderTarget);
 
             if (_currentGameState == PongGameState.GameLoop 
                 || (_currentGameState == PongGameState.GamePaused && playOneUpdateOnPaused))
@@ -296,9 +295,7 @@ namespace Pong
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.SetRenderTarget(_renderTarget);
-            GraphicsDevice.Clear(_letterboxingColor);
-            _spriteBatch.Begin();
+            _window.StartDrawToRenderTarget(_spriteBatch);
             // draw code below
 
             _starBackground.Render(_spriteBatch);
@@ -321,34 +318,27 @@ namespace Pong
                 DrawHighScores();
 
                 string help = $"Start new game by pressing 'Space'";
-                _textDrawer.Draw(help, new Vector2(_renderTarget.Width / 2, 60), Alignment.Center);
+                _textDrawer.Draw(help, new Vector2(_window.RenderTarget.Width / 2, 60), Alignment.Center);
             }
             else if (_currentGameState == PongGameState.AddNewHighScore)
             {
                 string help1 = $"You got a new highscore!";
                 string help2 = $"Please enter 3 characters and press 'Enter':";
                 string help3 = $"{_playerInputText}";
-                _textDrawer.Draw(help1, new Vector2(_renderTarget.Width / 2, 60), Alignment.Center);
-                _textDrawer.Draw(help2, new Vector2(_renderTarget.Width / 2, 80), Alignment.Center);
-                _textDrawer.Draw(help3, new Vector2(_renderTarget.Width / 2, 100), Alignment.Center);
+                _textDrawer.Draw(help1, new Vector2(_window.RenderTarget.Width / 2, 60), Alignment.Center);
+                _textDrawer.Draw(help2, new Vector2(_window.RenderTarget.Width / 2, 80), Alignment.Center);
+                _textDrawer.Draw(help3, new Vector2(_window.RenderTarget.Width / 2, 100), Alignment.Center);
             }
 
             if (_currentGameState == PongGameState.GamePaused)
             {
                 string paused = $"Game paused";
-                _textDrawer.Draw(paused, new Vector2(_renderTarget.Width / 2, _renderTarget.Height / 2), Alignment.Center);
+                _textDrawer.Draw(paused, new Vector2(_window.RenderTarget.Width / 2, _window.RenderTarget.Height / 2), Alignment.Center);
             }
 
             // end of draw code
-            _spriteBatch.End();
-            GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(_letterboxingColor);
-
-            //_spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp); // renders clear pixels, no antialiasing
-            //_spriteBatch.Begin();
-            _spriteBatch.Draw(_renderTarget, _renderTargetDestination, Color.White);
-            _spriteBatch.End();
+            _window.EndDrawToRenderTarget(_spriteBatch);
+            _window.DrawToDestination(_spriteBatch);
             base.Draw(gameTime);
         }
 
@@ -356,75 +346,26 @@ namespace Pong
         {
             string lives = $"lives: {GameStats.Instance.PlayerLives}";
             string score = $"score: {GameStats.Instance.PlayerScore}";
-            _textDrawer.Draw(lives, new Vector2(_renderTarget.Width / 2, 10), Alignment.Center);
-            _textDrawer.Draw(score, new Vector2(_renderTarget.Width / 2, 30), Alignment.Center);
+            _textDrawer.Draw(lives, new Vector2(_window.RenderTarget.Width / 2, 10), Alignment.Center);
+            _textDrawer.Draw(score, new Vector2(_window.RenderTarget.Width / 2, 30), Alignment.Center);
         }
 
         private void DrawHighScores()
         {
             string highscores = $"highscores:";
-            _textDrawer.Draw(highscores, new Vector2(_renderTarget.Width / 2, 100), Alignment.Center);
+            _textDrawer.Draw(highscores, new Vector2(_window.RenderTarget.Width / 2, 100), Alignment.Center);
             for (int i = 0; i < GameStats.Instance.highScores.Count;i++)
             {
                 string name = $"{i + 1}. {GameStats.Instance.highScores[i].Name}";
                 string score = $"{GameStats.Instance.highScores[i].Score}";
-                _textDrawer.Draw(name, new Vector2(_renderTarget.Width / 2 - 40, 125 + i * 20), Alignment.Right);
-                _textDrawer.Draw(score, new Vector2(_renderTarget.Width / 2 + 20, 125 + i * 20), Alignment.Right);
+                _textDrawer.Draw(name, new Vector2(_window.RenderTarget.Width / 2 - 40, 125 + i * 20), Alignment.Right);
+                _textDrawer.Draw(score, new Vector2(_window.RenderTarget.Width / 2 + 20, 125 + i * 20), Alignment.Right);
             }
         }
 
         private void ToggleDebugMode()
         {
             Globals.DEBUG_DRAW = !Globals.DEBUG_DRAW;
-        }
-
-        private void ToggleFullScreen()
-        {
-            if (!_graphics.IsFullScreen)
-            {
-                _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-                _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-            }
-            else
-            {
-                _graphics.PreferredBackBufferWidth = _gameResolution.X;
-                _graphics.PreferredBackBufferHeight = _gameResolution.Y;
-            }
-            _graphics.IsFullScreen = !_graphics.IsFullScreen;
-            _graphics.ApplyChanges();
-
-            _renderTargetDestination = GetRenderTargetDestination(_gameResolution, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
-        }
-
-        private Rectangle GetRenderTargetDestination(Point resolution, int preferredBackBufferWidth, int preferredBackBufferHeight)
-        {
-            float resolutionRatio = (float)resolution.X / resolution.Y;
-            float screenRatio;
-            Point bounds = new Point(preferredBackBufferWidth, preferredBackBufferHeight);
-            screenRatio = (float)bounds.X / bounds.Y;
-            float scale;
-            Rectangle rectangle = new Rectangle();
-
-            if (resolutionRatio < screenRatio)
-                scale = (float)bounds.Y / resolution.Y;
-            else if (resolutionRatio > screenRatio)
-                scale = (float)bounds.X / resolution.X;
-            else
-            {
-                // Resolution and window/screen share aspect ratio
-                rectangle.Size = bounds;
-                return rectangle;
-            }
-            rectangle.Width = (int)(resolution.X * scale);
-            rectangle.Height = (int)(resolution.Y * scale);
-            return CenterRectangle(new Rectangle(Point.Zero, bounds), rectangle);
-        }
-
-        static Rectangle CenterRectangle(Rectangle outerRectangle, Rectangle innerRectangle)
-        {
-            Point delta = outerRectangle.Center - innerRectangle.Center;
-            innerRectangle.Offset(delta);
-            return innerRectangle;
         }
     }
 }

@@ -1,6 +1,15 @@
 # TODO
 
+refactor: 
+- window logic to own class.
+
+- pacman:
+  - tilemap: TileMap to manage tiles and calling their functions.
+    - tiles Tile -class
+      - contains own Render() and Update() methods.
+
 - pong game:
+  - fix: particles are now from the whole texture, they should be from the area the ball sprite is.
   - trailing particles behind ball
   - scaleable windowed mode: https://community.monogame.net/t/handling-user-controlled-window-resizing/7828
     - keeping aspect ratio
