@@ -19,7 +19,7 @@ namespace GameEngine.Core.SpriteManagement
             SourceRectangle = sourceRectangle;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 entityPosition, float depthLayer, bool horizontalFlipped)
+        public void Draw(SpriteBatch spriteBatch, Vector2 entityPosition, float depthLayer, bool horizontalFlipped = false)
         {
             // use whole texture
             if (SourceRectangle == null)

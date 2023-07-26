@@ -1,5 +1,7 @@
 ﻿using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.FileManagement;
 using GameEngine.Core.GameEngine.Sprites;
+using GameEngine.Core.GameEngine.TileMap;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.GameEngine.Window;
 using GameEngine.Core.SpriteManagement;
@@ -26,6 +28,7 @@ namespace Pacman
         private KeyboardState _lastKeyboardState;
 
         // game specific stuff
+        private PacmanTileMap _tileMap;
 
         public MainPacman()
         {
@@ -43,6 +46,7 @@ namespace Pacman
                 );
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _entityManager = new EntityManager(_spriteBatch, _window.RenderTarget);
+            _tileMap = new PacmanTileMap();
 
             base.Initialize();
             Debug.WriteLine("Initialization done!");
@@ -57,6 +61,15 @@ namespace Pacman
             // load textures
             var pacmanTexture = Content.Load<Texture2D>("sprites/pacman");
             var ghostTexture = Content.Load<Texture2D>("sprites/pacman_ghost");
+            var tilesTexture = Content.Load<Texture2D>("sprites/pacman_tiles");
+
+            // load levels
+            var levels = new string[1];
+            levels[0] = FileSystem.LoadFromFileOrThrowException("levels/level0.csv");
+
+            // init tilemap
+            _tileMap.Initialize(tilesTexture, levels);
+            _tileMap.LoadLevel(0);
 
             // assign entities
             var pacman = new PacmanEntity(
@@ -98,8 +111,8 @@ namespace Pacman
                 _window.ToggleFullScreen();
             }
 
-            // TODO: Add your update logic here
             _entityManager.UpdateEntities(gameTime, _keyboardState);
+            _tileMap.UpdateTiles(gameTime);
 
             _lastKeyboardState = _keyboardState;
             base.Update(gameTime);
@@ -110,6 +123,7 @@ namespace Pacman
             _window.StartDrawToRenderTarget(_spriteBatch);
             // draw code below
 
+            _tileMap.DrawTiles(_spriteBatch);
             _entityManager.DrawEntities(gameTime);
 
             // end of draw code

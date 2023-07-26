@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Pacman
+﻿namespace Pacman
 {
     public static class Globals
     {
         public static int PACMAN_SPEED = 100;
         public static int GHOST_SPEED = 100;
+        public static int PACMAN_TILESIZE = 16;
+
+        public enum PacmanTiles
+        {
+            NONE = 0,
+            FLOOR,
+            WALL
+        }
 
         public enum SpriteLayers
         {

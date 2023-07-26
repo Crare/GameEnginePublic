@@ -18,5 +18,23 @@ namespace GameEngine.Core.GameEngine.FileManagement
             }
             return default(T);
         }
+
+        public static string LoadFromFileOrThrowException(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                return File.ReadAllText(fileName);
+            }
+            throw new System.Exception($"Couldn't find file: '{fileName}'");
+        }
+
+        public static string LoadFromFile(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                return File.ReadAllText(fileName);
+            }
+            return null;
+        }
     }
 }
