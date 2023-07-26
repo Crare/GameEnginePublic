@@ -17,7 +17,7 @@ namespace GameEngine.Core.EntityManagement
         public Sprite Sprite { get; set; }
         public int Tag { get; set; }
 
-        public Entity(Vector2 position, Rectangle boundingBox, float layer, float speed = 0, Sprite sprite = null, int tag = 0)
+        public Entity(Vector2 position, Rectangle boundingBox, float layer, float speed, Sprite sprite, int tag)
         {
             Position = position;
             BoundingBox = boundingBox;
@@ -32,9 +32,9 @@ namespace GameEngine.Core.EntityManagement
 
         }
 
-        public virtual void Render(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
-            Sprite.Render(spriteBatch, Position, DepthLayer, HorizontalFlipped);
+            Sprite.Draw(spriteBatch, Position, DepthLayer, HorizontalFlipped);
         }
 
         public virtual void DebugRender(SpriteBatch spriteBatch, Texture2D debugTexture, Color debugColor)

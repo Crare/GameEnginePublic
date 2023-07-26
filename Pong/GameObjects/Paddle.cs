@@ -36,9 +36,9 @@ namespace Pong
 
             // keep in window limits
             float yPos = Position.Y;
-            if (Position.Y > renderTarget2D.Height - Height)
+            if (Position.Y > renderTarget2D.Height - BoundingBox.Height)
             {
-                yPos = renderTarget2D.Height - Height;
+                yPos = renderTarget2D.Height - BoundingBox.Height;
             }
             else if (Position.Y < 0)
             {
@@ -46,7 +46,7 @@ namespace Pong
             }
             Position = new Vector2(Position.X, yPos);
 
-            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
+            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, BoundingBox.Width, BoundingBox.Height);
         }
     }
 
@@ -66,11 +66,11 @@ namespace Pong
                 {
                     // coming towards right paddle, start moving.
                     var yVelocity = 0;
-                    if (ball.Position.Y > Position.Y + Height / 2)
+                    if (ball.Position.Y > Position.Y + BoundingBox.Height / 2)
                     {
                         yVelocity = 1;
                     }
-                    if (ball.Position.Y < Position.Y + Height / 2)
+                    if (ball.Position.Y < Position.Y + BoundingBox.Height / 2)
                     {
                         yVelocity = -1;
                     }
@@ -84,15 +84,11 @@ namespace Pong
     public class Paddle : Entity
     {
         internal Vector2 startingPosition;
-        internal readonly int Width, Height;
 
         public Paddle(Sprite sprite, Vector2 position, PongTags tag, Rectangle boundingBox)
-            : base(position, boundingBox, (float)SpriteLayers.PLAYER, PADDLE_BASE_SPEED, sprite)
+            : base(position, boundingBox, (float)SpriteLayers.PLAYER, PADDLE_BASE_SPEED, sprite, (int)tag)
         {
             startingPosition = position;
-            Width = boundingBox.Width;
-            Height = boundingBox.Height;
-            Tag = (int)tag;
 
             PongEventSystem.OnGameOver += OnGameOver;
         }
@@ -103,11 +99,11 @@ namespace Pong
             BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width / 2, (int)Position.Y - BoundingBox.Height / 2, BoundingBox.Width, BoundingBox.Height);
         }
 
-        public override void Render(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            Sprite.Render(
+            Sprite.Draw(
                 spriteBatch, 
-                new Vector2(Position.X + Width / 2, Position.Y + Height / 2), 
+                new Vector2(Position.X + BoundingBox.Width / 2, Position.Y + BoundingBox.Height / 2), 
                 DepthLayer, false);
         }
     }

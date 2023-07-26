@@ -19,30 +19,25 @@ namespace Pong
 {
     public class MainPong : Game
     {
-        public Window _window;
-        Point _gameResolution = new Point(800, 480);
-        //RenderTarget2D _renderTarget;
-        //Rectangle _renderTargetDestination;
-        //Color _letterboxingColor = Color.Black;
-
-        Texture2D _debugTexture;
-        ScrollingBackground _starBackground;
-        Texture2D _pongSpritesheet;
-        Color _debugColor = new Color(1f, 0f, 0f, 0.3f);
-
-        private bool playOneUpdateOnPaused = false;
-
-        public string _playerInputText = "";
-
-        private readonly GraphicsDeviceManager _graphics;
+        // monogame stuff
+        private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        // common core stuff
+        public Window _window;
+        Point _gameResolution = new Point(800, 480);
+        private EntityManager _entityManager;
+        private TextDrawer _textDrawer;
         private KeyboardState _keyboardState;
         private KeyboardState _lastKeyboardState;
 
-        private EntityManager _entityManager;
-        private TextDrawer _textDrawer;
-
+        // game specific stuff
+        private Texture2D _debugTexture;
+        private ScrollingBackground _starBackground;
+        private Texture2D _pongSpritesheet;
+        private Color _debugColor = new Color(1f, 0f, 0f, 0.3f);
+        private bool playOneUpdateOnPaused = false;
+        public string _playerInputText = "";
         private PongGameState _currentGameState = PongGameState.Scoreboard;
 
         public MainPong()
@@ -55,25 +50,6 @@ namespace Pong
             PongEventSystem.OnGameOver += OnGameOver;
         }
 
-        private void OnGameOver()
-        {
-            AudioManager.Instance.PlaySound((int)PongSoundEffects.GameOver);
-            ParticleEvents.ParticlesReset();
-            if (GameStats.Instance.IsNewHighScore())
-            {
-                PongEventSystem.GameStateChanged(PongGameState.AddNewHighScore);
-
-            } else
-            {
-                PongEventSystem.GameStateChanged(PongGameState.Scoreboard);
-            }
-        }
-
-        private void OnGameStateChanged(PongGameState state)
-        {
-            _currentGameState = state;
-        }
-
         protected override void Initialize()
         {
             Debug.WriteLine("Initializing...");
@@ -81,7 +57,6 @@ namespace Pong
                     new RenderTarget2D(GraphicsDevice, _gameResolution.X, _gameResolution.Y),
                     _graphics
                 );
-
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _entityManager = new EntityManager(_spriteBatch, _window.RenderTarget);
 
@@ -96,6 +71,7 @@ namespace Pong
         {
             Debug.WriteLine("Loading content...");
 
+            // load fonts
             var font = Content.Load<SpriteFont>("Fonts/Arial");
             var defaultTextColor = Color.White;
             _textDrawer = new TextDrawer(_spriteBatch, font, defaultTextColor);
@@ -302,12 +278,12 @@ namespace Pong
 
             if (_currentGameState == PongGameState.GameLoop || _currentGameState == PongGameState.GamePaused)
             {
-                _entityManager.RenderEntities();
+                _entityManager.DrawEntities();
                 ParticleSystem.Instance.Draw();
 
                 if (Globals.DEBUG_DRAW)
                 {
-                    _entityManager.DebugRenderEntities(_debugTexture, _debugColor);
+                    _entityManager.DrawRenderEntities(_debugTexture, _debugColor);
                 }
 
                 DrawCurrentScore();
@@ -340,6 +316,26 @@ namespace Pong
             _window.EndDrawToRenderTarget(_spriteBatch);
             _window.DrawToDestination(_spriteBatch);
             base.Draw(gameTime);
+        }
+
+        private void OnGameOver()
+        {
+            AudioManager.Instance.PlaySound((int)PongSoundEffects.GameOver);
+            ParticleEvents.ParticlesReset();
+            if (GameStats.Instance.IsNewHighScore())
+            {
+                PongEventSystem.GameStateChanged(PongGameState.AddNewHighScore);
+
+            }
+            else
+            {
+                PongEventSystem.GameStateChanged(PongGameState.Scoreboard);
+            }
+        }
+
+        private void OnGameStateChanged(PongGameState state)
+        {
+            _currentGameState = state;
         }
 
         private void DrawCurrentScore()

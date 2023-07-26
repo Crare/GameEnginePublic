@@ -16,11 +16,10 @@ namespace Pong
         private Particle particle;
 
         public Ball(Vector2 position, Rectangle boundingBox, Sprite sprite) 
-            : base(position, boundingBox, (float)SpriteLayers.PLAYER, BALL_BASE_SPEED, sprite)
+            : base(position, boundingBox, (float)SpriteLayers.PLAYER, BALL_BASE_SPEED, sprite, (int)PongTags.ball)
         {
             startingPosition = position;
             Velocity = new Vector2(-Speed, Speed);
-            Tag = (int)PongTags.ball;
             particle = new Particle(1, Sprite.Texture, new Vector2(4, 4), Position, Color.White, DepthLayer);
 
             PongEventSystem.OnGameOver += OnGameOver;
@@ -32,9 +31,9 @@ namespace Pong
             BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width / 2, (int)Position.Y - BoundingBox.Height / 2, BoundingBox.Width, BoundingBox.Height);
         }
 
-        public override void Render(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            base.Render(spriteBatch);
+            base.Draw(spriteBatch);
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)

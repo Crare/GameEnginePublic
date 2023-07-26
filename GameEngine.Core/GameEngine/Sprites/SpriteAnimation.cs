@@ -22,7 +22,7 @@ namespace GameEngine.Core.GameEngine.Sprites
             SourceRectangles = sourceRectangles;
         }
 
-        public void Render(SpriteBatch spriteBatch, Vector2 position, bool horizontalFlipped, float depthLayer)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, bool horizontalFlipped, float depthLayer)
         {
             var rect = SourceRectangles[Frame];
             spriteBatch.Draw(
@@ -38,11 +38,15 @@ namespace GameEngine.Core.GameEngine.Sprites
                 );
         }
 
-        public void Update(GameTime gameTime)
+        /// <summary>
+        /// Updates the Sprite to next one based on framerate.
+        /// </summary>
+        /// <returns>If non looping animation has ended.</returns>
+        public bool Update(GameTime gameTime)
         {
             if (!IsLooping && Frame == SourceRectangles.Length - 1)
             {
-                return;
+                return true; // indicates animation has ended
             }
 
             if (Timer > FrameThreshold)
@@ -57,6 +61,7 @@ namespace GameEngine.Core.GameEngine.Sprites
             {
                 Timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             }
+            return false;
         }
     }
 }

@@ -49,15 +49,15 @@ namespace GameEngine.Core.EntityManagement
             });
         }
 
-        public void RenderEntities()
+        public void DrawEntities()
         {
             entities.ForEach(e =>
             {
-                e.Render(SpriteBatch);
+                e.Draw(SpriteBatch);
             });
         }
 
-        public void DebugRenderEntities(Texture2D debugTexture, Color debugColor)
+        public void DrawRenderEntities(Texture2D debugTexture, Color debugColor)
         {
             entities.ForEach(e =>
             {

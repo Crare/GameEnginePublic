@@ -28,9 +28,9 @@ namespace Pong.GameObjects
             }
         }
 
-        public override void Render(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            Animation.Render(spriteBatch, Position, HorizontalFlipped, DepthLayer);
+            Animation.Draw(spriteBatch, Position, HorizontalFlipped, DepthLayer);
         }
     }
 }
