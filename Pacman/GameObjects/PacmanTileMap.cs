@@ -12,7 +12,7 @@ namespace Pacman.GameObjects
         private Texture2D Texture;
         private string[] Levels;
 
-        public PacmanTileMap() : base(19, 19, Globals.PACMAN_TILESIZE)
+        public PacmanTileMap() : base(19, 21, Globals.PACMAN_TILESIZE)
         {
         }
 
