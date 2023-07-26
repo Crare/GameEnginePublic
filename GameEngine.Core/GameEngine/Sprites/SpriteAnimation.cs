@@ -33,7 +33,7 @@ namespace GameEngine.Core.GameEngine.Sprites
                     0f, // rotation
                     new Vector2(rect.Width / 2, rect.Height / 2), // origin
                     Vector2.One, // scale
-                    horizontalFlipped ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                     depthLayer
                 );
         }
