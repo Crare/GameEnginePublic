@@ -57,20 +57,21 @@ namespace GameEngine.Core.EntityManagement
             });
         }
 
-        public void DrawRenderEntities(Texture2D debugTexture, Color debugColor)
+        public void DrawRenderEntities(Texture2D debugTexture, Color debugColor, Color debugColor2)
         {
             entities.ForEach(e =>
             {
-                e.DebugRender(SpriteBatch, debugTexture, debugColor);
+                e.DebugRender(SpriteBatch, debugTexture, debugColor, debugColor2);
             });
         }
 
-        public bool IsColliding(Entity current, int tag)
+        public bool IsColliding(Entity current, int tag, out Entity collidedEntity)
         {
-            return entities.Any(e => 
-                e.Tag == tag 
+            collidedEntity = entities.FirstOrDefault(e =>
+                e.Tag == tag
                 && current.BoundingBox.Intersects(e.BoundingBox)
             );
+            return collidedEntity != null;
         }
 
         public TEntity GetEntityByTag<TEntity>(int tag) where TEntity : Entity

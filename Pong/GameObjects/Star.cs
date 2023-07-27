@@ -21,7 +21,7 @@ namespace Pong.GameObjects
         {
             Animation.Update(gameTime);
 
-            if (entityManager.IsColliding(this, (int)PongTags.ball))
+            if (entityManager.IsColliding(this, (int)PongTags.ball, out var collidedEntity))
             {
                 PongEventSystem.StarPicked();
                 entityManager.RemoveEntity(Id);

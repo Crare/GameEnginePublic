@@ -79,10 +79,16 @@ namespace Pong
                 }
             }
 
-            if (IsColliding(PongTags.leftPaddle, entityManager))
+            if (IsColliding(PongTags.leftPaddle, entityManager, out Entity collidedEntity1))
             {
                 if (Velocity.X < 0)
                 {
+                    if (collidedEntity1.Position.Y > Position.Y)
+                    {
+                        Velocity.Y -= 1;
+                    } else {
+                        Velocity.Y  += 1;
+                    }
                     Velocity.X = -Velocity.X * 1.1f;
                     Velocity.Y *= 1.1f;
                     GameStats.Instance.PlayerScore += SCORE_ON_PADDLE_HIT;
@@ -92,7 +98,7 @@ namespace Pong
                 }
             }
 
-            if (IsColliding(PongTags.rightPaddle, entityManager))
+            if (IsColliding(PongTags.rightPaddle, entityManager, out Entity collidedEntity2))
             {
                 if (Velocity.X > 0)
                 {
@@ -101,6 +107,19 @@ namespace Pong
                     var hitPosition = new Vector2(Position.X + BoundingBox.Width, Position.Y + BoundingBox.Height / 2);
                     SpawnParticlesAtPosition(hitPosition, 15);
                     AudioManager.Instance.PlaySound((int)PongSoundEffects.PaddleHit);
+
+                    if (collidedEntity2.Position.Y > Position.Y)
+                    {
+                        if (Velocity.Y > 0)
+                        {
+
+                        }
+                        Velocity.Y -= 2;
+                    }
+                    else
+                    {
+                        Velocity.Y += 2;
+                    }
                 }
             }
 
@@ -134,9 +153,9 @@ namespace Pong
             ParticleSystem.Instance.Spawn(newParticle, amount, 16, 20);
         }
 
-        private bool IsColliding(PongTags tag, EntityManager entityManager)
+        private bool IsColliding(PongTags tag, EntityManager entityManager, out Entity collidedEntity)
         {
-            return entityManager.IsColliding(this, (int)tag);
+            return entityManager.IsColliding(this, (int)tag, out collidedEntity);
         }
     }
 }

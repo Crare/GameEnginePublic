@@ -36,6 +36,7 @@ namespace Pong
         private ScrollingBackground _starBackground;
         private Texture2D _pongSpritesheet;
         private Color _debugColor = new Color(1f, 0f, 0f, 0.3f);
+        private Color _debugColor2 = new Color(1f, 1f, 1f, 0.8f);
         private bool playOneUpdateOnPaused = false;
         public string _playerInputText = "";
         private PongGameState _currentGameState = PongGameState.Scoreboard;
@@ -283,7 +284,7 @@ namespace Pong
 
                 if (Globals.DEBUG_DRAW)
                 {
-                    _entityManager.DrawRenderEntities(_debugTexture, _debugColor);
+                    _entityManager.DrawRenderEntities(_debugTexture, _debugColor, _debugColor2);
                 }
 
                 DrawCurrentScore();
