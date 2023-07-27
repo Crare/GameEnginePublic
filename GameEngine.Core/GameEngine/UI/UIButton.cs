@@ -16,8 +16,8 @@ namespace GameEngine.Core.GameEngine.UI
         internal Color TextColor;
         internal Color TextPressedColor;
         internal float TextScale;
-        internal event EventHandler OnPressedDown;
-        internal event EventHandler OnPressRelease;
+        public event EventHandler OnPressedDown;
+        public event EventHandler OnPressRelease;
         internal bool IsPressed = false;
         internal Color PressedBackgroundColor;
 

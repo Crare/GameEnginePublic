@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Pacman.GameObjects;
 using Pacman.GameObjects.tiles;
+using System;
 using System.Diagnostics;
 
 namespace Pacman
@@ -79,6 +80,8 @@ namespace Pacman
                 new Color(1f, 1f, 1f), // text pressed
                 1f,
                 (float)Globals.SpriteLayers.UI);
+            button.OnPressRelease += OnPressReleaseButton;
+            button.OnPressedDown += OnPressedDownButton;
             _UIManager.AddUIElement(button);
 
             var box = new UIElement(_graphics.GraphicsDevice,
@@ -161,7 +164,7 @@ namespace Pacman
             _entityManager.UpdateEntities(gameTime, _keyboardState);
             _tileMap.UpdateTiles(gameTime);
 
-            //_UIManager.UpdateUIElements(gameTime);
+            _UIManager.UpdateUIElements(gameTime);
 
             _lastKeyboardState = _keyboardState;
             base.Update(gameTime);
@@ -196,6 +199,15 @@ namespace Pacman
         private void ToggleDebugMode()
         {
             Globals.DEBUG_DRAW = !Globals.DEBUG_DRAW;
+        }
+
+        private void OnPressReleaseButton(object sender, EventArgs e)
+        {
+            Debug.WriteLine("OnPressReleaseButton");
+        }
+        private void OnPressedDownButton(object sender, EventArgs e)
+        {
+            Debug.WriteLine("OnPressedDownButton");
         }
     }
 }
