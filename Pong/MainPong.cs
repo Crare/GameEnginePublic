@@ -120,23 +120,13 @@ namespace Pong
             var paddleDimensions = new Point(16, 96);
             var leftPaddle = new PlayerPaddle(
                 new Sprite(_pongSpritesheet, new Rectangle(0,0, paddleDimensions.X, paddleDimensions.Y)),
-                new Vector2(0, _window.RenderTarget.Height / 2),
-                new Rectangle(
-                    _window.RenderTarget.Width - paddleDimensions.X / 2,
-                    _window.RenderTarget.Height / 2,
-                    paddleDimensions.X,
-                    paddleDimensions.Y)
+                new Vector2(paddleDimensions.X, _window.RenderTarget.Height / 2)
             );
             _entityManager.AddEntity(leftPaddle);
 
             var rightPaddle = new AIPaddle(
                 new Sprite(_pongSpritesheet, new Rectangle(0, 0, paddleDimensions.X, paddleDimensions.Y)),
-                new Vector2(_window.RenderTarget.Width - paddleDimensions.X, _window.RenderTarget.Height / 2),
-                new Rectangle(
-                    _window.RenderTarget.Width - paddleDimensions.X / 2,
-                    _window.RenderTarget.Height / 2,
-                    paddleDimensions.X,
-                    paddleDimensions.Y)
+                new Vector2(_window.RenderTarget.Width - paddleDimensions.X, _window.RenderTarget.Height / 2)
             );
             _entityManager.AddEntity(rightPaddle);
 

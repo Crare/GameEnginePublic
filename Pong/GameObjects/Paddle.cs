@@ -9,8 +9,8 @@ namespace Pong
 {
     public class PlayerPaddle : Paddle
     {
-        public PlayerPaddle(Sprite sprite, Vector2 position, Rectangle boundingBox) 
-            : base(sprite, position, PongTags.leftPaddle, boundingBox)
+        public PlayerPaddle(Sprite sprite, Vector2 position) 
+            : base(sprite, position, PongTags.leftPaddle)
         {
         }
 
@@ -36,24 +36,24 @@ namespace Pong
 
             // keep in window limits
             float yPos = Position.Y;
-            if (Position.Y > renderTarget2D.Height - BoundingBox.Height)
+            if (Position.Y > renderTarget2D.Height - BoundingBox.Height / 2)
             {
-                yPos = renderTarget2D.Height - BoundingBox.Height;
+                yPos = renderTarget2D.Height - BoundingBox.Height / 2;
             }
-            else if (Position.Y < 0)
+            else if (Position.Y < BoundingBox.Height / 2)
             {
-                yPos = 0;
+                yPos = BoundingBox.Height / 2;
             }
             Position = new Vector2(Position.X, yPos);
 
-            BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, BoundingBox.Width, BoundingBox.Height);
+            BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width/2, (int)Position.Y- BoundingBox.Height/2, BoundingBox.Width, BoundingBox.Height);
         }
     }
 
     public class AIPaddle : Paddle
     {
-        public AIPaddle(Sprite sprite, Vector2 position, Rectangle boundingBox)
-            : base(sprite, position, PongTags.rightPaddle, boundingBox)
+        public AIPaddle(Sprite sprite, Vector2 position)
+            : base(sprite, position, PongTags.rightPaddle)
         {
         }
 
@@ -64,18 +64,51 @@ namespace Pong
             {
                 if (ball.Velocity.X > 0) // this is assuming right paddle is AI always. otherwise needs more checks.
                 {
+                    var newPosY = Position.Y;
                     // coming towards right paddle, start moving.
                     var yVelocity = 0;
-                    if (ball.Position.Y > Position.Y + BoundingBox.Height / 2)
+                    if (ball.Position.Y > Position.Y + BoundingBox.Height / 2 + 5)
                     {
                         yVelocity = 1;
                     }
-                    if (ball.Position.Y < Position.Y + BoundingBox.Height / 2)
+                    if (ball.Position.Y < Position.Y + BoundingBox.Height / 2 - 5)
                     {
                         yVelocity = -1;
                     }
-                    Position = new Vector2(Position.X, Position.Y + (yVelocity * (Speed / 2) * (float)gameTime.ElapsedGameTime.TotalSeconds));
-                    BoundingBox = new Rectangle((int)Position.X, (int)Position.Y, BoundingBox.Width, BoundingBox.Height);
+
+                    newPosY += yVelocity * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    Position = new Vector2(Position.X, newPosY);
+
+                    // keep in window limits
+                    float yPos = Position.Y;
+                    if (Position.Y > renderTarget2D.Height - BoundingBox.Height / 2)
+                    {
+                        yPos = renderTarget2D.Height - BoundingBox.Height / 2;
+                    }
+                    else if (Position.Y < BoundingBox.Height / 2)
+                    {
+                        yPos = BoundingBox.Height / 2;
+                    }
+                    Position = new Vector2(Position.X, yPos);
+                    UpdateBoundingBoxPosition();
+                }
+                else
+                {
+                    var newPosY = Position.Y;
+                    var yVelocity = 0;
+                    // go towards the center
+                    if (Position.Y < renderTarget2D.Height / 2 - 5)
+                    {
+                        yVelocity = 1;
+                    }
+                    else if (Position.Y > renderTarget2D.Height / 2 + 5)
+                    {
+                        yVelocity = -1;
+                    }
+
+                    newPosY = newPosY + yVelocity * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    Position = new Vector2(Position.X, newPosY);
+                    UpdateBoundingBoxPosition();
                 }
             }
         }
@@ -85,8 +118,8 @@ namespace Pong
     {
         internal Vector2 startingPosition;
 
-        public Paddle(Sprite sprite, Vector2 position, PongTags tag, Rectangle boundingBox)
-            : base(position, boundingBox, (float)SpriteLayers.PLAYER, PADDLE_BASE_SPEED, sprite, (int)tag)
+        public Paddle(Sprite sprite, Vector2 position, PongTags tag)
+            : base(position, new Rectangle((int)position.X - 8, (int)position.Y - 48, 16, 96), (float)SpriteLayers.PLAYER, PADDLE_BASE_SPEED, sprite, (int)tag)
         {
             startingPosition = position;
 
@@ -96,15 +129,21 @@ namespace Pong
         private void OnGameOver()
         {
             Position = startingPosition;
-            BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width / 2, (int)Position.Y - BoundingBox.Height / 2, BoundingBox.Width, BoundingBox.Height);
+            BoundingBox =new Rectangle((int)Position.X - 8, (int)Position.Y - 48, 16, 96);
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             Sprite.Draw(
                 spriteBatch, 
-                new Vector2(Position.X + BoundingBox.Width / 2, Position.Y + BoundingBox.Height / 2), 
-                DepthLayer, false);
+                new Vector2(Position.X, Position.Y), 
+                DepthLayer,
+                HorizontalFlipped);
+        }
+
+        internal void UpdateBoundingBoxPosition()
+        {
+            BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width / 2, (int)Position.Y - BoundingBox.Height / 2, BoundingBox.Width, BoundingBox.Height);
         }
     }
 }
