@@ -11,6 +11,7 @@ namespace Pacman.GameObjects.tiles
     {
         private Texture2D Texture;
         private string[] Levels;
+        private Rectangle[] textureSources;
 
         public PacmanTileMap() : base(19, 21, Globals.PACMAN_TILESIZE)
         {
@@ -20,6 +21,18 @@ namespace Pacman.GameObjects.tiles
         {
             Texture = texture;
             Levels = levels;
+
+            var tz = Globals.PACMAN_TILESIZE;
+            textureSources = new Rectangle[30];
+            var i = 0;
+            for (int y = 0; y < 5; y++)
+            {
+                for (int x = 0; x < 6; x++)
+                {
+                    textureSources[i] = new Rectangle(x * tz, y * tz, tz, tz);
+                    i++;
+                }
+            }
         }
 
         public void LoadLevel(int level)
@@ -103,111 +116,133 @@ namespace Pacman.GameObjects.tiles
                     var data = tileData[x + Width * y];
                     if (data == "0")
                     {
-                        var rect = GetWallTileTexturePosition(x, y);
-                        Tiles[x, y].SetTextureSourceRect(rect);
+                        var textureIndex = GetWallTileTextureIndex(x, y);
+                        var wallTile = (TileWall)Tiles[x, y];
+                        var rect = textureSources[textureIndex];
+                        wallTile.SetTextureSourceRect(rect);
+                        wallTile.WallNeighbourIndex = textureIndex;
+                        Tiles[x, y] = wallTile;
                     }
                 }
             }
         }
 
-        private Rectangle GetWallTileTexturePosition(int x, int y)
+        private int GetWallTileTextureIndex(int x, int y)
         {
             var l = x - 1 < 0       ? false : Tiles[x - 1, y    ]?.TileType == (int)Globals.PacmanTiles.WALL;
             var r = x + 1 >= Width  ? false : Tiles[x + 1, y    ]?.TileType == (int)Globals.PacmanTiles.WALL;
             var t = y - 1 < 0       ? false : Tiles[x    , y - 1]?.TileType == (int)Globals.PacmanTiles.WALL;
             var b = y + 1 >= Height ? false : Tiles[x    , y + 1]?.TileType == (int)Globals.PacmanTiles.WALL;
 
-            //var tl = x - 1 < 0 && y - 1 < 0 ? true : Tiles[x - 1, y - 1]?.TileType == (int)Globals.PacmanTiles.WALL;
-            //var tr = x + 1 >= Width && y - 1 < 0 ? true : Tiles[x + 1, y - 1]?.TileType == (int)Globals.PacmanTiles.WALL;
-            //var bl = x - 1 < 0 && y + 1 >= Height ? true : Tiles[x + 1, y + 1]?.TileType == (int)Globals.PacmanTiles.WALL;
-            //var br = x + 1 >= Width && y + 1 >= Height ? true : Tiles[x + 1, y + 1]?.TileType == (int)Globals.PacmanTiles.WALL;
+            var tl = x - 1 < 0 || y - 1 < 0 ? false : Tiles[x - 1, y - 1]?.TileType == (int)Globals.PacmanTiles.WALL;
+            var tr = x + 1 >= Width || y - 1 < 0 ? false : Tiles[x + 1, y - 1]?.TileType == (int)Globals.PacmanTiles.WALL;
+            var bl = x - 1 < 0 || y + 1 >= Height ? false : Tiles[x - 1, y + 1]?.TileType == (int)Globals.PacmanTiles.WALL;
+            var br = x + 1 >= Width || y + 1 >= Height ? false : Tiles[x + 1, y + 1]?.TileType == (int)Globals.PacmanTiles.WALL;
 
             var tz = Globals.PACMAN_TILESIZE;
-
-            // check neighbours
-            //if (tl && t && tr && r && )
-            //{
-
-            //}
 
             // no neighbours = single dot
             if (!t && !r && !b && !l)
             {
-                return new Rectangle(32, 0, tz, tz);
+                return 1;
+            }
+
+            // all 8 sides.
+            if (tl && t && tr && r && br && b && bl)
+            {
+                return 0;
+            }
+
+            // two sides and their adjacent tile are walls
+            if (tl && t && !r && !b && l)
+            {
+                return 25;
+            }
+            if (t && tr && r && !b && !l)
+            {
+                return 24;
+            }
+            if (!t && r && br && b && !l)
+            {
+                return 18;
+            }
+            if (!t && !r && b && bl && l)
+            {
+                return 19;
             }
 
             // all sides = cross
             if (t && r && b && l)
             {
-                return new Rectangle(16, 16, tz, tz);
+                return 7;
             }
 
             // three sides
             if (!t && r && b && l)
             {
-                return new Rectangle(64, 0, tz, tz);
+                return 4;
             }
             if (t && !r && b && l)
             {
-                return new Rectangle(64, 16, tz, tz);
+                return 10;
             }
             if (t && r && !b && l)
             {
-                return new Rectangle(48, 16, tz, tz);
+                return 9;
             }
             if (t && r && b && !l)
             {
-                return new Rectangle(48, 0, tz, tz);
+                return 3;
             }
 
             // two adjacent sides
             if (!t && !r && b && l)
             {
-                return new Rectangle(64, 32, tz, tz);
+                return 16;
             }
             if (t && !r && !b && l)
             {
-                return new Rectangle(64, 48, tz, tz);
+                return 22;
             }
             if (t && r && !b && !l)
             {
-                return new Rectangle(48, 48, tz, tz);
+                return 21;
             }
             if (!t && r && b && !l)
             {
-                return new Rectangle(48, 32, tz, tz);
+                return 15;
             }
 
             // two opposite sides
             if (!t && r && !b && l)
             {
-                return new Rectangle(80, 0, tz, tz);
+                return 5;
             }
             if (t && !r && b && !l)
             {
-                return new Rectangle(80, 16, tz, tz);
+                return 11;
             }
 
             // one side is wall
             if (!t && !r && b && !l)
             {
-                return new Rectangle(16, 0, tz, tz);
+                return 1;
             }
             if (!t && !r && !b && l)
             {
-                return new Rectangle(32, 16, tz, tz);
+                return 8;
             }
             if (t && !r && !b && !l)
             {
-                return new Rectangle(16, 32, tz, tz);
+                return 13;
             }
             if (!t && r && !b && !l)
             {
-                return new Rectangle(0, 16, tz, tz);
+                return 6;
             }
 
             // default full texture
-            return new Rectangle(0, 0, tz, tz);
+            return 0;
         }
     }
 }

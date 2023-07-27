@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GameEngine.Core.GameEngine.Utils;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace GameEngine.Core.GameEngine.TileMap
@@ -25,6 +26,20 @@ namespace GameEngine.Core.GameEngine.TileMap
                     if (Tiles[x, y] != null)
                     {
                         Tiles[x, y].Draw(spriteBatch);
+                    }
+                }
+            }
+        }
+
+        public void DebugDrawTiles(SpriteBatch spriteBatch, TextDrawer textDrawer)
+        {
+            for (var x = 0; x < Width; x++)
+            {
+                for (var y = 0; y < Height; y++)
+                {
+                    if (Tiles[x, y] != null)
+                    {
+                        Tiles[x, y].DebugDraw(spriteBatch, textDrawer);
                     }
                 }
             }

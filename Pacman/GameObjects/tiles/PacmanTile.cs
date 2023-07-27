@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.GameEngine.TileMap;
+using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,6 +20,13 @@ namespace Pacman.GameObjects.tiles
         public override void Draw(SpriteBatch spriteBatch)
         {
             Sprite.Draw(spriteBatch, Position, DepthLayer);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, TextDrawer textDrawer)
+        {
+            //textDrawer.Draw($"{Position.X}, {Position.Y}",
+            //    Position,
+            //    Alignment.Center);
         }
 
         public void SetTextureSourceRect(Rectangle sourceRectangle)

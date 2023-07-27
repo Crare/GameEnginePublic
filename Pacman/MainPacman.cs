@@ -57,7 +57,9 @@ namespace Pacman
         {
             Debug.WriteLine("Loading content...");
             // load fonts
-            // TODO: FONT
+            var font = Content.Load<SpriteFont>("Fonts/Arial");
+            var defaultTextColor = Color.White;
+            _textDrawer = new TextDrawer(_spriteBatch, font, defaultTextColor);
 
             // load textures
             var pacmanTexture = Content.Load<Texture2D>("sprites/pacman");
@@ -112,6 +114,22 @@ namespace Pacman
                 _window.ToggleFullScreen();
             }
 
+#if DEBUG
+            // Toggle Debug mode: ctrl + shift + D
+            if (_keyboardState.IsKeyDown(Keys.D)
+                && (_keyboardState.IsKeyDown(Keys.LeftShift) || _keyboardState.IsKeyDown(Keys.RightShift))
+                && (_keyboardState.IsKeyDown(Keys.LeftControl) || _keyboardState.IsKeyDown(Keys.RightControl))
+                &&
+                    !(_lastKeyboardState.IsKeyDown(Keys.D)
+                    && (_lastKeyboardState.IsKeyDown(Keys.LeftShift) || _lastKeyboardState.IsKeyDown(Keys.RightShift))
+                    && (_lastKeyboardState.IsKeyDown(Keys.LeftControl) || _lastKeyboardState.IsKeyDown(Keys.RightControl))
+                    )
+                )
+            {
+                ToggleDebugMode();
+            }
+#endif
+
             _entityManager.UpdateEntities(gameTime, _keyboardState);
             _tileMap.UpdateTiles(gameTime);
 
@@ -127,10 +145,20 @@ namespace Pacman
             _tileMap.DrawTiles(_spriteBatch);
             _entityManager.DrawEntities(gameTime);
 
+            if (Globals.DEBUG_DRAW)
+            {
+                _tileMap.DebugDrawTiles(_spriteBatch, _textDrawer);
+            }
+
             // end of draw code
             _window.EndDrawToRenderTarget(_spriteBatch);
             _window.DrawToDestination(_spriteBatch);
             base.Draw(gameTime);
+        }
+
+        private void ToggleDebugMode()
+        {
+            Globals.DEBUG_DRAW = !Globals.DEBUG_DRAW;
         }
     }
 }

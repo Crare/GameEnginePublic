@@ -2,6 +2,8 @@
 {
     public static class Globals
     {
+        public static bool DEBUG_DRAW = false;
+
         public static int PACMAN_SPEED = 100;
         public static int GHOST_SPEED = 100;
         public static int PACMAN_TILESIZE = 16;

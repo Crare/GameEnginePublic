@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GameEngine.Core.GameEngine.Utils;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace GameEngine.Core.GameEngine.TileMap
@@ -19,6 +20,13 @@ namespace GameEngine.Core.GameEngine.TileMap
         public virtual void Draw(SpriteBatch spriteBatch)
         {
 
+        }
+
+        public virtual void DebugDraw(SpriteBatch spriteBatch, TextDrawer textDrawer)
+        {
+            //textDrawer.Draw($"{Position.X}, {Position.Y}",
+            //    Position,
+            //    Alignment.Center);
         }
 
         public virtual void Update(GameTime gameTime)
