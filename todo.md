@@ -16,7 +16,6 @@ refactor:
   - particle effects
 
 - pong game:
-  - fix: particles are now from the whole texture, they should be from the area the ball sprite is.
   - trailing particles behind ball
   - scaleable windowed mode: https://community.monogame.net/t/handling-user-controlled-window-resizing/7828
     - keeping aspect ratio

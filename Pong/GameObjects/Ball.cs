@@ -20,7 +20,7 @@ namespace Pong
         {
             startingPosition = position;
             Velocity = new Vector2(-Speed, Speed);
-            particle = new Particle(1, Sprite.Texture, new Vector2(4, 4), Position, Color.White, DepthLayer);
+            particle = new Particle(1, Sprite.Texture, new Vector2(4, 4), Position, Color.White, DepthLayer, sprite.SourceRectangle.Value);
 
             PongEventSystem.OnGameOver += OnGameOver;
         }

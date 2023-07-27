@@ -48,9 +48,27 @@ namespace GameEngine.Core.GameEngine.Particles
             );
         }
 
+        public Particle(double lifeTime, Texture2D texture, Vector2 size, Vector2 position, Color color, float depthLayer, Rectangle textureSourceRectangle)
+        {
+            Position = position;
+            LifeTime = lifeTime;
+            Size = size;
+            Texture = texture;
+            Color = color;
+            DepthLayer = depthLayer;
+            
+            // use piece from the center of the Texture using Size.
+            SourceRect = new Rectangle(
+                (int)(textureSourceRectangle.X + textureSourceRectangle.Width / 2 - Size.X / 2),
+                (int)(textureSourceRectangle.Y + textureSourceRectangle.Height / 2 - Size.Y / 2),
+                (int)Size.X,
+                (int)Size.Y
+            );
+        }
+
         public Particle Copy()
         {
-            return new Particle(LifeTime, Texture, Size, Position, Color, DepthLayer);
+            return new Particle(LifeTime, Texture, Size, Position, Color, DepthLayer, SourceRect);
         }
 
         public virtual void Update(GameTime gameTime, Vector2 gravity)
@@ -100,7 +118,7 @@ namespace GameEngine.Core.GameEngine.Particles
                 SourceRect,
                 Color.White,
                 0f, // rotation
-                new Vector2(Texture.Width / 2, Texture.Height / 2), // origin
+                new Vector2(SourceRect.Width / 2, SourceRect.Height / 2), // origin
                 Vector2.One, // scale
                 SpriteEffects.None,
                 DepthLayer
