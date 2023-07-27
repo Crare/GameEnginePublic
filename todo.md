@@ -33,6 +33,8 @@ just a space to concentrate on what needs to be done next:
   - menu buttons
     - allow using keyboard & gamepad to select (WASD or arrow keys to navigate, ESC to go back, Enter to select)
     - allow using mouse to select (Pressing buttons does the action)
+  - background layout box
+    - use sprite with 9-slicing like in unity https://docs.unity3d.com/Manual/9SliceSprites.html
 
 - custom font
 
