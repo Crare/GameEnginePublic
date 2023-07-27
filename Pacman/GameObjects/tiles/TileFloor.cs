@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Pacman.GameObjects
+namespace Pacman.GameObjects.tiles
 {
     public class TileFloor : PacmanTile
     {

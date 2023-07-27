@@ -10,7 +10,8 @@
         {
             NONE = 0,
             FLOOR,
-            WALL
+            WALL,
+            GATE
         }
 
         public enum SpriteLayers

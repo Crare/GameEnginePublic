@@ -32,7 +32,7 @@ namespace GameEngine.Core.SpriteManagement
                     0f, // rotation
                     new Vector2(Texture.Width / 2, Texture.Height / 2), // origin
                     Vector2.One, // scale
-                    horizontalFlipped ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                     depthLayer
                 );
             } else
@@ -45,7 +45,7 @@ namespace GameEngine.Core.SpriteManagement
                     0f, // rotation
                     new Vector2(SourceRectangle.Value.Width / 2, SourceRectangle.Value.Height / 2), // origin
                     Vector2.One, // scale
-                    horizontalFlipped ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
+                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                     depthLayer
                 );
             }

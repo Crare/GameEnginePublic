@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static Pacman.Globals;
 
-namespace Pacman.GameObjects
+namespace Pacman.GameObjects.tiles
 {
     public class PacmanTile : Tile
     {
@@ -19,6 +19,11 @@ namespace Pacman.GameObjects
         public override void Draw(SpriteBatch spriteBatch)
         {
             Sprite.Draw(spriteBatch, Position, DepthLayer);
+        }
+
+        public void SetTextureSourceRect(Rectangle sourceRectangle)
+        {
+            Sprite.SourceRectangle = sourceRectangle;
         }
     }
 }

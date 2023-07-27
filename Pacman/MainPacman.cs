@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Pacman.GameObjects;
+using Pacman.GameObjects.tiles;
 using System.Diagnostics;
 
 namespace Pacman
