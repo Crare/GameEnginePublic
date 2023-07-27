@@ -3,9 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GameEngine.Core.GameEngine.Utils
 {
-    public enum Alignment
+    public enum HorizontalAlignment
     {
-        Left, Right, Center
+        Left, Right, Center,
+    }
+
+    public enum VerticalAlignment
+    {
+        Top, Bottom, Middle,
     }
 
     public class TextDrawer
@@ -21,42 +26,51 @@ namespace GameEngine.Core.GameEngine.Utils
             DefaultColor = defaultColor;
         }
 
-        public void Draw(string text, Vector2 position, Alignment align = Alignment.Right)
+        public void Draw(string text, Vector2 position, HorizontalAlignment hAlign = HorizontalAlignment.Right, VerticalAlignment vAlign = VerticalAlignment.Bottom)
         {
-            position = Align(text, position, align);
+            position = Align(text, position, hAlign, vAlign);
             SpriteBatch.DrawString(Font, text, position, DefaultColor);
         }
 
-        public void Draw(string text, Vector2 position, Color color, Alignment align = Alignment.Right)
+        public void Draw(string text, Vector2 position, Color color, HorizontalAlignment hAlign = HorizontalAlignment.Right, VerticalAlignment vAlign = VerticalAlignment.Bottom)
         {
-            position = Align(text, position, align);
+            position = Align(text, position, hAlign, vAlign);
             SpriteBatch.DrawString(Font, text, position, color);
         }
 
-        public void Draw(string text, Vector2 position, Color color, float scale, Alignment align = Alignment.Right)
+        public void Draw(string text, Vector2 position, Color color, float scale, HorizontalAlignment hAlign = HorizontalAlignment.Right, VerticalAlignment vAlign = VerticalAlignment.Bottom)
         {
-            position = Align(text, position, align);
+            position = Align(text, position, hAlign, vAlign);
             SpriteBatch.DrawString(Font, text, position, color, 0f, Vector2.One, scale, SpriteEffects.None, 0);
         }
 
-        private Vector2 Align(string text, Vector2 position, Alignment align)
+        private Vector2 Align(string text, Vector2 position, HorizontalAlignment hAlign = HorizontalAlignment.Right, VerticalAlignment vAlign = VerticalAlignment.Bottom)
         {
-            if (align == Alignment.Right)
-            {
-                return position;
-            }
-            
+            var pos = position;
+            //if (hAlign == HorizontalAlignment.Right) // default
+            //if (vAlign == HorizontalAlignment.Bottom) // default
+
             Vector2 size = Font.MeasureString(text);
-            if (align == Alignment.Center)
+
+            if (hAlign == HorizontalAlignment.Center)
             {
-                return new Vector2(position.X - size.X * 0.5f, position.Y);
+                pos = new Vector2(position.X - size.X * 0.5f, position.Y);
             }
-            else if (align == Alignment.Left)
+            else if (hAlign == HorizontalAlignment.Left)
             {
-                return new Vector2(position.X - size.X, position.Y);
+                pos = new Vector2(position.X - size.X, position.Y);
             }
 
-            return position;
+            if (vAlign == VerticalAlignment.Middle)
+            {
+                pos = new Vector2(pos.X, position.Y - size.Y * 0.5f);
+            }
+            else if (vAlign == VerticalAlignment.Top)
+            {
+                pos = new Vector2(pos.X, position.Y - size.Y);
+            }
+
+            return pos;
         }
     }
 }

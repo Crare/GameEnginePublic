@@ -20,7 +20,8 @@
         {
             BACKGROUND,
             MIDDLEGROUND,
-            FOREGROUND
+            FOREGROUND,
+            UI
         }
 
         public enum PacmanTags

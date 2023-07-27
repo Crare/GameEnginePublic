@@ -2,8 +2,10 @@
 
 make game collection screen to choose game from?
 
-refactor: 
-- window logic to own class.
+
+- refactor:
+  - Camera-class: offset rendertarget inside the window.
+  - generate sourceRectangles based on dimension and amount of frames.
 
 - pacman:
   - tilemap: TileMap to manage tiles and calling their functions.

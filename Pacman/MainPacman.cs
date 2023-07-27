@@ -2,6 +2,7 @@
 using GameEngine.Core.GameEngine.FileManagement;
 using GameEngine.Core.GameEngine.Sprites;
 using GameEngine.Core.GameEngine.TileMap;
+using GameEngine.Core.GameEngine.UI;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.GameEngine.Window;
 using GameEngine.Core.SpriteManagement;
@@ -27,8 +28,12 @@ namespace Pacman
         private TextDrawer _textDrawer;
         private KeyboardState _keyboardState;
         private KeyboardState _lastKeyboardState;
+        private UIManager _UIManager;
 
         // game specific stuff
+        private Texture2D _debugTexture;
+        private Color _debugColor = new Color(1f, 0f, 0f, 0.1f);
+        private Color _debugColor2 = new Color(1f, 1f, 1f, 0.5f);
         private PacmanTileMap _tileMap;
 
         public MainPacman()
@@ -60,8 +65,31 @@ namespace Pacman
             var font = Content.Load<SpriteFont>("Fonts/Arial");
             var defaultTextColor = Color.White;
             _textDrawer = new TextDrawer(_spriteBatch, font, defaultTextColor);
+            _UIManager = new UIManager(_spriteBatch, _textDrawer);
+
+
+            // load UI elements
+            var button = new UIButton(
+                _graphics.GraphicsDevice,
+                "test button",
+                new Rectangle(_window.RenderTarget.Width / 2, 50, 100, 50),
+                new Color(0.3f, 0.3f, 1f, 1f), // bg 
+                new Color(0.6f, 0.6f, 1f, 1f), // bg pressed
+                new Color(0.8f, 0.8f, 0.8f), // text
+                new Color(1f, 1f, 1f), // text pressed
+                1f,
+                (float)Globals.SpriteLayers.UI);
+            _UIManager.AddUIElement(button);
+
+            var box = new UIElement(_graphics.GraphicsDevice,
+                new Rectangle(50, 50, 50, 50),
+                new Color(0.5f, 0.5f, 0.5f, 0.3f),
+                (float)Globals.SpriteLayers.UI);
+            _UIManager.AddUIElement(box);
 
             // load textures
+            _debugTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
+            _debugTexture.SetData(new Color[] { Color.White });
             var pacmanTexture = Content.Load<Texture2D>("sprites/pacman");
             var ghostTexture = Content.Load<Texture2D>("sprites/pacman_ghost");
             var tilesTexture = Content.Load<Texture2D>("sprites/pacman_tiles");
@@ -133,6 +161,8 @@ namespace Pacman
             _entityManager.UpdateEntities(gameTime, _keyboardState);
             _tileMap.UpdateTiles(gameTime);
 
+            //_UIManager.UpdateUIElements(gameTime);
+
             _lastKeyboardState = _keyboardState;
             base.Update(gameTime);
         }
@@ -148,6 +178,13 @@ namespace Pacman
             if (Globals.DEBUG_DRAW)
             {
                 _tileMap.DebugDrawTiles(_spriteBatch, _textDrawer);
+                _entityManager.DebugDrawEntities(_debugTexture, _debugColor, _debugColor2);
+            }
+
+            _UIManager.DrawUIElements();
+            if (Globals.DEBUG_DRAW)
+            {
+                _UIManager.DebugDrawUIElements(_debugTexture, _debugColor, _debugColor2);
             }
 
             // end of draw code

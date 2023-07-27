@@ -33,10 +33,10 @@ namespace Pong
 
         // game specific stuff
         private Texture2D _debugTexture;
+        private Color _debugColor = new Color(1f, 0f, 0f, 0.1f);
+        private Color _debugColor2 = new Color(1f, 1f, 1f, 0.5f);
         private ScrollingBackground _starBackground;
         private Texture2D _pongSpritesheet;
-        private Color _debugColor = new Color(1f, 0f, 0f, 0.3f);
-        private Color _debugColor2 = new Color(1f, 1f, 1f, 0.8f);
         private bool playOneUpdateOnPaused = false;
         public string _playerInputText = "";
         private PongGameState _currentGameState = PongGameState.Scoreboard;
@@ -274,7 +274,7 @@ namespace Pong
 
                 if (Globals.DEBUG_DRAW)
                 {
-                    _entityManager.DrawRenderEntities(_debugTexture, _debugColor, _debugColor2);
+                    _entityManager.DebugDrawEntities(_debugTexture, _debugColor, _debugColor2);
                 }
 
                 DrawCurrentScore();
@@ -285,22 +285,22 @@ namespace Pong
                 DrawHighScores();
 
                 string help = $"Start new game by pressing 'Space'";
-                _textDrawer.Draw(help, new Vector2(_window.RenderTarget.Width / 2, 60), Alignment.Center);
+                _textDrawer.Draw(help, new Vector2(_window.RenderTarget.Width / 2, 60), HorizontalAlignment.Center);
             }
             else if (_currentGameState == PongGameState.AddNewHighScore)
             {
                 string help1 = $"You got a new highscore!";
                 string help2 = $"Please enter 3 characters and press 'Enter':";
                 string help3 = $"{_playerInputText}";
-                _textDrawer.Draw(help1, new Vector2(_window.RenderTarget.Width / 2, 60), Alignment.Center);
-                _textDrawer.Draw(help2, new Vector2(_window.RenderTarget.Width / 2, 80), Alignment.Center);
-                _textDrawer.Draw(help3, new Vector2(_window.RenderTarget.Width / 2, 100), Alignment.Center);
+                _textDrawer.Draw(help1, new Vector2(_window.RenderTarget.Width / 2, 60), HorizontalAlignment.Center);
+                _textDrawer.Draw(help2, new Vector2(_window.RenderTarget.Width / 2, 80), HorizontalAlignment.Center);
+                _textDrawer.Draw(help3, new Vector2(_window.RenderTarget.Width / 2, 100), HorizontalAlignment.Center);
             }
 
             if (_currentGameState == PongGameState.GamePaused)
             {
                 string paused = $"Game paused";
-                _textDrawer.Draw(paused, new Vector2(_window.RenderTarget.Width / 2, _window.RenderTarget.Height / 2), Alignment.Center);
+                _textDrawer.Draw(paused, new Vector2(_window.RenderTarget.Width / 2, _window.RenderTarget.Height / 2), HorizontalAlignment.Center);
             }
 
             // end of draw code
@@ -333,20 +333,20 @@ namespace Pong
         {
             string lives = $"lives: {GameStats.Instance.PlayerLives}";
             string score = $"score: {GameStats.Instance.PlayerScore}";
-            _textDrawer.Draw(lives, new Vector2(_window.RenderTarget.Width / 2, 10), Alignment.Center);
-            _textDrawer.Draw(score, new Vector2(_window.RenderTarget.Width / 2, 30), Alignment.Center);
+            _textDrawer.Draw(lives, new Vector2(_window.RenderTarget.Width / 2, 10), HorizontalAlignment.Center);
+            _textDrawer.Draw(score, new Vector2(_window.RenderTarget.Width / 2, 30), HorizontalAlignment.Center);
         }
 
         private void DrawHighScores()
         {
             string highscores = $"highscores:";
-            _textDrawer.Draw(highscores, new Vector2(_window.RenderTarget.Width / 2, 100), Alignment.Center);
+            _textDrawer.Draw(highscores, new Vector2(_window.RenderTarget.Width / 2, 100), HorizontalAlignment.Center);
             for (int i = 0; i < GameStats.Instance.highScores.Count;i++)
             {
                 string name = $"{i + 1}. {GameStats.Instance.highScores[i].Name}";
                 string score = $"{GameStats.Instance.highScores[i].Score}";
-                _textDrawer.Draw(name, new Vector2(_window.RenderTarget.Width / 2 - 40, 125 + i * 20), Alignment.Right);
-                _textDrawer.Draw(score, new Vector2(_window.RenderTarget.Width / 2 + 20, 125 + i * 20), Alignment.Right);
+                _textDrawer.Draw(name, new Vector2(_window.RenderTarget.Width / 2 - 40, 125 + i * 20), HorizontalAlignment.Right);
+                _textDrawer.Draw(score, new Vector2(_window.RenderTarget.Width / 2 + 20, 125 + i * 20), HorizontalAlignment.Right);
             }
         }
 

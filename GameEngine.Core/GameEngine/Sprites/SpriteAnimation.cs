@@ -13,6 +13,8 @@ namespace GameEngine.Core.GameEngine.Sprites
         private bool IsLooping;
         private Rectangle[] SourceRectangles;
 
+        // TODO: generate sourceRectangles based on dimension and amount of frames.
+
         public SpriteAnimation(Texture2D texture, int startingFrame, float frameRate, bool isLooping, Rectangle[] sourceRectangles)
         {
             Texture = texture;

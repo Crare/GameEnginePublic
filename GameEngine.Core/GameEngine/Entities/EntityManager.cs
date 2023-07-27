@@ -57,11 +57,11 @@ namespace GameEngine.Core.EntityManagement
             });
         }
 
-        public void DrawRenderEntities(Texture2D debugTexture, Color debugColor, Color debugColor2)
+        public void DebugDrawEntities(Texture2D debugTexture, Color debugColor, Color debugColor2)
         {
             entities.ForEach(e =>
             {
-                e.DebugRender(SpriteBatch, debugTexture, debugColor, debugColor2);
+                e.DebugDraw(SpriteBatch, debugTexture, debugColor, debugColor2);
             });
         }
 

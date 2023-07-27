@@ -37,7 +37,7 @@ namespace GameEngine.Core.EntityManagement
             Sprite.Draw(spriteBatch, Position, DepthLayer, HorizontalFlipped);
         }
 
-        public virtual void DebugRender(SpriteBatch spriteBatch, Texture2D debugTexture, Color debugColor, Color debugColor2)
+        public virtual void DebugDraw(SpriteBatch spriteBatch, Texture2D debugTexture, Color debugColor, Color debugColor2)
         {
             //graphics.GraphicsDevice.DrawIndexedPrimitives
             spriteBatch.Draw(debugTexture, BoundingBox, debugColor);
