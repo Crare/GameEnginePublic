@@ -32,5 +32,6 @@ just a space to concentrate on what needs to be done next:
   - background layout box
     - use sprite with 9-slicing like in unity https://docs.unity3d.com/Manual/9SliceSprites.html
   -  ui  buttons don't work  in  fullscreen on mac.
+  - movable windows,  draggable, resizeable, closeable.
 
 - custom font
