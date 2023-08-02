@@ -96,8 +96,14 @@ namespace Pacman
         private void OnGameOver()
         {
             Globals.GameStarted = false;
-            // TODO  on game over.
-            // check  if new highscore
+
+            if (GameStats.Instance.IsNewHighScore())
+            {
+                PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.NewHighscore);
+            }  else
+            {
+                PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.GameOver);
+            }
         }
 
         private void OnExitGame()

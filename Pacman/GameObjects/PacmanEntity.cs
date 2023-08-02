@@ -1,18 +1,13 @@
 ﻿using GameEngine.Core.EntityManagement;
 using GameEngine.Core.GameEngine.Pathfinding;
 using GameEngine.Core.GameEngine.Sprites;
-using GameEngine.Core.GameEngine.Utils;
-using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Pacman.GameObjects.tiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using static Pacman.Globals;
 
 namespace Pacman.GameObjects
 {
@@ -64,7 +59,7 @@ namespace Pacman.GameObjects
 
         private void OnBigDotPicked()
         {
-            invulnerable = 15;
+            invulnerable = Globals.VULNERABLE_SECONDS;
             Speed = Globals.PACMAN_SPEED_WHEN_INVULNERABLE;
         }
 
@@ -207,6 +202,26 @@ namespace Pacman.GameObjects
                 if (invulnerable <= 0)
                 {
                     Speed = Globals.PACMAN_SPEED;
+                }
+            }
+
+            if (entityManager.IsColliding(
+                this,
+                new int[] {
+                    (int)PacmanTags.BlueGhost,
+                    (int)PacmanTags.OrangeGhost,
+                    (int)PacmanTags.PinkGhost,
+                    (int)PacmanTags.RedGhost
+                },
+                out var collidedEntity))
+            {
+                if (invulnerable <=  0)
+                {
+                    PacmanEventSystem.GameOver();
+                } else
+                {
+                    var ghost = collidedEntity as Ghost;
+                    ghost.OnDeath();
                 }
             }
         }

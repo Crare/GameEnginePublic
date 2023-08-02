@@ -223,11 +223,42 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             }
         }
 
+        public List<PathNode> GetPath(Point a, Vector2 b, PathFindingType pathFindingType = PathFindingType.AStarPathfinding, CheckNeighbours checkNeighbours = CheckNeighbours.FourNeighbours)
+        {
+            if (pathFindingType == PathFindingType.AStarPathfinding)
+            {
+                var bb = TileMap.WorldPositionToTilePosition(b);
+                return AStarPathfinding(a, bb, checkNeighbours);
+            }
+            return null;
+        }
+
+        public List<PathNode> GetPath(Vector2 a, Point b, PathFindingType pathFindingType = PathFindingType.AStarPathfinding, CheckNeighbours checkNeighbours = CheckNeighbours.FourNeighbours)
+        {
+            if (pathFindingType == PathFindingType.AStarPathfinding)
+            {
+                var aa = TileMap.WorldPositionToTilePosition(a);
+                return AStarPathfinding(aa, b, checkNeighbours);
+            }
+            return null;
+        }
+
+        public List<PathNode> GetPath(Vector2 a, Vector2 b, PathFindingType pathFindingType = PathFindingType.AStarPathfinding, CheckNeighbours checkNeighbours = CheckNeighbours.FourNeighbours)
+        {
+            if (pathFindingType == PathFindingType.AStarPathfinding)
+            {
+                var aa = TileMap.WorldPositionToTilePosition(a);
+                var bb = TileMap.WorldPositionToTilePosition(b);
+                return AStarPathfinding(aa, bb, checkNeighbours);
+            }
+            return null;
+        }
+
         public List<PathNode> GetPath(Point a, Point b, PathFindingType pathFindingType = PathFindingType.AStarPathfinding, CheckNeighbours checkNeighbours = CheckNeighbours.FourNeighbours)
         {
             if (pathFindingType == PathFindingType.AStarPathfinding)
             {
-                return AStarPathfinding2(a, b, checkNeighbours);
+                return AStarPathfinding(a, b, checkNeighbours);
             }
             return null;
         }
@@ -259,7 +290,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             return Math.Abs(aX - bX) + Math.Abs(aY - bY);
         }
 
-        private List<PathNode> AStarPathfinding2(Point a, Point b, CheckNeighbours checkNeighbours = CheckNeighbours.FourNeighbours)
+        private List<PathNode> AStarPathfinding(Point a, Point b, CheckNeighbours checkNeighbours = CheckNeighbours.FourNeighbours)
         {
             PathfindingNode start = new(PathNodes[a.X, a.Y]);
             PathfindingNode goal = PathNodes[b.X, b.Y] != null ? new PathfindingNode(PathNodes[b.X, b.Y]) : null;
@@ -322,17 +353,6 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             } while (temp != start && temp != null);
 
             return Path.ToList();
-        }
-
-        private static float HeuristicCost(PathfindingNode node, PathfindingNode targetNode)
-        {
-            return DistanceWeight(node, targetNode);
-        }
-
-        // d(current,neighbor) is the weight of the edge from current to neighbor
-        private static float DistanceWeight(PathfindingNode current, PathfindingNode neighbour)
-        {
-            return Math.Abs(current.X - neighbour.X) + Math.Abs(current.Y - neighbour.Y);
         }
 
         private List<PathfindingNode> GetNeighbours(int x, int y, CheckNeighbours checkNeighbours)

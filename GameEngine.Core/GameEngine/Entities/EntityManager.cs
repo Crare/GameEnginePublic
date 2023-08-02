@@ -66,6 +66,15 @@ namespace GameEngine.Core.EntityManagement
             });
         }
 
+        public bool IsColliding(Entity current, int[] tags, out Entity collidedEntity)
+        {
+            collidedEntity = entities.FirstOrDefault(e =>
+                tags.Contains(e.Tag)
+                && current.BoundingBox.Intersects(e.BoundingBox)
+            );
+            return collidedEntity != null;
+        }
+
         public bool IsColliding(Entity current, int tag, out Entity collidedEntity)
         {
             collidedEntity = entities.FirstOrDefault(e =>

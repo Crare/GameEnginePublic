@@ -6,10 +6,6 @@ make game collection screen to choose game from?
 just a space to concentrate on what needs to be done next:
 
 - center pacman game
-- add entities in the tilemap area
-- restrict movement to tilemap area for player
-- use tilemap area for ghost to move around
-- pathfinding: AStar or something?
 
 
 ## general

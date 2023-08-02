@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.GameEngine.Utils;
+﻿using System;
+using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -54,6 +55,16 @@ namespace GameEngine.Core.GameEngine.TileMap
             //        Tiles[x, y]?.Update(gameTime);
             //    }
             //}
+        }
+
+        public Point WorldPositionToTilePosition(Vector2 worldPosition)
+        {
+            return new Point((int)Math.Round(worldPosition.X / TileSize), (int)Math.Round(worldPosition.Y / TileSize));
+        }
+
+        public Vector2 TilePositionToWorldPosition(Point tilePosition)
+        {
+            return new Vector2(tilePosition.X * TileSize, tilePosition.Y * TileSize);
         }
     }
 }
