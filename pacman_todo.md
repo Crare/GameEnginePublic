@@ -7,6 +7,7 @@
 - update UI-elements score and time.
 - going around level's edge doesn't loop yet, but  creates a  infinite loop.
 - add sounds
+- particles when eating other entities
 
 - more levels: LevelManager to handle loading and saving levels and changing them.
 - change level
