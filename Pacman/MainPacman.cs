@@ -164,6 +164,8 @@ namespace Pacman
             openTileTypes[2] = (int)Globals.PacmanTiles.GATE;
             _pathfinding = new PacmanPathfinding(_tileMap, openTileTypes);
 
+            GameStats.Instance.LoadHighScores();
+
             base.Initialize();
             Debug.WriteLine("Initialization done!");
         }

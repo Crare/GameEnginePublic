@@ -45,6 +45,19 @@ namespace Pacman
                 PacmanEventSystem.OnNewGame += OnNewGame;
                 PacmanEventSystem.OnBigDotPicked += OnBigDotPicked;
                 PacmanEventSystem.OnSmallDotPicked += OnSmallDotPicked;
+
+                PacmanEventSystem.OnGameStarted += OnGameStarted;
+                PacmanEventSystem.OnGameOver += OnGameOver;
+            }
+
+            private void OnGameOver()
+            {
+                ElapsedTime.Stop();
+            }
+
+            private void OnGameStarted()
+            {
+                ElapsedTime.Start();
             }
 
             private void OnBigDotPicked()
@@ -61,6 +74,7 @@ namespace Pacman
 
             private void OnNewGame()
             {
+                ElapsedTime.Reset();
                 //PlayerLives = Globals.PLAYER_LIVES_AT_START;
                 PlayerScore = 0;
             }
@@ -69,7 +83,7 @@ namespace Pacman
             public int PlayerScore = 0;
             private static string highScoreFileName = "highscores.json";
             public List<PacmanScoreStats> highScores = new();
-            public Stopwatch ElapsedTime;
+            public Stopwatch ElapsedTime = new();
 
             public void LoadHighScores()
             {

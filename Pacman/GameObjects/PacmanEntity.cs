@@ -69,6 +69,7 @@ namespace Pacman.GameObjects
             Direction = PacmanDirection.right;
             rotation = 0f;
             stopped = true;
+            gameStarted = false;
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -199,6 +200,7 @@ namespace Pacman.GameObjects
             if (gameStarted && !lastGameStarted)
             {
                 Globals.GhostsMoving = true;
+                PacmanEventSystem.GameStarted();
             }
 
             if (invulnerable >= 0)

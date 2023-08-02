@@ -113,13 +113,13 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             DrawPath(debugPath);
         }
 
-        public void DrawPath(List<PathNode> path)
+        public void DrawPath(List<PathNode> path,  Color color = default, int offset = 0)
         {
             if (path == null || !path.Any())
             {
                 return;
             }
-            var pathColor = new Color(0f, 0.5f, 0f, 0.5f);
+            var pathColor = color == default ? new Color(0f, 0.5f, 0f, 0.5f) : color;
             var tz = TileMap.TileSize;
 
             for (var i = 0; i < path.Count; i++)
@@ -131,8 +131,8 @@ namespace GameEngine.Core.GameEngine.Pathfinding
                 var node = path[i];
                 var nextNode = path[i + 1];
                 GameDebug.DrawLine(
-                    new Vector2(node.X * tz, node.Y * tz),
-                    new Vector2(nextNode.X * tz, nextNode.Y * tz),
+                    new Vector2(node.X * tz + offset, node.Y * tz + offset),
+                    new Vector2(nextNode.X * tz + offset, nextNode.Y * tz + offset),
                     pathColor,
                     1);
             }
@@ -263,6 +263,12 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             return null;
         }
 
+        public Point GetFurthestNodePositionFromPosition(Vector2 worldPosition)
+        {
+            var point = TileMap.WorldPositionToTilePosition(worldPosition);
+            return GetFurthestNodePositionFromPoint(point);
+        }
+
         public Point GetFurthestNodePositionFromPoint(Point point)
         {
             Point furthestPoint = point;
@@ -326,7 +332,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
                                 isFound = true;
                             }
                         }
-                        if (!isFound)
+                        if (!isFound && !ClosedList.Any(c => c == neighbour) && !OpenList.UnorderedItems.Any(o => o.Element == neighbour))
                         {
                             neighbour.Parent = current;
                             neighbour.DistanceToTarget = Distance(neighbour.X, neighbour.Y, goal.X, goal.Y);

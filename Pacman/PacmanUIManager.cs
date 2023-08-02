@@ -6,7 +6,6 @@ using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.GameEngine.Window;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Pacman.Pacman;
 
 namespace Pacman
@@ -20,6 +19,7 @@ namespace Pacman
         private UIButton SubmitButton;
         private UITextElement ScoreText;
         private UITextElement TimeText;
+        private UITextElement HighscoresText;
 
         public PacmanUIManager(UITheme theme, SpriteBatch spriteBatch, TextDrawer textDrawer, GraphicsDevice graphics,
             Window window
@@ -34,8 +34,8 @@ namespace Pacman
                     Theme.Title,
                     graphics,
                     new Rectangle(
-                        (int)window.GetHorizontalCenter(),
-                        (int)window.GetVerticalCenter()  - 50,
+                        (int)window.GetHorizontalCenter() - 50,
+                        (int)window.GetVerticalCenter()  - 80,
                         100, 40
                     ),
                     (float)Globals.SpriteLayers.UI
@@ -63,10 +63,7 @@ namespace Pacman
                         ),
                     Theme,
                     default,
-                    () =>
-                    {
-                        PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.Highscores);
-                    }
+                    () => PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.Highscores)
                 ),
                 new UIButton(
                     graphics,
@@ -137,6 +134,19 @@ namespace Pacman
                 )
             };
 
+            HighscoresText = new UITextElement(
+                "no scores yet",
+                    Theme.Text,
+                    graphics,
+                    new Rectangle(
+                        (int)window.GetHorizontalCenter() - 100,
+                        140,
+                        100, 40
+                    ),
+                    (float)Globals.SpriteLayers.UI,
+                    HorizontalAlignment.Right,
+                    VerticalAlignment.Bottom
+                );
 
             var highscoresElements = new List<UIElement>()
             {
@@ -145,12 +155,13 @@ namespace Pacman
                     Theme.Title,
                     graphics,
                     new Rectangle(
-                        (int)window.GetHorizontalCenter(),
+                        (int)window.GetHorizontalCenter() - 50,
                         100,
                         100, 40
                     ),
                     (float)Globals.SpriteLayers.UI
                 ),
+                HighscoresText,
                 new UIButton(
                     graphics,
                     "Back",
@@ -162,10 +173,7 @@ namespace Pacman
                     Theme,
                     (float)Globals.SpriteLayers.UI,
                     default,
-                    () =>
-                    {
-                        PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.MainMenu);
-                    }
+                    () => PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.MainMenu)
                 ),
 
             };
@@ -182,7 +190,7 @@ namespace Pacman
                         200,
                         40),
                     (float)Globals.SpriteLayers.UI,
-                    (string newInputText) => UpdateInputText(newInputText)
+                    UpdateInputText
                 );
 
             SubmitButton = new UIButton(
@@ -196,9 +204,7 @@ namespace Pacman
                 theme,
                 (float)Globals.SpriteLayers.UI,
                 null,
-                () => {
-                    GameStats.Instance.SaveNewHighScore(InputText);
-                }
+                () => GameStats.Instance.SaveNewHighScore(InputText)
             );
 
             var newHighscoreElements = new List<UIElement>()
@@ -272,28 +278,30 @@ namespace Pacman
             PacmanEventSystem.OnBigDotPicked += ScoreChanged;
             PacmanEventSystem.OnSmallDotPicked += ScoreChanged;
             PacmanEventSystem.OnGhostEaten += ScoreChanged;
-            PacmanEventSystem.OnGameStarted += OnGameStarted;
-            PacmanEventSystem.OnGameOver += OnGameOver;
-        }
-
-        private void OnGameOver()
-        {
-            GameStats.Instance.ElapsedTime?.Stop();
-        }
-
-        private void OnGameStarted()
-        {
-            GameStats.Instance.ElapsedTime?.Restart();
+            PacmanEventSystem.OnGameStateChanged += UpdateHighscoresText;
         }
 
         private void ScoreChanged()
         {
-            ScoreText.Text = $"Score: {GameStats.Instance.PlayerScore}";
+            ScoreText.SetText($"Score: {GameStats.Instance.PlayerScore}");
         }
 
         private void UpdateTimeText()
         {
-            TimeText.Text = $"Time: {GameStats.Instance.ElapsedTime?.Elapsed.ToString(@"dd\.hh\:mm\:ss\:ff")}";
+            TimeText.SetText($"Time: {GameStats.Instance.ElapsedTime?.Elapsed.ToString(@"mm\:ss\:ff")}");
+        }
+
+        private void UpdateHighscoresText(Globals.PacmanGameState gameState)
+        {
+            if (gameState != Globals.PacmanGameState.Highscores) {
+                return;
+            }
+            var text = "";
+            GameStats.Instance.highScores.ForEach(hs =>
+            {
+                text += $"{hs.Name}: {hs.Score} - {hs.ElapsedTime.ToString(@"mm\:ss\:ff")}\n";
+            });
+            HighscoresText.SetText(text);
         }
 
         public void UpdateUIElements(GameTime gameTime, Globals.PacmanGameState currentGameState)

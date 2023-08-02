@@ -8,7 +8,7 @@ namespace GameEngine.Core.GameEngine.UI
     public class UITextElement : UIElement
     {
         public UIElementTheme Theme;
-        public string Text;
+        private string Text;
         public HorizontalAlignment HAlign =  HorizontalAlignment.None;
         public VerticalAlignment VAlign  = VerticalAlignment.None;
 

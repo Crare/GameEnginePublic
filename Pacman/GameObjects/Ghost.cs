@@ -25,6 +25,7 @@ namespace Pacman.GameObjects
             : base(position, texture, Color.Red, pathfinding, entityManager, Globals.PacmanTags.RedGhost)
         {
             timeout = 1;
+            DebugPathOffset = 4;
         }
 
         public override void Restart()
@@ -69,16 +70,6 @@ namespace Pacman.GameObjects
                 base.UpdatePath(entityManager);
             }
         }
-
-        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D debugTexture, Color debugColor, Color debugColor2)
-        {
-            base.DebugDraw(spriteBatch, debugTexture, debugColor, debugColor2);
-
-            if (path != null)
-            {
-                Pathfinding.DrawPath(path);
-            }
-        }
     }
 
     /// <summary>
@@ -90,6 +81,7 @@ namespace Pacman.GameObjects
             : base(position, texture, Color.Blue, pathfinding, entityManager, Globals.PacmanTags.BlueGhost)
         {
             timeout = 2;
+            DebugPathOffset = 3;
         }
 
         public override void Restart()
@@ -154,7 +146,7 @@ namespace Pacman.GameObjects
                     path = Pathfinding.GetPath(a, b);
                 }
                 base.UpdatePath(entityManager);
-            }
+            } 
         }
     }
 
@@ -167,6 +159,7 @@ namespace Pacman.GameObjects
             : base(position, texture, Color.Pink, pathfinding, entityManager, Globals.PacmanTags.PinkGhost)
         {
             timeout = 3;
+            DebugPathOffset = 2;
         }
 
         public override void Restart()
@@ -246,6 +239,7 @@ namespace Pacman.GameObjects
             : base(position, texture, Color.Orange, pathfinding, entityManager, Globals.PacmanTags.OrangeGhost)
         {
             timeout = 4;
+            DebugPathOffset = 1;
         }
 
         public override void Restart()
@@ -268,6 +262,13 @@ namespace Pacman.GameObjects
 
             UpdatePath(entityManager);
             MoveUsingPath(gameTime);
+
+            if (path == null || !path.Any())
+            {
+                // reached  end of path
+                ChasePacman = !ChasePacman;
+                CanUpdatePath = true;
+            }
 
             //  so probably: targets furthest away tile from pacman and when  reaches it,
             //  targets next  the tile the pacman is  on  and  moves there
@@ -295,8 +296,7 @@ namespace Pacman.GameObjects
                     }
                     else if (!ChasePacman)
                     {
-                        var b = new Point((int)Math.Round(pacman.Position.X / Globals.PACMAN_TILESIZE), (int)Math.Round(pacman.Position.Y / Globals.PACMAN_TILESIZE));
-                        var furthestPoint = Pathfinding.GetFurthestNodePositionFromPoint(b);
+                        var furthestPoint = Pathfinding.GetFurthestNodePositionFromPosition(pacman.Position);
                         path = Pathfinding.GetPath(Position, furthestPoint);
                     }
                 }
@@ -317,6 +317,7 @@ namespace Pacman.GameObjects
         internal float vulnerable = 0;
         internal Point StartingPoint;
         internal bool CanUpdatePath = true;
+        internal int DebugPathOffset = 0;
 
         public Ghost(Vector2 position, Texture2D texture, Color colorTint, PacmanPathfinding pathfinding, EntityManager entityManager, Globals.PacmanTags tag)
             : base(position, new Rectangle((int)position.X, (int)position.Y, 10, 10), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.GHOST_SPEED, null, (int)tag)
@@ -375,23 +376,26 @@ namespace Pacman.GameObjects
                 var targetNode = path.FirstOrDefault();
                 if (targetNode != null)
                 {
-                    CanUpdatePath = false; // don't allow path updates when not aligned to tilemap grid
                     MoveTowardsPosition(targetNode.Position, gameTime);
                     if (Vector2.Distance(Position, targetNode.Position) < 0.1f)
                     {
                         Position = targetNode.Position;
                         path.RemoveAt(0);
                         CanUpdatePath = true; // path position reached. allow updating path.
+                    } else
+                    {
+                        CanUpdatePath = false; // don't allow path updates when not aligned to tilemap grid
                     }
-                } else
-                {
-                    CanUpdatePath = true;
                 }
+                //else
+                //{
+                //    CanUpdatePath = true;
+                //}
             }
-            else
-            {
-                CanUpdatePath = true;
-            }
+            //else
+            //{
+            //    CanUpdatePath = true;
+            //}
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
@@ -445,6 +449,16 @@ namespace Pacman.GameObjects
                 }
             }
             Position += velocity * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D debugTexture, Color debugColor, Color debugColor2)
+        {
+            base.DebugDraw(spriteBatch, debugTexture, debugColor, debugColor2);
+
+            if (path != null)
+            {
+                Pathfinding.DrawPath(path, ColorTint, DebugPathOffset);
+            }
         }
     }
 }
