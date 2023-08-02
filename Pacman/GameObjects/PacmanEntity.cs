@@ -4,10 +4,10 @@ using GameEngine.Core.GameEngine.Sprites;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Pacman.Pacman;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Pacman.Globals;
 
 namespace Pacman.GameObjects
 {
@@ -208,10 +208,10 @@ namespace Pacman.GameObjects
             if (entityManager.IsColliding(
                 this,
                 new int[] {
-                    (int)PacmanTags.BlueGhost,
-                    (int)PacmanTags.OrangeGhost,
-                    (int)PacmanTags.PinkGhost,
-                    (int)PacmanTags.RedGhost
+                    (int)Globals.PacmanTags.BlueGhost,
+                    (int)Globals.PacmanTags.OrangeGhost,
+                    (int)Globals.PacmanTags.PinkGhost,
+                    (int)Globals.PacmanTags.RedGhost
                 },
                 out var collidedEntity))
             {
@@ -222,6 +222,7 @@ namespace Pacman.GameObjects
                 {
                     var ghost = collidedEntity as Ghost;
                     ghost.OnDeath();
+                    GameStats.Instance.PlayerScore += Globals.SCORE_ON_GHOST_EATEN;
                 }
             }
         }

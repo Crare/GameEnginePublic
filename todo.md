@@ -5,19 +5,18 @@ make game collection screen to choose game from?
 ## DOING NOW / NEXT:
 just a space to concentrate on what needs to be done next:
 
-- center pacman game
-
+- pacman game
 
 ## general
 
 - refactor:
   - Camera-class: offset rendertarget inside the window.
-  - generate sourceRectangles based on dimension and amount of frames.
 
 - scaleable windowed mode: https://community.monogame.net/t/handling-user-controlled-window-resizing/7828
   - keeping aspect ratio
   - free aspect ratio mode?
   - refactor Window stuff to Window-class
+  - options for window sizing to window settings at top of window.
 
 - gamepad input / controller support. https://docs.monogame.net/api/Microsoft.Xna.Framework.Input.html
   - maybe make generalized input thing,
@@ -28,7 +27,6 @@ just a space to concentrate on what needs to be done next:
 - UI elements
   - menu buttons
     - allow using keyboard & gamepad to select (WASD or arrow keys to navigate, ESC to go back, Enter to select)
-    - allow using mouse to select (Pressing buttons does the action)
   - background layout box
     - use sprite with 9-slicing like in unity https://docs.unity3d.com/Manual/9SliceSprites.html
 
