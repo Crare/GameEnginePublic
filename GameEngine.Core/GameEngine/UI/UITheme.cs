@@ -28,6 +28,8 @@ namespace GameEngine.Core.GameEngine.UI
         //public Color borderColor;
         //public Color borderColor2;
 
+        public Color PlaceholderTextColor;
+
         public Color TextColor;
         public Color TextColorPressed;
         public Color TextColorHover;
@@ -41,6 +43,14 @@ namespace GameEngine.Core.GameEngine.UI
         public HorizontalAlignment HAlign;
         public VerticalAlignment VAlign;
 
+        public int BorderWidth;
+        public Color BorderColor;
+        public Color BorderColorHover;
+        public Color BorderColorPressed;
+        public Color BorderColorActive;
+
+        public int InputPadding;
+
         public UIElementTheme() { }
 
     }
@@ -50,6 +60,7 @@ namespace GameEngine.Core.GameEngine.UI
         public UIElementTheme Button;
         public UIElementTheme Title;
         public UIElementTheme Text;
+        public UIElementTheme Input;
 
         public UITheme() { }
     }

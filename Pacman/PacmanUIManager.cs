@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using GameEngine.Core.GameEngine.UI;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.GameEngine.Window;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Pacman.Pacman;
 
 namespace Pacman
 {
@@ -11,6 +15,11 @@ namespace Pacman
     {
         public Dictionary<Globals.PacmanGameState, UIElementGroup> ElementGroups;
         public UITheme Theme;
+        private string InputText = "";
+        private UIInput InputInitials;
+        private UIButton SubmitButton;
+        private UITextElement ScoreText;
+        private UITextElement TimeText;
 
         public PacmanUIManager(UITheme theme, SpriteBatch spriteBatch, TextDrawer textDrawer, GraphicsDevice graphics,
             Window window
@@ -74,32 +83,33 @@ namespace Pacman
                 )
             };
 
+            ScoreText = new UITextElement(
+                "Score: 0",
+                Theme.Text,
+                graphics,
+                new Rectangle(
+                    (int)window.GetHorizontalCenter(),
+                    20,
+                    100, 40
+                ),
+                (float)Globals.SpriteLayers.UI
+            );
+            TimeText = new UITextElement(
+                "Time: 00:00:00",
+                Theme.Text,
+                graphics,
+                new Rectangle(
+                    (int)window.GetHorizontalCenter(),
+                    40,
+                    100, 40
+                ),
+                (float)Globals.SpriteLayers.UI
+            );
 
             var gameLoopElements = new List<UIElement>() {
-                new UITextElement(
-                    "Score: 0",
-                    Theme.Text,
-                    graphics,
-                    new Rectangle(
-                        (int)window.GetHorizontalCenter(),
-                        20,
-                        100, 40
-                    ),
-                    (float)Globals.SpriteLayers.UI
-                ),
-                new UITextElement(
-                    "Time: 0:00:00",
-                    Theme.Text,
-                    graphics,
-                    new Rectangle(
-                        (int)window.GetHorizontalCenter(),
-                        40,
-                        100, 40
-                    ),
-                    (float)Globals.SpriteLayers.UI
-                )
+                ScoreText,
+                TimeText
             };
-
 
             var gameOverElements = new List<UIElement>()
             {
@@ -160,6 +170,36 @@ namespace Pacman
 
             };
 
+            InputInitials =
+                new UIInput(
+                    InputText,
+                    "John Doe",
+                    Theme.Input,
+                    graphics,
+                    new Rectangle(
+                        (int)window.GetHorizontalCenter() - 100,
+                        (int)window.GetVerticalCenter(),
+                        200,
+                        40),
+                    (float)Globals.SpriteLayers.UI,
+                    (string newInputText) => UpdateInputText(newInputText)
+                );
+
+            SubmitButton = new UIButton(
+                graphics,
+                "Save",
+                new Rectangle(
+                        (int)window.GetHorizontalCenter() - 100,
+                        (int)window.GetVerticalCenter() + 45,
+                        200,
+                        40),
+                theme,
+                (float)Globals.SpriteLayers.UI,
+                null,
+                () => {
+                    GameStats.Instance.SaveNewHighScore(InputText);
+                }
+            );
 
             var newHighscoreElements = new List<UIElement>()
             {
@@ -168,45 +208,55 @@ namespace Pacman
                     Theme.Title,
                     graphics,
                     new Rectangle(
-                        (int)window.GetHorizontalCenter(),
-                        100,
+                        (int)window.GetHorizontalCenter() - 50,
+                        70,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI
+                    (float)Globals.SpriteLayers.UI,
+                    HorizontalAlignment.Center,
+                    VerticalAlignment.Middle
                 ),
                 new UITextElement(
                     "Score: 0",
                     Theme.Text,
                     graphics,
                     new Rectangle(
-                        (int)window.GetHorizontalCenter(),
+                        (int)window.GetHorizontalCenter() - 50,
                         120,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI
+                    (float)Globals.SpriteLayers.UI,
+                    HorizontalAlignment.Right,
+                    VerticalAlignment.Middle
                 ),
                 new UITextElement(
                     "Time: 0:00:00",
                     Theme.Text,
                     graphics,
                     new Rectangle(
-                        (int)window.GetHorizontalCenter(),
+                        (int)window.GetHorizontalCenter() - 50,
                         140,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI
+                    (float)Globals.SpriteLayers.UI,
+                    HorizontalAlignment.Right,
+                    VerticalAlignment.Middle
                 ),
                 new UITextElement(
                     "Add your initials:",
                     Theme.Text,
                     graphics,
                     new Rectangle(
-                        (int)window.GetHorizontalCenter(),
+                        (int)window.GetHorizontalCenter() - 50,
                         160,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI
+                    (float)Globals.SpriteLayers.UI,
+                    HorizontalAlignment.Right,
+                    VerticalAlignment.Middle
                 ),
+                InputInitials,
+                SubmitButton
             };
 
 
@@ -218,16 +268,54 @@ namespace Pacman
                 { Globals.PacmanGameState.Highscores, new UIElementGroup(highscoresElements) },
                 { Globals.PacmanGameState.NewHighscore, new UIElementGroup(newHighscoreElements) }
             };
+
+            PacmanEventSystem.OnBigDotPicked += ScoreChanged;
+            PacmanEventSystem.OnSmallDotPicked += ScoreChanged;
+            PacmanEventSystem.OnGhostEaten += ScoreChanged;
+            PacmanEventSystem.OnGameStarted += OnGameStarted;
+            PacmanEventSystem.OnGameOver += OnGameOver;
+        }
+
+        private void OnGameOver()
+        {
+            GameStats.Instance.ElapsedTime?.Stop();
+        }
+
+        private void OnGameStarted()
+        {
+            GameStats.Instance.ElapsedTime?.Restart();
+        }
+
+        private void ScoreChanged()
+        {
+            ScoreText.Text = $"Score: {GameStats.Instance.PlayerScore}";
+        }
+
+        private void UpdateTimeText()
+        {
+            TimeText.Text = $"Time: {GameStats.Instance.ElapsedTime?.Elapsed.ToString(@"dd\.hh\:mm\:ss\:ff")}";
         }
 
         public void UpdateUIElements(GameTime gameTime, Globals.PacmanGameState currentGameState)
         {
             ElementGroups[currentGameState].Update(gameTime);
+            UpdateTimeText();
         }
 
-        public void DrawUIElements(Globals.PacmanGameState currentGameState)
+        public void DrawUIElements(Globals.PacmanGameState currentGameState, GameTime gameTime)
         {
-            ElementGroups[currentGameState].Draw(SpriteBatch, TextDrawer);
+            ElementGroups[currentGameState].Draw(SpriteBatch, TextDrawer, gameTime);
+        }
+
+        public void DebugDrawUIElements(Globals.PacmanGameState currentGameState, Texture2D debugTexture, Color debugColor, Color debugColor2)
+        {
+            ElementGroups[currentGameState].DebugDraw(SpriteBatch, TextDrawer, debugTexture, debugColor, debugColor2);
+        }
+
+        private void UpdateInputText(string newInputText)
+        {
+            InputText = newInputText;
+            InputInitials.UpdateInputText(InputText);
         }
     }
 }

@@ -9,10 +9,32 @@ namespace GameEngine.Core.GameEngine.UI
     {
         public UIElementTheme Theme;
         public string Text;
+        public HorizontalAlignment HAlign =  HorizontalAlignment.None;
+        public VerticalAlignment VAlign  = VerticalAlignment.None;
 
         // TODO: add listener to trigger changing text.
+        public UITextElement(
+            string text,
+            UIElementTheme theme,
+            GraphicsDevice graphics,
+            Rectangle container,
+            float layerDepth,
+            HorizontalAlignment horizontalAlignment,
+            VerticalAlignment verticalAlignment)
+            : base(graphics, container, default, layerDepth)
+        {
+            Text = text;
+            Theme = theme;
+            HAlign = horizontalAlignment;
+            VAlign = verticalAlignment;
+        }
 
-        public UITextElement(string text, UIElementTheme theme, GraphicsDevice graphics, Rectangle container, float layerDepth)
+        public UITextElement(
+            string text,
+            UIElementTheme theme,
+            GraphicsDevice graphics,
+            Rectangle container,
+            float layerDepth)
             : base(graphics, container, default, layerDepth)
         {
             Text = text;
@@ -24,15 +46,15 @@ namespace GameEngine.Core.GameEngine.UI
             Text = newText;
         }
 
-        public override void Draw(SpriteBatch spriteBatch, TextDrawer textDrawer)
+        public override void Draw(SpriteBatch spriteBatch, TextDrawer textDrawer, GameTime gameTime)
         {
             textDrawer.Draw(
                 Text,
                 new Vector2(Container.X, Container.Y),
                 Theme.TextColor,
                 Theme.TextSize,
-                Theme.HAlign,
-                Theme.VAlign
+                HAlign != HorizontalAlignment.None ? HAlign : Theme.HAlign,
+                VAlign != VerticalAlignment.None ? VAlign : Theme.VAlign
                 );
         }
 

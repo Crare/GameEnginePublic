@@ -42,11 +42,11 @@ namespace GameEngine.Core.GameEngine.UI
             });
         }
 
-        public virtual void DrawUIElements()
+        public virtual void DrawUIElements(GameTime gameTime)
         {
             uiElements.ForEach(uiElement =>
             {
-                uiElement.Draw(SpriteBatch, TextDrawer);
+                uiElement.Draw(SpriteBatch, TextDrawer, gameTime);
             });
         }
 

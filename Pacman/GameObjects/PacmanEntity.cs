@@ -106,6 +106,7 @@ namespace Pacman.GameObjects
                 {
                     PacmanEventSystem.GameOver();
                 }
+                return; // skip rest of the update code  after death.
             }
 
             if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
@@ -229,6 +230,7 @@ namespace Pacman.GameObjects
                     var ghost = collidedEntity as Ghost;
                     ghost.OnDeath();
                     GameStats.Instance.PlayerScore += Globals.SCORE_ON_GHOST_EATEN;
+                    PacmanEventSystem.GhostEaten();
                 }
             }
         }

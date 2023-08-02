@@ -12,8 +12,8 @@ namespace GameEngine.Core.GameEngine.UI
 
         private UIElementTheme Theme;
 
-        public event EventHandler OnPressedDown;
-        public event EventHandler OnPressRelease;
+        //public event EventHandler OnPressedDown;
+        //public event EventHandler OnPressRelease;
         internal bool IsPressed = false;
         internal bool IsHover = false;
 
@@ -38,7 +38,7 @@ namespace GameEngine.Core.GameEngine.UI
             OnPressReleasedCallback = onPressReleasedCallback;
         }
 
-        public override void Draw(SpriteBatch spriteBatch, TextDrawer textDrawer)
+        public override void Draw(SpriteBatch spriteBatch, TextDrawer textDrawer, GameTime gameTime)
         {
             // draw box
             spriteBatch.Draw(Texture, 
@@ -102,21 +102,21 @@ namespace GameEngine.Core.GameEngine.UI
 
         private void InvokeOnPressedDown()
         {
-            var handler = OnPressedDown;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            //var handler = OnPressedDown;
+            //if (handler != null)
+            //{
+            //    handler(this, EventArgs.Empty);
+            //}
             OnPressCallback?.Invoke();
         }
 
         private void InvokeOnPressRelease()
         {
-            var handler = OnPressRelease;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            //var handler = OnPressRelease;
+            //if (handler != null)
+            //{
+            //    handler(this, EventArgs.Empty);
+            //}
             OnPressReleasedCallback?.Invoke();
         }
     }

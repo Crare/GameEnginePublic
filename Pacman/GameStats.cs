@@ -4,6 +4,7 @@ namespace Pacman
     using GameEngine.Core.GameEngine.Audio;
     using GameEngine.Core.GameEngine.FileManagement;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text.Json;
@@ -16,6 +17,7 @@ namespace Pacman
         {
             public int Score { get; set; }
             public string Name { get; set; }
+            public TimeSpan ElapsedTime { get; set; }
         }
 
         public sealed class GameStats
@@ -67,6 +69,7 @@ namespace Pacman
             public int PlayerScore = 0;
             private static string highScoreFileName = "highscores.json";
             public List<PacmanScoreStats> highScores = new();
+            public Stopwatch ElapsedTime;
 
             public void LoadHighScores()
             {
@@ -75,11 +78,13 @@ namespace Pacman
 
             public void SaveNewHighScore(string name)
             {
-                highScores.Add(new PacmanScoreStats()
-                {
-                    Score = PlayerScore,
-                    Name = name
-                }
+                highScores.Add(
+                    new PacmanScoreStats()
+                    {
+                        Score = PlayerScore,
+                        Name = name,
+                        ElapsedTime = ElapsedTime.Elapsed
+                    }
                 );
 
                 highScores = highScores
@@ -87,6 +92,8 @@ namespace Pacman
                     .ToList();
 
                 FileSystem.SaveAsJson(highScoreFileName, highScores); // simple json saving for now.
+
+                PacmanEventSystem.GameStateChanged(PacmanGameState.Highscores);
             }
 
             public bool IsNewHighScore()

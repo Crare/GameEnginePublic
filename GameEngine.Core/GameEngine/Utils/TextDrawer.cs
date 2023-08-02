@@ -5,12 +5,12 @@ namespace GameEngine.Core.GameEngine.Utils
 {
     public enum HorizontalAlignment
     {
-        Left, Right, Center,
+        None, Left, Right, Center,
     }
 
     public enum VerticalAlignment
     {
-        Top, Bottom, Middle,
+        None, Top, Bottom, Middle,
     }
 
     public class TextDrawer
@@ -44,13 +44,18 @@ namespace GameEngine.Core.GameEngine.Utils
             SpriteBatch.DrawString(Font, text, position, color, 0f, Vector2.One, scale, SpriteEffects.None, 0);
         }
 
+        public Vector2 TextSize(string text)
+        {
+            return Font.MeasureString(text);
+        }
+
         private Vector2 Align(string text, Vector2 position, HorizontalAlignment hAlign = HorizontalAlignment.Right, VerticalAlignment vAlign = VerticalAlignment.Bottom)
         {
             var pos = position;
             //if (hAlign == HorizontalAlignment.Right) // default
             //if (vAlign == HorizontalAlignment.Bottom) // default
 
-            Vector2 size = Font.MeasureString(text);
+            Vector2 size = TextSize(text);
 
             if (hAlign == HorizontalAlignment.Center)
             {

@@ -25,6 +25,9 @@ namespace Pacman
 
         public static event Action OnBigDotPicked;
         public static void BigDotPicked() => OnBigDotPicked?.Invoke();
+
+        public static event Action OnGhostEaten;
+        public static void GhostEaten() => OnGhostEaten?.Invoke();
     }
 }
 

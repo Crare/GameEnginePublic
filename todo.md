@@ -24,6 +24,7 @@ just a space to concentrate on what needs to be done next:
     - setting view with keymappings that can be changed
 
 - text input it bit slow, can't press next key before letting go of last to register next one.
+- text input holding down key  should add iit multiple times  after held down for second or so.
 
 - UI elements
   - menu buttons

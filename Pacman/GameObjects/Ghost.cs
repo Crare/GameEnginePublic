@@ -46,14 +46,14 @@ namespace Pacman.GameObjects
             }
 
             UpdatePath(entityManager);
-            UsePath(gameTime);
+            MoveUsingPath(gameTime);
 
             base.Update(gameTime, keyboardState, renderTarget2D, entityManager);
         }
 
         internal override void UpdatePath(EntityManager entityManager)
         {
-            if (path == null || !path.Any() || updatePath <= 0)
+            if (path == null || !path.Any() || CanUpdatePath)
             {
                 if (vulnerable > 0)
                 {
@@ -111,7 +111,7 @@ namespace Pacman.GameObjects
             }
 
             UpdatePath(entityManager);
-            UsePath(gameTime);
+            MoveUsingPath(gameTime);
 
             // so one of them probably targets the tile pacman was before, and  other  one targets  the tile pacman is moving to(prediction/assumption).
             base.Update(gameTime, keyboardState, renderTarget2D, entityManager);
@@ -120,7 +120,7 @@ namespace Pacman.GameObjects
 
         internal override void UpdatePath(EntityManager entityManager)
         {
-            if (path == null || !path.Any() || updatePath <= 0)
+            if (path == null || !path.Any() || CanUpdatePath)
             {
                 if (vulnerable > 0)
                 {
@@ -188,7 +188,7 @@ namespace Pacman.GameObjects
             }
 
             UpdatePath(entityManager);
-            UsePath(gameTime);
+            MoveUsingPath(gameTime);
 
             // so one of them probably targets the tile pacman was before, and  other  one targets  the tile pacman is moving to(prediction/assumption).
             base.Update(gameTime, keyboardState, renderTarget2D, entityManager);
@@ -197,7 +197,7 @@ namespace Pacman.GameObjects
 
         internal override void UpdatePath(EntityManager entityManager)
         {
-            if (path == null || !path.Any() || updatePath <= 0)
+            if (path == null || !path.Any() || CanUpdatePath)
             {
                 if (vulnerable > 0)
                 {
@@ -267,7 +267,7 @@ namespace Pacman.GameObjects
             }
 
             UpdatePath(entityManager);
-            UsePath(gameTime);
+            MoveUsingPath(gameTime);
 
             //  so probably: targets furthest away tile from pacman and when  reaches it,
             //  targets next  the tile the pacman is  on  and  moves there
@@ -278,7 +278,7 @@ namespace Pacman.GameObjects
 
         internal override void UpdatePath(EntityManager entityManager)
         {
-            if (path == null || !path.Any() || updatePath <= 0)
+            if (path == null || !path.Any() || CanUpdatePath)
             {
                 if (vulnerable > 0)
                 {
@@ -316,7 +316,7 @@ namespace Pacman.GameObjects
         internal float timeout = 8;
         internal float vulnerable = 0;
         internal Point StartingPoint;
-        internal float updatePath = Globals.UPDATE_PATH_SECONDS;
+        internal bool CanUpdatePath = true;
 
         public Ghost(Vector2 position, Texture2D texture, Color colorTint, PacmanPathfinding pathfinding, EntityManager entityManager, Globals.PacmanTags tag)
             : base(position, new Rectangle((int)position.X, (int)position.Y, 10, 10), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.GHOST_SPEED, null, (int)tag)
@@ -344,6 +344,7 @@ namespace Pacman.GameObjects
         {
             Position = new Vector2(StartingPoint.X * Globals.PACMAN_TILESIZE, StartingPoint.Y * Globals.PACMAN_TILESIZE);
             timeout = 10;
+            Restart();
         }
 
         public virtual void Restart()
@@ -364,23 +365,32 @@ namespace Pacman.GameObjects
 
         internal virtual void UpdatePath(EntityManager entityManager)
         {
-            updatePath = Globals.UPDATE_PATH_SECONDS;
+            CanUpdatePath = false;
         }
 
-        internal virtual void UsePath(GameTime gameTime)
+        internal virtual void MoveUsingPath(GameTime gameTime)
         {
-            if (path != null)
+            if (path != null && path.Any())
             {
                 var targetNode = path.FirstOrDefault();
                 if (targetNode != null)
                 {
+                    CanUpdatePath = false; // don't allow path updates when not aligned to tilemap grid
                     MoveTowardsPosition(targetNode.Position, gameTime);
                     if (Vector2.Distance(Position, targetNode.Position) < 0.1f)
                     {
                         Position = targetNode.Position;
                         path.RemoveAt(0);
+                        CanUpdatePath = true; // path position reached. allow updating path.
                     }
+                } else
+                {
+                    CanUpdatePath = true;
                 }
+            }
+            else
+            {
+                CanUpdatePath = true;
             }
         }
 
@@ -399,10 +409,6 @@ namespace Pacman.GameObjects
             if  (vulnerable > 0)
             {
                 vulnerable -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            if (updatePath > 0)
-            {
-                updatePath -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
         }
 

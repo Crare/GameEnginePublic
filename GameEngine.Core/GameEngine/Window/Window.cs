@@ -27,12 +27,12 @@ namespace GameEngine.Core.GameEngine.Window
 
         public float GetHorizontalCenter()
         {
-            return GameResolution.X / 2;
+            return RenderTarget.Width / 2;
         }
 
         public float GetVerticalCenter()
         {
-            return GameResolution.Y / 2;
+            return RenderTarget.Height / 2;
         }
 
         public void StartDrawToRenderTarget(SpriteBatch spriteBatch)

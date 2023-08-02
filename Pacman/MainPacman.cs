@@ -10,7 +10,6 @@ using Pacman.GameObjects;
 using Pacman.GameObjects.tiles;
 using Pacman.Pacman;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Pacman
@@ -53,17 +52,54 @@ namespace Pacman
                 TextSize = 1f,
                 TextSizePressed = 1f,
                 TextSizeHover = 1f,
-                TextSizeActive = 1f
+                TextSizeActive = 1f,
+
+                HAlign = HorizontalAlignment.Center,
+                VAlign = VerticalAlignment.Middle
             },
             Title = new UIElementTheme()
             {
                 TextColor = new(1f, 1f, 1f),
-                TextSize = 2f
+                TextSize = 2f,
+                HAlign = HorizontalAlignment.Center,
+                VAlign = VerticalAlignment.Middle
             },
             Text = new UIElementTheme()
             {
                 TextColor = new(1f, 1f, 1f),
-                TextSize = 1f
+                TextSize = 1f,
+                HAlign = HorizontalAlignment.Center,
+                VAlign = VerticalAlignment.Middle
+            },
+            Input = new UIElementTheme()
+            {
+                BorderColor = new(0f, 0.8f, 0.8f),
+                BorderColorPressed = new(0, 1f, 1f),
+                BorderColorHover = new(0, 0.9f, 0.9f),
+                BorderColorActive = new(0, 0.9f, 0.9f),
+
+                BackgroundColor = new(0.9f, 0.9f, 0.9f),
+                BackgroundColorPressed = new(0.85f, 0.85f, 0.85f),
+                BackgroundColorHover = new(1f, 1f, 1f),
+                BackgroundColorActive = new(1f, 1f, 1f),
+
+                PlaceholderTextColor = new(0.8f, 0.8f, 0.8f),
+
+                TextColor = new(0f, 0f, 0f),
+                TextColorPressed = new(0.1f, 0.1f, 0.1f),
+                TextColorHover = new(0.3f, 0.3f, 0.3f),
+                TextColorActive = new(0.3f, 0.3f, 0.3f),
+
+                TextSize = 1f,
+                TextSizePressed = 1f,
+                TextSizeHover = 1f,
+                TextSizeActive = 1f,
+
+                BorderWidth = 3,
+                InputPadding = 5,
+
+                HAlign = HorizontalAlignment.Right,
+                VAlign = VerticalAlignment.Middle
             }
         };
 
@@ -286,16 +322,12 @@ namespace Pacman
                 //_pathfinding.DrawDebugPath();
             }
 
-            _UIManager.DrawUIElements(_currentGameState);
+            _UIManager.DrawUIElements(_currentGameState, gameTime);
             if (Globals.DEBUG_DRAW)
             {
-                _UIManager.DebugDrawUIElements(_debugTexture, _debugColor, _debugColor2);
+                //_UIManager.DebugDrawUIElements(_debugTexture, _debugColor, _debugColor2);
+                _UIManager.DebugDrawUIElements(_currentGameState, _debugTexture, _debugColor, _debugColor2);
             }
-
-            _textDrawer.Draw($"score: {GameStats.Instance.PlayerScore}",
-                new Vector2(_window.RenderTarget.Width / 2, 15),
-                HorizontalAlignment.Center,
-                VerticalAlignment.Middle);
 
             // end of draw code
             _window.EndDrawToRenderTarget(_spriteBatch);

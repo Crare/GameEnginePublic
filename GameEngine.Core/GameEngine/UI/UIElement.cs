@@ -1,6 +1,7 @@
 ﻿using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace GameEngine.Core.GameEngine.UI
 {
@@ -37,7 +38,7 @@ namespace GameEngine.Core.GameEngine.UI
         //        );
         //}
 
-        public virtual void Draw(SpriteBatch spriteBatch, TextDrawer textDrawer)
+        public virtual void Draw(SpriteBatch spriteBatch, TextDrawer textDrawer, GameTime gameTime)
         {
             spriteBatch.Draw(Texture, Container, BackgroundColor);
         }
@@ -51,7 +52,7 @@ namespace GameEngine.Core.GameEngine.UI
                 $"x={Container.X}, y={Container.Y}",
                 new Vector2(Container.X, Container.Y),
                 HorizontalAlignment.Right
-                );
+            );
         }
 
         public virtual void Update(GameTime gameTime) { 
