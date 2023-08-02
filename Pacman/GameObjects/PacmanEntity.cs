@@ -102,6 +102,10 @@ namespace Pacman.GameObjects
             else
             {
                 var animationEnded = DeathAnimation.Update(gameTime);
+                if (animationEnded)
+                {
+                    PacmanEventSystem.GameOver();
+                }
             }
 
             if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
@@ -193,7 +197,7 @@ namespace Pacman.GameObjects
 
             if (gameStarted && !lastGameStarted)
             {
-                Globals.GameStarted = true;
+                Globals.GhostsMoving = true;
             }
 
             if (invulnerable >= 0)
@@ -217,7 +221,9 @@ namespace Pacman.GameObjects
             {
                 if (invulnerable <=  0)
                 {
-                    PacmanEventSystem.GameOver();
+                    // play death animation, after that we go to GameOver gameState.
+                    AnimationState = 1;
+                    Globals.GhostsMoving = false;
                 } else
                 {
                     var ghost = collidedEntity as Ghost;

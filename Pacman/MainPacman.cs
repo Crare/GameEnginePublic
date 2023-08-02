@@ -83,7 +83,7 @@ namespace Pacman
 
         private void OnNewGame()
         {
-            Globals.GameStarted = false;
+            Globals.GhostsMoving = false;
             _tileMap.LoadLevel(0);
             PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.GameLoop);
         }
@@ -95,7 +95,7 @@ namespace Pacman
 
         private void OnGameOver()
         {
-            Globals.GameStarted = false;
+            Globals.GhostsMoving = false;
 
             if (GameStats.Instance.IsNewHighScore())
             {

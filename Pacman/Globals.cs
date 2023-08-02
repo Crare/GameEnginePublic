@@ -16,7 +16,7 @@
         public static int SCORE_ON_BIG_DOT_PICKED = 150;
         public static int SCORE_ON_GHOST_EATEN = 1000;
 
-        public static bool GameStarted = false;
+        public static bool GhostsMoving = false;
 
         public enum PacmanGameState
         {
