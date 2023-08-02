@@ -19,6 +19,39 @@ namespace GameEngine.Core.SpriteManagement
             SourceRectangle = sourceRectangle;
         }
 
+        public void Draw(SpriteBatch spriteBatch, Vector2 entityPosition, Color tint, float depthLayer, bool horizontalFlipped = false)
+        {
+            // use whole texture
+            if (SourceRectangle == null)
+            {
+                spriteBatch.Draw(
+                    Texture,
+                    entityPosition,
+                    null,
+                    tint,
+                    0f, // rotation
+                    new Vector2(Texture.Width / 2, Texture.Height / 2), // origin
+                    Vector2.One, // scale
+                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                    depthLayer
+                );
+            }
+            else
+            {
+                spriteBatch.Draw(
+                    Texture,
+                    entityPosition,
+                    SourceRectangle,
+                    tint,
+                    0f, // rotation
+                    new Vector2(SourceRectangle.Value.Width / 2, SourceRectangle.Value.Height / 2), // origin
+                    Vector2.One, // scale
+                    horizontalFlipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                    depthLayer
+                );
+            }
+        }
+
         public void Draw(SpriteBatch spriteBatch, Vector2 entityPosition, float depthLayer, bool horizontalFlipped = false)
         {
             // use whole texture

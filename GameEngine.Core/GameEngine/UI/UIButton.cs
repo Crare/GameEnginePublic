@@ -3,42 +3,39 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameEngine.Core.GameEngine.UI
 {
     public class UIButton : UIElement
     {
         internal string Text;
-        internal Color TextColor;
-        internal Color TextPressedColor;
-        internal float TextScale;
+
+        private UIElementTheme Theme;
+
         public event EventHandler OnPressedDown;
         public event EventHandler OnPressRelease;
         internal bool IsPressed = false;
-        internal Color PressedBackgroundColor;
+        internal bool IsHover = false;
+
+        private Action OnPressCallback;
+        private Action OnPressReleasedCallback;
 
         public UIButton(
-            GraphicsDevice graphics, 
-            string text, 
-            Rectangle container, 
-            Color backgroundColor, 
-            Color pressedBackgroundColor,
-            Color textColor,
-            Color textPressedColor,
-            float textScale = 1f,
-            float layerDepth = 1f
-            ) 
-            : base(graphics, container, backgroundColor, layerDepth)
+            GraphicsDevice graphics,
+            string text,
+            Rectangle container,
+            UITheme theme,
+            float layerDepth = 1f,
+            Action onPressCallback = null,
+            Action onPressReleasedCallback = null
+            )
+            : base(graphics, container, theme.Button.BackgroundColor, layerDepth)
         {
             Text = text;
-            PressedBackgroundColor = pressedBackgroundColor;
-            TextColor = textColor;
-            TextPressedColor = textPressedColor;
-            TextScale = textScale;
+            Theme = theme.Button;
+
+            OnPressCallback = onPressCallback;
+            OnPressReleasedCallback = onPressReleasedCallback;
         }
 
         public override void Draw(SpriteBatch spriteBatch, TextDrawer textDrawer)
@@ -46,26 +43,27 @@ namespace GameEngine.Core.GameEngine.UI
             // draw box
             spriteBatch.Draw(Texture, 
                 Container,
-                IsPressed ? PressedBackgroundColor : BackgroundColor
+                IsPressed
+                    ? Theme.BackgroundColorPressed
+                    : IsHover
+                        ? Theme.BackgroundColorHover
+                        : Theme.BackgroundColor
                 );
-            //spriteBatch.Draw(
-            //        Texture,
-            //        new Vector2(Container.X, Container.Y),
-            //        null,
-            //        IsPressed ? PressedBackgroundColor : BackgroundColor,
-            //        0f, // rotation
-            //        new Vector2(Container.Width / 2, Container.Height / 2), // origin
-            //        Vector2.One, // scale
-            //        SpriteEffects.None,
-            //        LayerDepth
-            //    );
 
             // draw title over box
             textDrawer.Draw(
                 Text,
                 new Vector2(Container.X + Container.Width / 2, Container.Y + Container.Height / 2),
-                IsPressed ? TextPressedColor : TextColor,
-                TextScale,
+                IsPressed
+                    ? Theme.TextColorPressed
+                    : IsHover
+                        ? Theme.TextColorHover
+                        : Theme.TextColor,
+                IsPressed
+                    ? Theme.TextSizePressed
+                    : IsHover
+                        ? Theme.TextSizeHover
+                        : Theme.TextSize,
                 HorizontalAlignment.Center,
                 VerticalAlignment.Middle
                 );
@@ -74,14 +72,10 @@ namespace GameEngine.Core.GameEngine.UI
         override public void Update(GameTime gameTime)
         {
             var lastPressState = IsPressed;
-
-            // TODO: checking if button is being pressed.
-            // get mouse position
-            // check if it is over button
-            // check if mouse button is pressed
-            //IsPressed = 
             var mState = Mouse.GetState();
-            if (IsColliding(mState) && mState.LeftButton == ButtonState.Pressed)
+            IsHover = IsColliding(mState);
+
+            if (IsHover && mState.LeftButton == ButtonState.Pressed)
             {
                 IsPressed = true;
             } else
@@ -89,10 +83,10 @@ namespace GameEngine.Core.GameEngine.UI
                 IsPressed = false;
             }
 
-            if (!lastPressState && IsPressed) {
+            if (!lastPressState && IsPressed && IsHover) {
                 InvokeOnPressedDown();
             }
-            if (lastPressState && !IsPressed)
+            if (lastPressState && !IsPressed && IsHover)
             {
                 InvokeOnPressRelease();
             }
@@ -113,6 +107,7 @@ namespace GameEngine.Core.GameEngine.UI
             {
                 handler(this, EventArgs.Empty);
             }
+            OnPressCallback?.Invoke();
         }
 
         private void InvokeOnPressRelease()
@@ -122,6 +117,7 @@ namespace GameEngine.Core.GameEngine.UI
             {
                 handler(this, EventArgs.Empty);
             }
+            OnPressReleasedCallback?.Invoke();
         }
     }
 }

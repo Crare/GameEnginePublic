@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.GameEngine.FileManagement;
+﻿using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.FileManagement;
 using GameEngine.Core.GameEngine.TileMap;
 using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
@@ -12,9 +13,11 @@ namespace Pacman.GameObjects.tiles
         private Texture2D Texture;
         private string[] Levels;
         private Rectangle[] textureSources;
+        private EntityManager EntityManager;
 
-        public PacmanTileMap() : base(19, 21, Globals.PACMAN_TILESIZE)
+        public PacmanTileMap(EntityManager entityManager) : base(19, 21, Globals.PACMAN_TILESIZE)
         {
+            EntityManager = entityManager;
         }
 
         public void Initialize(Texture2D texture, string[] levels)
@@ -47,50 +50,37 @@ namespace Pacman.GameObjects.tiles
                 .Split(",");
             //Debug.WriteLine($"got tiledata with length of {tileData.Length}");
 
+            var dotSmall = EntityManager.GetEntityByTag<SmallDot>((int)Globals.PacmanTags.DotSmall);
+            var dotBig = EntityManager.GetEntityByTag<BigDot>((int)Globals.PacmanTags.DotBig);
+
             // sets all tiles first
             for (var x = 0; x < Width; x++)
             {
                 for (var y = 0; y < Height; y++)
                 {
                     var data = tileData[x + Width * y];
-                    if (data == "0")
+                    if (data == "1"
+                        || data == "N"
+                        || data == "C"
+                        || data == "R"
+                        || data == "O"
+                        || data == "B"
+                        || data == "P"
+                        || data == "X")
                     {
-                        var tile = new TileWall(
-                            new Vector2(x, y),
-                            new Sprite(Texture, defaultWallTileTexture));
-                        Tiles[x, y] = tile;
-                    }
-                    else if (data == "N")
-                    {
+                        // floor tile
                         var tile = new TileFloor(
                             new Vector2(x, y),
                             new Sprite(Texture, defaultFloorTileTexture)
                             );
                         Tiles[x, y] = tile;
                     }
-                    else if (data == "1")
+                    else if (data == "0")
                     {
-                        // dot
-                    }
-                    else if (data == "C")
-                    {
-                        // cherry  = big dot
-                    }
-                    else if (data == "R")
-                    {
-                        // red ghost
-                    }
-                    else if (data == "B")
-                    {
-                        // blue ghost
-                    }
-                    else if (data == "P")
-                    {
-                        // pink ghost
-                    }
-                    else if (data == "O")
-                    {
-                        // orange ghost
+                        var tile = new TileWall(
+                            new Vector2(x, y),
+                            new Sprite(Texture, defaultWallTileTexture));
+                        Tiles[x, y] = tile;
                     }
                     else if (data == "G")
                     {
@@ -101,12 +91,61 @@ namespace Pacman.GameObjects.tiles
                             );
                         Tiles[x, y] = tile;
                     }
+
+                    if (data == "1")
+                    {
+                        var dotSmall2 = dotSmall.Copy();
+                        dotSmall2.Position = new Vector2(x * TileSize, y * TileSize);
+                        EntityManager.AddEntity(dotSmall2);
+                        dotSmall2.BoundingBox = new Rectangle((int)dotSmall2.Position.X - dotSmall2.BoundingBox.Width / 2, (int)dotSmall2.Position.Y - dotSmall2.BoundingBox.Height / 2, dotSmall2.BoundingBox.Width, dotSmall2.BoundingBox.Height);
+                    }
+                    else if (data == "C")
+                    {
+                        var dotBig2 = dotBig.Copy();
+                        dotBig2.Position = new Vector2(x * TileSize, y * TileSize);
+                        EntityManager.AddEntity(dotBig2);
+                        dotBig2.BoundingBox = new Rectangle((int)dotBig2.Position.X - dotBig2.BoundingBox.Width / 2, (int)dotBig2.Position.Y - dotBig2.BoundingBox.Height / 2, dotBig2.BoundingBox.Width, dotBig2.BoundingBox.Height);
+                    }
+                    else if (data == "R")
+                    {
+                        var ghost = EntityManager.GetEntityByTag<RedGhost>((int)Globals.PacmanTags.RedGhost);
+                        ghost.Position = new Vector2(x * TileSize, y * TileSize);
+                        ghost.BoundingBox = new Rectangle((int)ghost.Position.X - ghost.BoundingBox.Width / 2, (int)ghost.Position.Y - ghost.BoundingBox.Height / 2, ghost.BoundingBox.Width, ghost.BoundingBox.Height);
+                        ghost.Restart();
+                    }
+                    else if (data == "B")
+                    {
+                        var ghost = EntityManager.GetEntityByTag<BlueGhost>((int)Globals.PacmanTags.BlueGhost);
+                        ghost.Position = new Vector2(x * TileSize, y * TileSize);
+                        ghost.BoundingBox = new Rectangle((int)ghost.Position.X - ghost.BoundingBox.Width / 2, (int)ghost.Position.Y - ghost.BoundingBox.Height / 2, ghost.BoundingBox.Width, ghost.BoundingBox.Height);
+                        ghost.Restart();
+                    }
+                    else if (data == "P")
+                    {
+                        var ghost = EntityManager.GetEntityByTag<PinkGhost>((int)Globals.PacmanTags.PinkGhost);
+                        ghost.Position = new Vector2(x * TileSize, y * TileSize);
+                        ghost.BoundingBox = new Rectangle((int)ghost.Position.X - ghost.BoundingBox.Width / 2, (int)ghost.Position.Y - ghost.BoundingBox.Height / 2, ghost.BoundingBox.Width, ghost.BoundingBox.Height);
+                        ghost.Restart();
+                    }
+                    else if (data == "O")
+                    {
+                        var ghost = EntityManager.GetEntityByTag<OrangeGhost>((int)Globals.PacmanTags.OrangeGhost);
+                        ghost.Position = new Vector2(x * TileSize, y * TileSize);
+                        ghost.BoundingBox = new Rectangle((int)ghost.Position.X - ghost.BoundingBox.Width / 2, (int)ghost.Position.Y - ghost.BoundingBox.Height / 2, ghost.BoundingBox.Width, ghost.BoundingBox.Height);
+                        ghost.Restart();
+                    }
                     else if (data == "X")
                     {
-                        // pacman
+                        var pacman = EntityManager.GetEntityByTag<PacmanEntity>((int)Globals.PacmanTags.Pacman);
+                        pacman.Position = new Vector2(x * TileSize, y * TileSize);
+                        pacman.BoundingBox = new Rectangle((int)pacman.Position.X - pacman.BoundingBox.Width /2, (int)pacman.Position.Y - pacman.BoundingBox.Height /  2, pacman.BoundingBox.Width, pacman.BoundingBox.Height);
+                        pacman.Restart();
                     }
                 }
             }
+
+            EntityManager.RemoveEntity(dotSmall.Id);
+            EntityManager.RemoveEntity(dotBig.Id);
 
             // then check wall tile textures.
             for (var x = 0; x < Width; x++)
@@ -127,19 +166,26 @@ namespace Pacman.GameObjects.tiles
             }
         }
 
+        private bool IsWallOrGateTile(int x, int y)
+        {
+            if (x < 0 || x >= Width || y < 0 || y >= Height)
+            {
+                return false;
+            }
+            return Tiles[x, y]?.TileType == (int)Globals.PacmanTiles.WALL || Tiles[x, y]?.TileType == (int)Globals.PacmanTiles.GATE;
+        }
+
         private int GetWallTileTextureIndex(int x, int y)
         {
-            var l = x - 1 < 0       ? false : Tiles[x - 1, y    ]?.TileType == (int)Globals.PacmanTiles.WALL;
-            var r = x + 1 >= Width  ? false : Tiles[x + 1, y    ]?.TileType == (int)Globals.PacmanTiles.WALL;
-            var t = y - 1 < 0       ? false : Tiles[x    , y - 1]?.TileType == (int)Globals.PacmanTiles.WALL;
-            var b = y + 1 >= Height ? false : Tiles[x    , y + 1]?.TileType == (int)Globals.PacmanTiles.WALL;
+            var l = IsWallOrGateTile(x - 1, y    );
+            var r = IsWallOrGateTile(x + 1, y    );
+            var t = IsWallOrGateTile(x    , y - 1);
+            var b = IsWallOrGateTile(x    , y + 1);
 
-            var tl = x - 1 < 0 || y - 1 < 0 ? false : Tiles[x - 1, y - 1]?.TileType == (int)Globals.PacmanTiles.WALL;
-            var tr = x + 1 >= Width || y - 1 < 0 ? false : Tiles[x + 1, y - 1]?.TileType == (int)Globals.PacmanTiles.WALL;
-            var bl = x - 1 < 0 || y + 1 >= Height ? false : Tiles[x - 1, y + 1]?.TileType == (int)Globals.PacmanTiles.WALL;
-            var br = x + 1 >= Width || y + 1 >= Height ? false : Tiles[x + 1, y + 1]?.TileType == (int)Globals.PacmanTiles.WALL;
-
-            var tz = Globals.PACMAN_TILESIZE;
+            var tl = IsWallOrGateTile(x - 1, y - 1);
+            var tr = IsWallOrGateTile(x + 1, y - 1);
+            var bl = IsWallOrGateTile(x - 1, y + 1);
+            var br = IsWallOrGateTile(x + 1, y + 1);
 
             // no neighbours = single dot
             if (!t && !r && !b && !l)

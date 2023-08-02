@@ -25,6 +25,16 @@ namespace GameEngine.Core.GameEngine.Window
             RenderTargetDestination = GetRenderTargetDestination(GameResolution, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
         }
 
+        public float GetHorizontalCenter()
+        {
+            return GameResolution.X / 2;
+        }
+
+        public float GetVerticalCenter()
+        {
+            return GameResolution.Y / 2;
+        }
+
         public void StartDrawToRenderTarget(SpriteBatch spriteBatch)
         {
             Graphics.GraphicsDevice.SetRenderTarget(RenderTarget);

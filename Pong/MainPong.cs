@@ -191,7 +191,8 @@ namespace Pong
             }
 #endif
 
-            if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11))
+            if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11)
+                || _keyboardState.IsKeyDown(Keys.I) && !_lastKeyboardState.IsKeyDown(Keys.I))
             {
                 _window.ToggleFullScreen();
             }

@@ -7,4 +7,10 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="GameEngine\Pathfinding\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GameEngine\Pathfinding\" />
+  </ItemGroup>
 </Project>

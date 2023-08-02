@@ -1,28 +1,46 @@
 ﻿using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.Pathfinding;
 using GameEngine.Core.GameEngine.Sprites;
+using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Pacman.GameObjects.tiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pacman.GameObjects
 {
+    public enum PacmanDirection
+    {
+        right = 0,
+        down = 1,
+        left = 2,
+        up = 3
+    }
+
     public class PacmanEntity : Entity
     {
         SpriteAnimation EatAnimation;
         SpriteAnimation DeathAnimation;
         private int AnimationState = 0; // 0 = eat, 1 = death
-        private int Direction = 0; // 0 = right, 1 = down, 2 = left, 3 = up
+        public PacmanDirection Direction = PacmanDirection.right;
         private float rotation = 0f; // in radians
+        private bool stopped = true;
+        private PacmanPathfinding Pathfinding;
+        private List<PathNode> path;
+        private bool gameStarted = false;
+        private float invulnerable = 0f;
 
-        public PacmanEntity(Vector2 position, Texture2D texture) 
-            : base(position, new Rectangle((int)position.X, (int)position.Y, 16, 16), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.PACMAN_SPEED, null, (int)Globals.PacmanTags.Pacman)
+        public PacmanEntity(Vector2 position, Texture2D texture, PacmanPathfinding pathfinding) 
+            : base(position, new Rectangle((int)position.X, (int)position.Y, 10, 10), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.PACMAN_SPEED, null, (int)Globals.PacmanTags.Pacman)
         {
+            Pathfinding = pathfinding;
             var pacmanEat = new Rectangle[3];
             pacmanEat[0] = new Rectangle(0, 0, 16, 16);
             pacmanEat[1] = new Rectangle(16, 0, 16, 16);
@@ -40,6 +58,22 @@ namespace Pacman.GameObjects
             pacmanDeath[7] = new Rectangle(160, 0, 16, 16);
             pacmanDeath[8] = new Rectangle(176, 0, 16, 16);
             DeathAnimation = new SpriteAnimation(texture, 0, 10, false, pacmanDeath);
+
+            PacmanEventSystem.OnBigDotPicked += OnBigDotPicked;
+        }
+
+        private void OnBigDotPicked()
+        {
+            invulnerable = 15;
+            Speed = Globals.PACMAN_SPEED_WHEN_INVULNERABLE;
+        }
+
+        public void Restart()
+        {
+            AnimationState = 0;
+            Direction = PacmanDirection.right;
+            rotation = 0f;
+            stopped = true;
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -53,8 +87,19 @@ namespace Pacman.GameObjects
             }
         }
 
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D debugTexture, Color debugColor, Color debugColor2)
+        {
+            if (path != null && path.Any())
+            {
+                Pathfinding.DrawPath(path);
+            }
+            base.DebugDraw(spriteBatch, debugTexture, debugColor, debugColor2);
+        }
+
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
+            var lastGameStarted = gameStarted;
+
             if (AnimationState == 0)
             {
                 EatAnimation.Update(gameTime);
@@ -66,28 +111,134 @@ namespace Pacman.GameObjects
 
             if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
             {
-                Direction = 3;
+                Direction = PacmanDirection.up;
                 rotation = MathHelper.ToRadians(270);
                 HorizontalFlipped = false;
+                stopped = false;
+                gameStarted = true;
             }
             if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
             {
-                Direction = 1;
+                Direction = PacmanDirection.down;
                 rotation = MathHelper.ToRadians(90);
                 HorizontalFlipped = false;
+                stopped = false;
+                gameStarted = true;
             }
             if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.A))
             {
-                Direction = 2;
+                Direction = PacmanDirection.left;
                 rotation = 0;
                 HorizontalFlipped = true;
+                stopped = false;
             }
             if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
             {
-                Direction = 0;
+                Direction = PacmanDirection.right;
                 rotation = 0;
                 HorizontalFlipped = false;
+                stopped = false;
+                gameStarted = true;
             }
+
+            if (!stopped && (path == null || !path.Any()))
+            {
+                var pos = new Point(
+                        (int)Math.Round(Position.X / Globals.PACMAN_TILESIZE),
+                        (int)Math.Round(Position.Y / Globals.PACMAN_TILESIZE));
+                Point target = new Point(-1, -1);
+
+                if (Direction ==  PacmanDirection.right)
+                {
+                    target = new Point(pos.X + 1, pos.Y);
+                } else if (Direction == PacmanDirection.left)
+                {
+                    target = new Point(pos.X - 1, pos.Y);
+                }
+                else if (Direction == PacmanDirection.up)
+                {
+                    target = new Point(pos.X, pos.Y  - 1);
+                }
+                else if (Direction == PacmanDirection.down)
+                {
+                    target = new Point(pos.X, pos.Y + 1);
+                }
+
+                if (target.X != -1 && target.Y != -1)
+                {
+                    path = Pathfinding.GetPath(pos, target);
+                    if (path != null && path.Any())
+                    {
+                        stopped = false;
+                    }
+                } else
+                {
+                    stopped = true;
+                }
+            }
+
+            if (path != null && path.Any() && !stopped)
+            {
+                var targetNode = path.FirstOrDefault();
+                if (targetNode != null)
+                {
+                    MoveTowardsPosition(targetNode.Position, gameTime);
+                    if (Vector2.Distance(Position, targetNode.Position) < 0.1f)
+                    {
+                        Position = targetNode.Position;
+                        path.RemoveAt(0);
+                    }
+                    BoundingBox = new Rectangle(
+                        (int)Position.X - BoundingBox.Width / 2,
+                        (int)Position.Y - BoundingBox.Height / 2,
+                        BoundingBox.Width,
+                        BoundingBox.Height);
+                }
+            }
+
+            if (gameStarted && !lastGameStarted)
+            {
+                Globals.GameStarted = true;
+            }
+
+            if (invulnerable >= 0)
+            {
+                invulnerable -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (invulnerable <= 0)
+                {
+                    Speed = Globals.PACMAN_SPEED;
+                }
+            }
+        }
+
+        private void MoveTowardsPosition(Vector2 pos, GameTime gameTime)
+        {
+            var velocity = new Vector2(0, 0);
+            if (pos.X == Position.X)
+            {
+                // vertical
+                if (Position.Y < pos.Y)
+                {
+                    velocity.Y += 1;
+                }
+                else
+                {
+                    velocity.Y -= 1;
+                }
+            }
+            else
+            {
+                // horizontal
+                if (Position.X < pos.X)
+                {
+                    velocity.X += 1;
+                }
+                else
+                {
+                    velocity.X -= 1;
+                }
+            }
+            Position += velocity * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
     }
 }

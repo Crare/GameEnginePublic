@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.SpriteManagement;
+﻿using GameEngine.Core.GameEngine.Utils;
+using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -39,8 +40,9 @@ namespace GameEngine.Core.EntityManagement
 
         public virtual void DebugDraw(SpriteBatch spriteBatch, Texture2D debugTexture, Color debugColor, Color debugColor2)
         {
+            GameDebug.DrawRectangle(BoundingBox, debugColor, false);
             //graphics.GraphicsDevice.DrawIndexedPrimitives
-            spriteBatch.Draw(debugTexture, BoundingBox, debugColor);
+            //spriteBatch.Draw(debugTexture, BoundingBox, debugColor);
             spriteBatch.Draw(debugTexture, new Rectangle((int)Position.X-1, (int)Position.Y-1, 2, 2), debugColor2);
         }
 

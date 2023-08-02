@@ -20,7 +20,8 @@ namespace Pacman.GameObjects.tiles
         {
             textDrawer.Draw($"{WallNeighbourIndex}",
                 Position,
-                HorizontalAlignment.Center);
+                HorizontalAlignment.Center,
+                VerticalAlignment.Middle);
         }
     }
 }

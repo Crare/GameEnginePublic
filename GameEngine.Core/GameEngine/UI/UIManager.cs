@@ -1,24 +1,21 @@
 ﻿using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameEngine.Core.GameEngine.UI
 {
     public class UIManager
     {
-        private int lastUIElementId = 0;
-        private List<UIElement> uiElements = new();
+        internal int lastUIElementId = 0;
+        internal List<UIElement> uiElements = new();
         // TODO: maybe do UIElementContainer to visualize group of UI-elements.
 
-        private DebugMouse debugMouse = new();
+        internal DebugMouse debugMouse = new();
 
-        SpriteBatch SpriteBatch;
-        TextDrawer TextDrawer;
+        public SpriteBatch SpriteBatch;
+        public TextDrawer TextDrawer;
 
         public UIManager(SpriteBatch spriteBatch, TextDrawer textDrawer) {
             SpriteBatch = spriteBatch;
@@ -37,7 +34,7 @@ namespace GameEngine.Core.GameEngine.UI
             uiElements = uiElements.Where(e => e.Id != element.Id).ToList();
         }
 
-        public void UpdateUIElements(GameTime gameTime)
+        public virtual void UpdateUIElements(GameTime gameTime)
         {
             uiElements.ForEach(uiElement =>
             {
@@ -45,7 +42,7 @@ namespace GameEngine.Core.GameEngine.UI
             });
         }
 
-        public void DrawUIElements()
+        public virtual void DrawUIElements()
         {
             uiElements.ForEach(uiElement =>
             {
@@ -53,7 +50,7 @@ namespace GameEngine.Core.GameEngine.UI
             });
         }
 
-        public void DebugDrawUIElements(Texture2D debugTexture, Color debugColor, Color debugColor2)
+        public virtual void DebugDrawUIElements(Texture2D debugTexture, Color debugColor, Color debugColor2)
         {
             uiElements.ForEach(uiElement =>
             {

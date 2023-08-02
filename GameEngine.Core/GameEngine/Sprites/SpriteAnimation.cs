@@ -6,14 +6,12 @@ namespace GameEngine.Core.GameEngine.Sprites
 {
     public class SpriteAnimation
     {
-        private Texture2D Texture;
+        public Texture2D Texture;
         private int Frame;
         private float Timer;
         private float FrameThreshold;
         private bool IsLooping;
         private Rectangle[] SourceRectangles;
-
-        // TODO: generate sourceRectangles based on dimension and amount of frames.
 
         public SpriteAnimation(Texture2D texture, int startingFrame, float frameRate, bool isLooping, Rectangle[] sourceRectangles)
         {
@@ -22,6 +20,33 @@ namespace GameEngine.Core.GameEngine.Sprites
             FrameThreshold = (1000 / frameRate);
             IsLooping = isLooping;
             SourceRectangles = sourceRectangles;
+        }
+
+        /// <summary>
+        /// this works if we know all the tiles from spritesheet are used for this animation.
+        /// </summary>
+        public SpriteAnimation(Texture2D texture, int startingFrame, float frameRate, bool isLooping, int spriteSheetColumns, int spriteSheetRows)
+        {
+            Texture = texture;
+            Frame = startingFrame;
+            FrameThreshold = (1000 / frameRate);
+            IsLooping = isLooping;
+            SetupSourceRectangles(spriteSheetColumns, spriteSheetRows);
+        }
+
+        private void SetupSourceRectangles(int columns, int rows)
+        {
+            var spriteWidth = Texture.Width / columns;
+            var spriteHeight = Texture.Height / rows;
+            SourceRectangles = new Rectangle[columns * rows];
+            var i = 0;
+            for (var row = 0; row < rows; row++)
+            {
+                for(var col = 0; col < columns; col++)
+                {
+                    SourceRectangles[i] = new Rectangle(columns * spriteWidth, rows * spriteHeight, spriteWidth, spriteHeight);
+                }
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position, bool flipHorizontally, float depthLayer)

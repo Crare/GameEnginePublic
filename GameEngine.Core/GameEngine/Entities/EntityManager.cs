@@ -28,6 +28,7 @@ namespace GameEngine.Core.EntityManagement
         {
             entity.Id = NewEntityId();
             entities.Add(entity);
+            entities = entities.OrderBy(e => e.DepthLayer).ToList();
         }
 
         public long NewEntityId()
