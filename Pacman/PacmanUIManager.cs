@@ -118,8 +118,30 @@ namespace Pacman
             var gameOverElements = new List<UIElement>()
             {
                 ScoreText,
-                TimeText
-            };
+                TimeText,
+                new UITextElement(
+                    "GAME OVER",
+                    Theme.Title,
+                    graphics,
+                    new Rectangle(
+                        (int)window.GetHorizontalCenter() - 50,
+                        150,
+                        100, 40
+                    ),
+                    (float)Globals.SpriteLayers.UI
+                ),
+                new UITextElement(
+                "Press Escape to go back to menu",
+                Theme.Text,
+                graphics,
+                new Rectangle(
+                    (int)window.GetHorizontalCenter(),
+                    100,
+                    100, 40
+                ),
+                (float)Globals.SpriteLayers.UI
+            )
+        };
 
             HighscoresText1 = new UITextElement(
                 "no scores yet",
@@ -220,7 +242,7 @@ namespace Pacman
                     theme,
                     (float)Globals.SpriteLayers.UI,
                     null,
-                    () => GameStats.Instance.SaveNewHighScore(InputText),
+                    SaveNewScore,
                     (int)Globals.PacmanSoundEffects.buttonClick,
                     true // disabled
                 );
@@ -273,6 +295,12 @@ namespace Pacman
             PacmanEventSystem.OnSmallDotPicked += ScoreChanged;
             PacmanEventSystem.OnGhostEaten += ScoreChanged;
             PacmanEventSystem.OnGameStateChanged += UpdateHighscoresText;
+        }
+
+        private void SaveNewScore()
+        {
+            GameStats.Instance.SaveNewHighScore(InputText);
+            UpdateInputText("");
         }
 
         private void ScoreChanged()
