@@ -4,12 +4,8 @@
 
 ## DOING:
 
-- redo pathfinding
 - center pacman game / move the level in  center of view (camera offset?)
-- highscores, saving and showing
 - going around level's edge doesn't loop yet, but  creates a  infinite loop.
-- add sounds
-- particles when eating other entities
 
 - more levels: LevelManager to handle loading and saving levels and changing them.
 - change level
