@@ -5,6 +5,7 @@ using System.Linq;
 using GameEngine.Core.GameEngine.TileMap;
 using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace GameEngine.Core.GameEngine.Pathfinding
 {
@@ -19,72 +20,21 @@ namespace GameEngine.Core.GameEngine.Pathfinding
         EightNeighbours
     }
 
-    public class PathfindingNode
-    {
-        public int X, Y;
-        /// <summary>
-        /// gScore[n] is the cost of the cheapest path from start to n currently known.
-        /// </summary>
-        public float gScore;
-        /// <summary>
-        /// fScore[n] represents our current best guess as to
-        /// how cheap a path could be from start to finish if it goes through n.
-        /// </summary>
-        public float fScore;
-
-        public PathfindingNode Parent;
-
-        public PathfindingNode(PathNode node, float weight = 1)
-        {
-            X = node.X;
-            Y = node.Y;
-            Parent = null;
-            DistanceToTarget = -1;
-            Cost = 1;
-            Weight = weight;
-        }
-
-        public PathfindingNode(int x, int y, float weight, PathfindingNode parent)
-        {
-            X = x;
-            Y = y;
-            Parent = parent;
-            DistanceToTarget = -1;
-            Cost = 1;
-            Weight = weight;
-        }
-
-        public float DistanceToTarget;
-        public float Cost;
-        public float Weight;
-        public float F
-        {
-            get
-            {
-                if (DistanceToTarget != -1 && Cost != -1)
-                    return DistanceToTarget + Cost;
-                else
-                    return -1;
-            }
-        }
-
-    }
-
     public class Pathfinding<TTile> where TTile : Tile
-	{
+    {
         public PathNode[,] PathNodes;
-		internal TileMap<TTile> TileMap;
+        internal TileMap<TTile> TileMap;
         internal int[] OpenTileTypes;
 
         internal List<PathNode> debugPath;
-        internal Point debugPathStart = new Point(1, 1);
-        internal Point debugPathEnd = new Point(17, 19);
+        internal Point debugPathStart = new(1, 1);
+        internal Point debugPathEnd = new(17, 19);
 
-		public Pathfinding(TileMap<TTile> tileMap, int[] openTileTypes)
-		{
-			TileMap = tileMap;
-			OpenTileTypes = openTileTypes;
-		}
+        public Pathfinding(TileMap<TTile> tileMap, int[] openTileTypes)
+        {
+            TileMap = tileMap;
+            OpenTileTypes = openTileTypes;
+        }
 
         public void SetDebugPathStart(Point point)
         {
@@ -102,7 +52,8 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             if (debugPath == null)
             {
                 Debug.WriteLine("no debug path found");
-            } else
+            }
+            else
             {
                 Debug.WriteLine($"got debug path with length of {debugPath.Count}");
             }
@@ -113,9 +64,9 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             DrawPath(debugPath);
         }
 
-        public void DrawPath(List<PathNode> path,  Color color = default, int offset = 0)
+        public void DrawPath(List<PathNode> path, Color color = default, int offset = 0)
         {
-            if (path == null || !path.Any())
+            if (path == null || !path.Any())
             {
                 return;
             }
@@ -124,7 +75,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
 
             for (var i = 0; i < path.Count; i++)
             {
-                if (i == path.Count-1)
+                if (i == path.Count - 1)
                 {
                     return;
                 }
@@ -141,7 +92,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
         public void DrawDebugNodes(bool drawCoordinates = false)
         {
             var rectPadding = 5;
-            var blue = new Color(0f,0f,0.8f,0.9f);
+            var blue = new Color(0f, 0f, 0.8f, 0.9f);
             var green = new Color(0f, 0.8f, 0f, 0.9f);
             for (var y = 0; y < TileMap.Height; y++)
             {
@@ -177,7 +128,8 @@ namespace GameEngine.Core.GameEngine.Pathfinding
                     {
                         if (node.Neighbours.Any())
                         {
-                            node.Neighbours.ForEach(n => {
+                            node.Neighbours.ForEach(n =>
+                            {
                                 if (n.X > node.X || n.Y > node.Y)
                                 {
                                     // draw only lines to neighbours left and down.
@@ -193,20 +145,20 @@ namespace GameEngine.Core.GameEngine.Pathfinding
 
         public void Init()
         {
-			PathNodes = new PathNode[TileMap.Width, TileMap.Height]; 
+            PathNodes = new PathNode[TileMap.Width, TileMap.Height];
 
-			// create path nodes
+            // create path nodes
             for (var y = 0; y < TileMap.Height; y++)
-			{
+            {
                 for (var x = 0; x < TileMap.Width; x++)
                 {
-					if (OpenTileTypes.Any(t => t == TileMap.Tiles[x,y]?.TileType))
-					{
-						PathNodes[x, y] = new PathNode(
-                            new Vector2(x *  TileMap.TileSize, y  * TileMap.TileSize),
+                    if (OpenTileTypes.Any(t => t == TileMap.Tiles[x, y]?.TileType))
+                    {
+                        PathNodes[x, y] = new PathNode(
+                            new Vector2(x * TileMap.TileSize, y * TileMap.TileSize),
                             x,
                             y);
-					}
+                    }
                 }
             }
 
@@ -217,7 +169,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
                 {
                     if (OpenTileTypes.Any(t => t == TileMap.Tiles[x, y]?.TileType))
                     {
-						PathNodes[x, y].SetNeighbours(GetNeighbouringPathNodes(x, y));
+                        PathNodes[x, y].SetNeighbours(GetNeighbouringPathNodes(x, y));
                     }
                 }
             }
@@ -228,7 +180,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             if (pathFindingType == PathFindingType.AStarPathfinding)
             {
                 var bb = TileMap.WorldPositionToTilePosition(b);
-                return AStarPathfinding(a, bb, checkNeighbours);
+                return AStarPathfindingGetPath(a, bb, checkNeighbours);
             }
             return null;
         }
@@ -238,7 +190,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             if (pathFindingType == PathFindingType.AStarPathfinding)
             {
                 var aa = TileMap.WorldPositionToTilePosition(a);
-                return AStarPathfinding(aa, b, checkNeighbours);
+                return AStarPathfindingGetPath(aa, b, checkNeighbours);
             }
             return null;
         }
@@ -249,7 +201,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             {
                 var aa = TileMap.WorldPositionToTilePosition(a);
                 var bb = TileMap.WorldPositionToTilePosition(b);
-                return AStarPathfinding(aa, bb, checkNeighbours);
+                return AStarPathfindingGetPath(aa, bb, checkNeighbours);
             }
             return null;
         }
@@ -258,7 +210,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
         {
             if (pathFindingType == PathFindingType.AStarPathfinding)
             {
-                return AStarPathfinding(a, b, checkNeighbours);
+                return AStarPathfindingGetPath(a, b, checkNeighbours);
             }
             return null;
         }
@@ -273,11 +225,11 @@ namespace GameEngine.Core.GameEngine.Pathfinding
         {
             Point furthestPoint = point;
             var distance = 0f;
-            for (int y = 0;  y < TileMap.Height; y++)
+            for (int y = 0; y < TileMap.Height; y++)
             {
                 for (int x = 0; x < TileMap.Width; x++)
                 {
-                    if (PathNodes[x,y] != null)
+                    if (PathNodes[x, y] != null)
                     {
                         var node = PathNodes[x, y];
                         if (Distance(point.X, point.Y, node.X, node.Y) > distance)
@@ -291,120 +243,26 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             return furthestPoint;
         }
 
-        private float Distance(int aX, int aY,  int bX, int bY)
+        private List<PathNode> AStarPathfindingGetPath(Point a, Point b, CheckNeighbours checkNeighbours = CheckNeighbours.FourNeighbours)
+        {
+            return AStarPathfinding.GetPath(PathNodes, new GridPoint(a.X, a.Y), new GridPoint(b.X, b.Y), checkNeighbours);
+        }
+
+        private float Distance(int aX, int aY, int bX, int bY)
         {
             return Math.Abs(aX - bX) + Math.Abs(aY - bY);
         }
-
-        private List<PathNode> AStarPathfinding(Point a, Point b, CheckNeighbours checkNeighbours = CheckNeighbours.FourNeighbours)
+        
+        private List<PathNode> GetNeighbouringPathNodes(int x, int y)
         {
-            PathfindingNode start = new(PathNodes[a.X, a.Y]);
-            PathfindingNode goal = PathNodes[b.X, b.Y] != null ? new PathfindingNode(PathNodes[b.X, b.Y]) : null;
-            if (goal ==  null)
-            {
-                return null;
-            }
-
-            Stack<PathNode> Path = new();
-            PriorityQueue<PathfindingNode, float> OpenList = new();
-            List<PathfindingNode> ClosedList = new();
-            List<PathfindingNode> neighbours;
-            PathfindingNode current = start;
-
-            // add start node to Open List
-            OpenList.Enqueue(start, start.F);
-
-            while (OpenList.Count != 0 && !ClosedList.Exists(node => node.X == goal.X && node.Y == goal.Y))
-            {
-                current = OpenList.Dequeue();
-                ClosedList.Add(current);
-                neighbours = GetNeighbours(current.X, current.Y, checkNeighbours);
-
-                foreach (PathfindingNode neighbour in neighbours)
-                {
-                    if (!ClosedList.Contains(neighbour))
-                    {
-                        bool isFound = false;
-                        foreach (var oLNode in OpenList.UnorderedItems)
-                        {
-                            if (oLNode.Element == neighbour)
-                            {
-                                isFound = true;
-                            }
-                        }
-                        if (!isFound && !ClosedList.Any(c => c == neighbour) && !OpenList.UnorderedItems.Any(o => o.Element == neighbour))
-                        {
-                            neighbour.Parent = current;
-                            neighbour.DistanceToTarget = Distance(neighbour.X, neighbour.Y, goal.X, goal.Y);
-                            neighbour.Cost = neighbour.Weight + neighbour.Parent.Cost;
-                            OpenList.Enqueue(neighbour, neighbour.F);
-                        }
-                    }
-                }
-            }
-
-            // construct path, if end was not closed return null
-            if (!ClosedList.Exists(n => n.X == goal.X  && n.Y == goal.Y))
-            {
-                return null;
-            }
-
-            // if all good, return path
-            PathfindingNode temp = ClosedList[ClosedList.IndexOf(current)];
-            if (temp == null) return null;
-            do
-            {
-                Path.Push(PathNodes[temp.X,temp.Y]);
-                temp = temp.Parent;
-            } while (temp != start && temp != null);
-
-            return Path.ToList();
-        }
-
-        private List<PathfindingNode> GetNeighbours(int x, int y, CheckNeighbours checkNeighbours)
-        {
-            List<PathfindingNode> neighbours = new();
+            List<PathNode> neighbours = new();
 
             // left
             if (x - 1 > 0 && PathNodes[x - 1, y] != null)
             {
-                neighbours.Add(new PathfindingNode(PathNodes[x - 1, y]));
+                neighbours.Add(PathNodes[x - 1, y]);
             }
             // right
-            if (x + 1 < TileMap.Width && PathNodes[x + 1, y] != null)
-            {
-                neighbours.Add(new PathfindingNode(PathNodes[x + 1, y]));
-            }
-            // up
-            if (y - 1 > 0 && PathNodes[x, y - 1] != null)
-            {
-                neighbours.Add(new PathfindingNode(PathNodes[x, y - 1]));
-            }
-            // down
-            if (y + 1 < TileMap.Height && PathNodes[x, y + 1] != null)
-            {
-                neighbours.Add(new PathfindingNode(PathNodes[x, y + 1]));
-            }
-
-            if (checkNeighbours == CheckNeighbours.EightNeighbours)
-            {
-                // TODO check eight neighbours
-            }
-
-            return neighbours;
-        }
-
-
-        private List<PathNode> GetNeighbouringPathNodes(int x,int y)
-		{
-            List<PathNode> neighbours = new();
-
-			// left
-			if (x-1 > 0 && PathNodes[x-1, y] != null)
-			{
-				neighbours.Add(PathNodes[x - 1, y]);
-			}
-			// right
             if (x + 1 < TileMap.Width && PathNodes[x + 1, y] != null)
             {
                 neighbours.Add(PathNodes[x + 1, y]);
@@ -421,7 +279,7 @@ namespace GameEngine.Core.GameEngine.Pathfinding
             }
 
             return neighbours;
-		}
+        }
 
     }
 }
