@@ -1,6 +1,8 @@
 ﻿using GameEngine.Core.EntityManagement;
 using GameEngine.Core.GameEngine.Audio;
+using GameEngine.Core.GameEngine.Particles;
 using GameEngine.Core.GameEngine.Sprites;
+using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -19,6 +21,7 @@ namespace Pacman.GameObjects
             anim[2] = new Rectangle(32, 0, 16, 16);
             anim[3] = new Rectangle(48, 0, 16, 16);
             SpriteAnimation = new SpriteAnimation(texture, 0, 10, true, anim);
+            particle = new Particle(1, texture, new Vector2(4, 4), Position, Color.White, DepthLayer, anim[0]);
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
@@ -26,6 +29,7 @@ namespace Pacman.GameObjects
             base.Update(gameTime, keyboardState, renderTarget2D, entityManager);
             if (entityManager.IsColliding(this, (int)PacmanTags.Pacman, out var collidedEntity))
             {
+                SpawnParticlesAtPosition(Position, 2);
                 PacmanEventSystem.SmallDotPicked();
                 entityManager.RemoveEntity(Id);
                 //AudioManager.Instance.PlaySound((int)Globals.PacmanSoundEffects.pickupSmallDot);
@@ -48,6 +52,7 @@ namespace Pacman.GameObjects
             anim[1] = new Rectangle(80, 0, 16, 16);
             anim[2] = new Rectangle(96, 0, 16, 16);
             SpriteAnimation = new SpriteAnimation(texture, 0, 5, true, anim);
+            particle = new Particle(1, texture, new Vector2(4, 4), Position, Color.White, DepthLayer, anim[0]);
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
@@ -56,6 +61,7 @@ namespace Pacman.GameObjects
             if (entityManager.IsColliding(this, (int)PacmanTags.Pacman, out var collidedEntity))
             {
                 PacmanEventSystem.BigDotPicked();
+                SpawnParticlesAtPosition(Position, 5);
                 entityManager.RemoveEntity(Id);
                 AudioManager.Instance.PlaySound((int)Globals.PacmanSoundEffects.pickupBigDot);
             }
@@ -70,6 +76,7 @@ namespace Pacman.GameObjects
     public class Dot : Entity
     {
         internal SpriteAnimation SpriteAnimation;
+        internal Particle particle;
 
         public Dot(Vector2 position, Rectangle boundingBox, Globals.PacmanTags tag)
             : base(position, boundingBox, (float)Globals.SpriteLayers.BACKGROUND, 0, null, (int)tag)
@@ -84,6 +91,13 @@ namespace Pacman.GameObjects
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
             SpriteAnimation.Update(gameTime);
+        }
+
+        internal void SpawnParticlesAtPosition(Vector2 position, int amount)
+        {
+            var newParticle = particle.Copy();
+            newParticle.Position = position;
+            ParticleSystem.Instance.Spawn(newParticle, amount, 16, 20);
         }
     }
 }

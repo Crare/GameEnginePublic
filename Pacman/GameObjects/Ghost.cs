@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.Particles;
 using GameEngine.Core.GameEngine.Pathfinding;
 using GameEngine.Core.GameEngine.Sprites;
 using GameEngine.Core.SpriteManagement;
@@ -318,6 +319,7 @@ namespace Pacman.GameObjects
         internal Point StartingPoint;
         internal bool CanUpdatePath = true;
         internal int DebugPathOffset = 0;
+        internal Particle particle;
 
         public Ghost(Vector2 position, Texture2D texture, Color colorTint, PacmanPathfinding pathfinding, EntityManager entityManager, Globals.PacmanTags tag)
             : base(position, new Rectangle((int)position.X, (int)position.Y, 10, 10), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.GHOST_SPEED, null, (int)tag)
@@ -334,6 +336,7 @@ namespace Pacman.GameObjects
             Pathfinding = pathfinding;
             EntityManager = entityManager;
             PacmanEventSystem.OnBigDotPicked += OnBigDotPicked;
+            particle = new Particle(1, texture, new Vector2(4, 4), Position, ColorTint, DepthLayer, anim[0]);
         }
 
         private void OnBigDotPicked()
@@ -343,6 +346,7 @@ namespace Pacman.GameObjects
 
         public virtual void OnDeath()
         {
+            SpawnParticlesAtPosition(Position, 10);
             Position = new Vector2(StartingPoint.X * Globals.PACMAN_TILESIZE, StartingPoint.Y * Globals.PACMAN_TILESIZE);
             timeout = 10;
             Restart();
@@ -459,6 +463,13 @@ namespace Pacman.GameObjects
             {
                 Pathfinding.DrawPath(path, ColorTint, DebugPathOffset);
             }
+        }
+
+        internal void SpawnParticlesAtPosition(Vector2 position, int amount)
+        {
+            var newParticle = particle.Copy();
+            newParticle.Position = position;
+            ParticleSystem.Instance.Spawn(newParticle, amount, 16, 20);
         }
     }
 }

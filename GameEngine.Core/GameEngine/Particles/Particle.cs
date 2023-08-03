@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GameEngine.Core.GameEngine.Particles
 {
-    public class Particle
+    public class Particle // IDisposable?
     {
         /// <summary>
         /// Index is set when the particle is added to the ParticleSystem.

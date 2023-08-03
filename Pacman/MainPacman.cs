@@ -1,6 +1,7 @@
 ﻿using GameEngine.Core.EntityManagement;
 using GameEngine.Core.GameEngine.Audio;
 using GameEngine.Core.GameEngine.FileManagement;
+using GameEngine.Core.GameEngine.Particles;
 using GameEngine.Core.GameEngine.UI;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.GameEngine.Window;
@@ -170,6 +171,7 @@ namespace Pacman
             openTileTypes[2] = (int)Globals.PacmanTiles.GATE;
             _pathfinding = new PacmanPathfinding(_tileMap, openTileTypes);
 
+            ParticleSystem.Instance.Init(_spriteBatch, _graphics);
             GameStats.Instance.LoadHighScores();
 
             base.Initialize();
@@ -322,6 +324,7 @@ namespace Pacman
             {
                 _entityManager.UpdateEntities(gameTime, _keyboardState);
                 _tileMap.UpdateTiles(gameTime);
+                ParticleSystem.Instance.Update(gameTime);
             }
 
             _UIManager.UpdateUIElements(gameTime, _currentGameState);
@@ -340,6 +343,7 @@ namespace Pacman
             {
                 _tileMap.DrawTiles(_spriteBatch);
                 _entityManager.DrawEntities(gameTime);
+                ParticleSystem.Instance.Draw();
             }
 
             if (Globals.DEBUG_DRAW)
