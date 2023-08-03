@@ -36,7 +36,7 @@ namespace Pacman.GameObjects
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
-            if (!Globals.GhostsMoving)
+            if (!Globals.GHOSTS_MOVING)
             {
                 return;
             }
@@ -92,7 +92,7 @@ namespace Pacman.GameObjects
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
-            if (!Globals.GhostsMoving)
+            if (!Globals.GHOSTS_MOVING)
             {
                 return;
             }
@@ -170,7 +170,7 @@ namespace Pacman.GameObjects
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
-            if (!Globals.GhostsMoving)
+            if (!Globals.GHOSTS_MOVING)
             {
                 return;
             }
@@ -250,7 +250,7 @@ namespace Pacman.GameObjects
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
-            if (!Globals.GhostsMoving)
+            if (!Globals.GHOSTS_MOVING)
             {
                 return;
             }
@@ -400,7 +400,7 @@ namespace Pacman.GameObjects
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
-            if (!Globals.GhostsMoving)
+            if (!Globals.GHOSTS_MOVING)
             {
                 return;
             }

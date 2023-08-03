@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.Audio;
 using GameEngine.Core.GameEngine.Pathfinding;
 using GameEngine.Core.GameEngine.Sprites;
 using Microsoft.Xna.Framework;
@@ -95,12 +96,17 @@ namespace Pacman.GameObjects
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
             var lastGameStarted = gameStarted;
+            var lastPosition = Position;
 
-            if (AnimationState == 0)
+            if (AnimationState == 0 && !stopped)
             {
-                EatAnimation.Update(gameTime);
+                var looped = EatAnimation.Update(gameTime);
+                if (looped)
+                {
+                    AudioManager.Instance.PlaySound((int)Globals.PacmanSoundEffects.pacmanMove);
+                }
             }
-            else
+            else if(AnimationState == 1)
             {
                 var animationEnded = DeathAnimation.Update(gameTime);
                 if (animationEnded)
@@ -113,31 +119,23 @@ namespace Pacman.GameObjects
             if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
             {
                 Direction = PacmanDirection.up;
-                rotation = MathHelper.ToRadians(270);
-                HorizontalFlipped = false;
                 stopped = false;
                 gameStarted = true;
             }
             if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
             {
                 Direction = PacmanDirection.down;
-                rotation = MathHelper.ToRadians(90);
-                HorizontalFlipped = false;
                 stopped = false;
                 gameStarted = true;
             }
             if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.A))
             {
                 Direction = PacmanDirection.left;
-                rotation = 0;
-                HorizontalFlipped = true;
                 stopped = false;
             }
             if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
             {
                 Direction = PacmanDirection.right;
-                rotation = 0;
-                HorizontalFlipped = false;
                 stopped = false;
                 gameStarted = true;
             }
@@ -171,6 +169,9 @@ namespace Pacman.GameObjects
                     if (path != null && path.Any())
                     {
                         stopped = false;
+                    }  else
+                    {
+                        stopped = true;
                     }
                 } else
                 {
@@ -199,7 +200,7 @@ namespace Pacman.GameObjects
 
             if (gameStarted && !lastGameStarted)
             {
-                Globals.GhostsMoving = true;
+                Globals.GHOSTS_MOVING = true;
                 PacmanEventSystem.GameStarted();
             }
 
@@ -226,14 +227,53 @@ namespace Pacman.GameObjects
                 {
                     // play death animation, after that we go to GameOver gameState.
                     AnimationState = 1;
-                    Globals.GhostsMoving = false;
+                    Globals.GHOSTS_MOVING = false;
+                    AudioManager.Instance.PlaySound((int)Globals.PacmanSoundEffects.pacmanDeath);
                 } else
                 {
                     var ghost = collidedEntity as Ghost;
                     ghost.OnDeath();
                     GameStats.Instance.PlayerScore += Globals.SCORE_ON_GHOST_EATEN;
                     PacmanEventSystem.GhostEaten();
+                    AudioManager.Instance.PlaySound((int)Globals.PacmanSoundEffects.ghostDeath);
                 }
+            }
+
+            UpdateAnimation(lastPosition);
+        }
+
+        private void UpdateAnimation(Vector2 lastPosition)
+        {
+            if (stopped)
+            {
+                return;
+            }
+
+            var dir = new Vector2(Position.X - lastPosition.X, Position.Y - lastPosition.Y);
+
+            // up
+            if (dir.Y < 0)
+            {
+                rotation = MathHelper.ToRadians(270);
+                HorizontalFlipped = false;
+            }
+            // down
+            if (dir.Y > 0)
+            {
+                rotation = MathHelper.ToRadians(90);
+                HorizontalFlipped = false;
+            }
+            // left
+            if (dir.X < 0)
+            {
+                rotation = 0;
+                HorizontalFlipped = true;
+            }
+            // right
+            if (dir.X > 0)
+            {
+                rotation = 0;
+                HorizontalFlipped = false;
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.GameEngine.Utils;
+﻿using GameEngine.Core.GameEngine.Audio;
+using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -16,9 +17,12 @@ namespace GameEngine.Core.GameEngine.UI
         //public event EventHandler OnPressRelease;
         internal bool IsPressed = false;
         internal bool IsHover = false;
+        internal bool IsDisabled = false;
 
         private Action OnPressCallback;
         private Action OnPressReleasedCallback;
+
+        private int SoundEffectIndex;
 
         public UIButton(
             GraphicsDevice graphics,
@@ -27,7 +31,9 @@ namespace GameEngine.Core.GameEngine.UI
             UITheme theme,
             float layerDepth = 1f,
             Action onPressCallback = null,
-            Action onPressReleasedCallback = null
+            Action onPressReleasedCallback = null,
+            int soundEffectIndex = -1,
+            bool isDisabled = false
             )
             : base(graphics, container, theme.Button.BackgroundColor, layerDepth)
         {
@@ -36,6 +42,8 @@ namespace GameEngine.Core.GameEngine.UI
 
             OnPressCallback = onPressCallback;
             OnPressReleasedCallback = onPressReleasedCallback;
+            SoundEffectIndex = soundEffectIndex;
+            IsDisabled = isDisabled;
         }
 
         public override void Draw(SpriteBatch spriteBatch, TextDrawer textDrawer, GameTime gameTime)
@@ -43,30 +51,41 @@ namespace GameEngine.Core.GameEngine.UI
             // draw box
             spriteBatch.Draw(Texture, 
                 Container,
-                IsPressed
-                    ? Theme.BackgroundColorPressed
-                    : IsHover
-                        ? Theme.BackgroundColorHover
-                        : Theme.BackgroundColor
+                IsDisabled
+                    ? Theme.BackgroundColorDisabled
+                    : IsPressed
+                        ? Theme.BackgroundColorPressed
+                        : IsHover
+                            ? Theme.BackgroundColorHover
+                            : Theme.BackgroundColor
                 );
 
             // draw title over box
             textDrawer.Draw(
                 Text,
                 new Vector2(Container.X + Container.Width / 2, Container.Y + Container.Height / 2),
-                IsPressed
-                    ? Theme.TextColorPressed
-                    : IsHover
-                        ? Theme.TextColorHover
-                        : Theme.TextColor,
-                IsPressed
-                    ? Theme.TextSizePressed
-                    : IsHover
-                        ? Theme.TextSizeHover
-                        : Theme.TextSize,
+                IsDisabled
+                    ? Theme.TextColorDisabled
+                    : IsPressed
+                        ? Theme.TextColorPressed
+                        : IsHover
+                            ? Theme.TextColorHover
+                            : Theme.TextColor,
+                IsDisabled
+                    ? Theme.TextSizeDisabled
+                    : IsPressed
+                        ? Theme.TextSizePressed
+                        : IsHover
+                            ? Theme.TextSizeHover
+                            : Theme.TextSize,
                 HorizontalAlignment.Center,
                 VerticalAlignment.Middle
-                );
+            );
+        }
+
+        public void SetDisabled(bool disabled)
+        {
+            IsDisabled = disabled;
         }
 
         override public void Update(GameTime gameTime)
@@ -102,6 +121,10 @@ namespace GameEngine.Core.GameEngine.UI
 
         private void InvokeOnPressedDown()
         {
+            if (SoundEffectIndex != -1)
+            {
+                AudioManager.Instance.PlaySound(SoundEffectIndex);
+            }
             //var handler = OnPressedDown;
             //if (handler != null)
             //{

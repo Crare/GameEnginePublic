@@ -24,6 +24,10 @@ namespace GameEngine.Core.GameEngine.UI
         /// active color, for gamepad control support
         /// </summary>
         public Color BackgroundColorActive;
+        /// <summary>
+        /// disabled color
+        /// </summary>
+        public Color BackgroundColorDisabled;
 
         //public Color borderColor;
         //public Color borderColor2;
@@ -34,11 +38,13 @@ namespace GameEngine.Core.GameEngine.UI
         public Color TextColorPressed;
         public Color TextColorHover;
         public Color TextColorActive;
+        public Color TextColorDisabled;
 
         public float TextSize;
         public float TextSizePressed;
         public float TextSizeHover;
         public float TextSizeActive;
+        public float TextSizeDisabled;
 
         public HorizontalAlignment HAlign;
         public VerticalAlignment VAlign;
@@ -48,6 +54,7 @@ namespace GameEngine.Core.GameEngine.UI
         public Color BorderColorHover;
         public Color BorderColorPressed;
         public Color BorderColorActive;
+        //public Color BorderColorDisabled;
 
         public int InputPadding;
 

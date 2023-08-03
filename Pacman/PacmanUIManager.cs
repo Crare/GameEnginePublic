@@ -50,8 +50,9 @@ namespace Pacman
                         ),
                     Theme,
                     (float)Globals.SpriteLayers.UI,
-                    default,
-                    PacmanEventSystem.NewGame
+                    null,
+                    PacmanEventSystem.NewGame,
+                    (int)Globals.PacmanSoundEffects.buttonClick
                 ),
                 new UIButton(
                     graphics,
@@ -62,8 +63,10 @@ namespace Pacman
                         100, 40
                         ),
                     Theme,
-                    default,
-                    () => PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.Highscores)
+                    (float)Globals.SpriteLayers.UI,
+                    null,
+                    () => PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.Highscores),
+                    (int)Globals.PacmanSoundEffects.buttonClick
                 ),
                 new UIButton(
                     graphics,
@@ -75,8 +78,9 @@ namespace Pacman
                         ),
                     Theme,
                     (float)Globals.SpriteLayers.UI,
-                    default,
-                    PacmanEventSystem.ExitGame
+                    null,
+                    PacmanEventSystem.ExitGame,
+                    (int)Globals.PacmanSoundEffects.buttonClick
                 )
             };
 
@@ -172,8 +176,9 @@ namespace Pacman
                         ),
                     Theme,
                     (float)Globals.SpriteLayers.UI,
-                    default,
-                    () => PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.MainMenu)
+                    null,
+                    () => PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.MainMenu),
+                    (int)Globals.PacmanSoundEffects.buttonClick
                 ),
 
             };
@@ -181,7 +186,7 @@ namespace Pacman
             InputInitials =
                 new UIInput(
                     InputText,
-                    "John Doe",
+                    "",
                     Theme.Input,
                     graphics,
                     new Rectangle(
@@ -194,18 +199,20 @@ namespace Pacman
                 );
 
             SubmitButton = new UIButton(
-                graphics,
-                "Save",
-                new Rectangle(
-                        (int)window.GetHorizontalCenter() - 100,
-                        (int)window.GetVerticalCenter() + 45,
-                        200,
-                        40),
-                theme,
-                (float)Globals.SpriteLayers.UI,
-                null,
-                () => GameStats.Instance.SaveNewHighScore(InputText)
-            );
+                    graphics,
+                    "Save",
+                    new Rectangle(
+                            (int)window.GetHorizontalCenter() - 100,
+                            (int)window.GetVerticalCenter() + 45,
+                            200,
+                            40),
+                    theme,
+                    (float)Globals.SpriteLayers.UI,
+                    null,
+                    () => GameStats.Instance.SaveNewHighScore(InputText),
+                    (int)Globals.PacmanSoundEffects.buttonClick,
+                    true // disabled
+                );
 
             var newHighscoreElements = new List<UIElement>()
             {
@@ -324,6 +331,7 @@ namespace Pacman
         {
             InputText = newInputText;
             InputInitials.UpdateInputText(InputText);
+            SubmitButton.SetDisabled(InputText.Length <= 0);
         }
     }
 }

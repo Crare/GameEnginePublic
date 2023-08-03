@@ -1,15 +1,18 @@
 ﻿using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.Audio;
 using GameEngine.Core.GameEngine.FileManagement;
 using GameEngine.Core.GameEngine.UI;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.GameEngine.Window;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Pacman.GameObjects;
 using Pacman.GameObjects.tiles;
 using Pacman.Pacman;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Pacman
@@ -43,16 +46,19 @@ namespace Pacman
                 BackgroundColorPressed = new(0, 1f, 1f),
                 BackgroundColorHover = new(0, 0.9f, 0.9f),
                 BackgroundColorActive = new(0, 0.9f, 0.9f),
+                BackgroundColorDisabled = new(0.5f, 0.5f, 0.5f),
 
                 TextColor = new(1f, 1f, 1f),
                 TextColorPressed = new(0.7f, 0.7f, 0.7f),
                 TextColorHover = new(0.5f, 0.5f, 0.5f),
                 TextColorActive = new(0.5f, 0.5f, 0.5f),
+                TextColorDisabled = new Color(0.3f, 0.3f, 0.3f),
 
                 TextSize = 1f,
                 TextSizePressed = 1f,
                 TextSizeHover = 1f,
                 TextSizeActive = 1f,
+                TextSizeDisabled = 1f,
 
                 HAlign = HorizontalAlignment.Center,
                 VAlign = VerticalAlignment.Middle
@@ -119,7 +125,7 @@ namespace Pacman
 
         private void OnNewGame()
         {
-            Globals.GhostsMoving = false;
+            Globals.GHOSTS_MOVING = false;
             _tileMap.LoadLevel(0);
             PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.GameLoop);
         }
@@ -131,7 +137,7 @@ namespace Pacman
 
         private void OnGameOver()
         {
-            Globals.GhostsMoving = false;
+            Globals.GHOSTS_MOVING = false;
 
             if (GameStats.Instance.IsNewHighScore())
             {
@@ -246,7 +252,28 @@ namespace Pacman
             _pathfinding.DebugPath();
 
             // add audio
-            // TODO: AUDIO
+            Dictionary<int, string> soundEffects = new()
+            {
+                {
+                    (int)Globals.PacmanSoundEffects.pacmanDeath, "Audio/pacmanDeath"
+                },
+                {
+                    (int)Globals.PacmanSoundEffects.pacmanMove, "Audio/pacmanMove"
+                },
+                {
+                    (int)Globals.PacmanSoundEffects.buttonClick, "Audio/buttonClick"
+                },
+                {
+                    (int)Globals.PacmanSoundEffects.ghostDeath, "Audio/ghostDeath"
+                },
+                {
+                    (int)Globals.PacmanSoundEffects.pickupBigDot, "Audio/pickupBigDot"
+                },
+                {
+                    (int)Globals.PacmanSoundEffects.pickupSmallDot, "Audio/pickupSmallDot"
+                }
+            };
+            AudioManager.Instance.Init(soundEffects, Content);
 
             //_window.ToggleFullScreen();
             Debug.WriteLine("Loading content done!");

@@ -100,9 +100,10 @@ namespace GameEngine.Core.GameEngine.Sprites
         /// <summary>
         /// Updates the Sprite to next one based on framerate.
         /// </summary>
-        /// <returns>If non looping animation has ended.</returns>
+        /// <returns>If non looping animation has ended. Or animation has looped back to start.</returns>
         public bool Update(GameTime gameTime)
         {
+            var looped = false;
             if (!IsLooping && Frame == SourceRectangles.Length - 1)
             {
                 return true; // indicates animation has ended
@@ -114,13 +115,14 @@ namespace GameEngine.Core.GameEngine.Sprites
                 if (Frame == SourceRectangles.Length)
                 {
                     Frame = 0;
+                    looped = true;
                 }
                 Timer = 0;
             } else
             {
                 Timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             }
-            return false;
+            return looped;
         }
     }
 }

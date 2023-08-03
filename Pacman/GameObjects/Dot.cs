@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.Audio;
 using GameEngine.Core.GameEngine.Sprites;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,6 +28,7 @@ namespace Pacman.GameObjects
             {
                 PacmanEventSystem.SmallDotPicked();
                 entityManager.RemoveEntity(Id);
+                //AudioManager.Instance.PlaySound((int)Globals.PacmanSoundEffects.pickupSmallDot);
             }
         }
 
@@ -55,6 +57,7 @@ namespace Pacman.GameObjects
             {
                 PacmanEventSystem.BigDotPicked();
                 entityManager.RemoveEntity(Id);
+                AudioManager.Instance.PlaySound((int)Globals.PacmanSoundEffects.pickupBigDot);
             }
         }
 
