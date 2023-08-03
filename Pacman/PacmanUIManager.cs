@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using GameEngine.Core.GameEngine.UI;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.GameEngine.Window;
@@ -19,7 +20,9 @@ namespace Pacman
         private UIButton SubmitButton;
         private UITextElement ScoreText;
         private UITextElement TimeText;
-        private UITextElement HighscoresText;
+        private UITextElement HighscoresText1;
+        private UITextElement HighscoresText2;
+        private UITextElement HighscoresText3;
 
         public PacmanUIManager(UITheme theme, SpriteBatch spriteBatch, TextDrawer textDrawer, GraphicsDevice graphics,
             Window window
@@ -114,36 +117,42 @@ namespace Pacman
 
             var gameOverElements = new List<UIElement>()
             {
-                new UITextElement(
-                    "Score: 0",
-                    Theme.Text,
-                    graphics,
-                    new Rectangle(
-                        (int)window.GetHorizontalCenter(),
-                        20,
-                        100, 40
-                    ),
-                    (float)Globals.SpriteLayers.UI
-                ),
-                new UITextElement(
-                    "Time: 0:00:00",
-                    Theme.Text,
-                    graphics,
-                    new Rectangle(
-                        (int)window.GetHorizontalCenter(),
-                        40,
-                        100, 40
-                    ),
-                    (float)Globals.SpriteLayers.UI
-                )
+                ScoreText,
+                TimeText
             };
 
-            HighscoresText = new UITextElement(
+            HighscoresText1 = new UITextElement(
                 "no scores yet",
                     Theme.Text,
                     graphics,
                     new Rectangle(
-                        (int)window.GetHorizontalCenter() - 100,
+                        (int)window.GetHorizontalCenter() - 150,
+                        140,
+                        100, 40
+                    ),
+                    (float)Globals.SpriteLayers.UI,
+                    HorizontalAlignment.Right,
+                    VerticalAlignment.Bottom
+                );
+            HighscoresText2 = new UITextElement(
+                "",
+                    Theme.Text,
+                    graphics,
+                    new Rectangle(
+                        (int)window.GetHorizontalCenter(),
+                        140,
+                        100, 40
+                    ),
+                    (float)Globals.SpriteLayers.UI,
+                    HorizontalAlignment.Right,
+                    VerticalAlignment.Bottom
+                );
+            HighscoresText3 = new UITextElement(
+                "",
+                    Theme.Text,
+                    graphics,
+                    new Rectangle(
+                        (int)window.GetHorizontalCenter() + 100,
                         140,
                         100, 40
                     ),
@@ -165,7 +174,9 @@ namespace Pacman
                     ),
                     (float)Globals.SpriteLayers.UI
                 ),
-                HighscoresText,
+                HighscoresText1,
+                HighscoresText2,
+                HighscoresText3,
                 new UIButton(
                     graphics,
                     "Back",
@@ -229,32 +240,8 @@ namespace Pacman
                     HorizontalAlignment.Center,
                     VerticalAlignment.Middle
                 ),
-                new UITextElement(
-                    "Score: 0",
-                    Theme.Text,
-                    graphics,
-                    new Rectangle(
-                        (int)window.GetHorizontalCenter() - 50,
-                        120,
-                        100, 40
-                    ),
-                    (float)Globals.SpriteLayers.UI,
-                    HorizontalAlignment.Right,
-                    VerticalAlignment.Middle
-                ),
-                new UITextElement(
-                    "Time: 0:00:00",
-                    Theme.Text,
-                    graphics,
-                    new Rectangle(
-                        (int)window.GetHorizontalCenter() - 50,
-                        140,
-                        100, 40
-                    ),
-                    (float)Globals.SpriteLayers.UI,
-                    HorizontalAlignment.Right,
-                    VerticalAlignment.Middle
-                ),
+                ScoreText,
+                TimeText,
                 new UITextElement(
                     "Add your initials:",
                     Theme.Text,
@@ -303,12 +290,20 @@ namespace Pacman
             if (gameState != Globals.PacmanGameState.Highscores) {
                 return;
             }
-            var text = "";
+            var text1 = "name\n\n";
+            var text2 = "score\n\n";
+            var text3 = "time\n\n";
+            var i = 1;
             GameStats.Instance.highScores.ForEach(hs =>
             {
-                text += $"{hs.Name}: {hs.Score} - {hs.ElapsedTime.ToString(@"mm\:ss\:ff")}\n";
+                text1 += $"{i}. {hs.Name}\n";
+                text2 += $"{hs.Score}\n";
+                text3 += $"{hs.ElapsedTime.ToString(@"mm\:ss\:ff")}\n";
+                i++;
             });
-            HighscoresText.SetText(text);
+            HighscoresText1.SetText(text1);
+            HighscoresText2.SetText(text2);
+            HighscoresText3.SetText(text3);
         }
 
         public void UpdateUIElements(GameTime gameTime, Globals.PacmanGameState currentGameState)
@@ -331,7 +326,7 @@ namespace Pacman
         {
             InputText = newInputText;
             InputInitials.UpdateInputText(InputText);
-            SubmitButton.SetDisabled(InputText.Length <= 0);
+            SubmitButton.SetDisabled(!(InputText.Length > 0 && InputText.Length <= 8));
         }
     }
 }

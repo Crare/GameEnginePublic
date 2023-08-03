@@ -340,8 +340,18 @@ namespace Pacman.GameObjects
             Animation = new SpriteAnimation(texture, 0, 10, true, anim);
             Pathfinding = pathfinding;
             EntityManager = entityManager;
-            PacmanEventSystem.OnBigDotPicked += OnBigDotPicked;
             particle = new Particle(1, texture, new Vector2(4, 4), Position, ColorTint, DepthLayer, anim[0]);
+
+            PacmanEventSystem.OnBigDotPicked += OnBigDotPicked;
+            PacmanEventSystem.OnNewGame += OnNewGame;
+        }
+
+        private void OnNewGame()
+        {
+            Position = new Vector2(StartingPoint.X * Globals.PACMAN_TILESIZE, StartingPoint.Y * Globals.PACMAN_TILESIZE);
+            BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width / 2, (int)Position.Y - BoundingBox.Height / 2, BoundingBox.Width, BoundingBox.Height);
+            Restart();
+            path = null;
         }
 
         private void OnBigDotPicked()
@@ -354,6 +364,7 @@ namespace Pacman.GameObjects
             SpawnParticlesAtPosition(Position, 10);
             Position = new Vector2(StartingPoint.X * Globals.PACMAN_TILESIZE, StartingPoint.Y * Globals.PACMAN_TILESIZE);
             timeout = 10;
+            path = null;
             Restart();
         }
 

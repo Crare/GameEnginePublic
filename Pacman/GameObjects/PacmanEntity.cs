@@ -32,6 +32,7 @@ namespace Pacman.GameObjects
         private List<PathNode> path;
         private bool gameStarted = false;
         private float invulnerable = 0f;
+        private Point StartingPoint;
 
         public PacmanEntity(Vector2 position, Texture2D texture, PacmanPathfinding pathfinding) 
             : base(position, new Rectangle((int)position.X, (int)position.Y, 10, 10), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.PACMAN_SPEED, null, (int)Globals.PacmanTags.Pacman)
@@ -56,6 +57,14 @@ namespace Pacman.GameObjects
             DeathAnimation = new SpriteAnimation(texture, 0, 10, false, pacmanDeath);
 
             PacmanEventSystem.OnBigDotPicked += OnBigDotPicked;
+            PacmanEventSystem.OnNewGame += OnNewGame;
+        }
+
+        private void OnNewGame()
+        {
+            Position = new Vector2(StartingPoint.X * Globals.PACMAN_TILESIZE, StartingPoint.Y * Globals.PACMAN_TILESIZE);
+            path = null;
+            Restart();
         }
 
         private void OnBigDotPicked()
@@ -66,6 +75,8 @@ namespace Pacman.GameObjects
 
         public void Restart()
         {
+            StartingPoint = new Point((int)Math.Round(Position.X / Globals.PACMAN_TILESIZE), (int)Math.Round(Position.Y / Globals.PACMAN_TILESIZE));
+
             AnimationState = 0;
             Direction = PacmanDirection.right;
             rotation = 0f;

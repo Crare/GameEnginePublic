@@ -5,7 +5,7 @@ make game collection screen to choose game from?
 ## DOING NOW / NEXT:
 just a space to concentrate on what needs to be done next:
 
-- pacman game
+- UIInput wont get deactive when clicking outside element.
 - pong game needs  small  fixes
 
 ## general

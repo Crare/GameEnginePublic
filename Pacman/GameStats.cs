@@ -103,6 +103,7 @@ namespace Pacman
 
                 highScores = highScores
                     .OrderByDescending(highScores => highScores.Score)
+                    .Take(10)
                     .ToList();
 
                 FileSystem.SaveAsJson(highScoreFileName, highScores); // simple json saving for now.
