@@ -130,19 +130,19 @@ namespace Pacman.GameObjects
                     // try to get path to the position behind of pacman
                     if (pacman.Direction == PacmanDirection.right)
                     {
-                        b.X = Pathfinding.PathNodes[b.X - 1, b.Y] != null ? b.X - 1 : b.X;
+                        b.X = b.X - 1 >= 0 && Pathfinding.PathNodes[b.X - 1, b.Y] != null ? b.X - 1 : b.X;
                     }
                     else if (pacman.Direction == PacmanDirection.left)
                     {
-                        b.X = Pathfinding.PathNodes[b.X + 1, b.Y] != null ? b.X + 1 : b.X;
+                        b.X = b.X + 1 <= Pathfinding.PathNodes.GetUpperBound(0) && Pathfinding.PathNodes[b.X + 1, b.Y] != null ? b.X + 1 : b.X;
                     }
                     if (pacman.Direction == PacmanDirection.up)
                     {
-                        b.Y = Pathfinding.PathNodes[b.X, b.Y + 1] != null ? b.Y + 1 : b.Y;
+                        b.Y = b.Y + 1 <= Pathfinding.PathNodes.GetUpperBound(1) && Pathfinding.PathNodes[b.X, b.Y + 1] != null ? b.Y + 1 : b.Y;
                     }
                     else if (pacman.Direction == PacmanDirection.down)
                     {
-                        b.Y = Pathfinding.PathNodes[b.X, b.Y - 1] != null ? b.Y - 1 : b.Y;
+                        b.Y = b.Y - 1 >= 0 && Pathfinding.PathNodes[b.X, b.Y - 1] != null ? b.Y - 1 : b.Y;
                     }
                     path = Pathfinding.GetPath(a, b);
                 }
@@ -208,11 +208,16 @@ namespace Pacman.GameObjects
                     // try to get path to the position in front of pacman
                     if (pacman.Direction == PacmanDirection.right)
                     {
-                        b.X = Pathfinding.PathNodes[b.X + 1, b.Y] != null ? b.X + 1 : b.X;
+                        if (b.X + 1 <= Pathfinding.PathNodes.GetUpperBound(0)) {
+                            b.X = Pathfinding.PathNodes[b.X + 1, b.Y] != null ? b.X + 1 : b.X;
+                        }
                     }
                     else if (pacman.Direction == PacmanDirection.left)
                     {
-                        b.X = Pathfinding.PathNodes[b.X - 1, b.Y] != null ? b.X - 1 : b.X;
+                        if (b.X - 1 >= 0)
+                        {
+                            b.X = Pathfinding.PathNodes[b.X - 1, b.Y] != null ? b.X - 1 : b.X;
+                        }
                     }
                     if (pacman.Direction == PacmanDirection.up)
                     {

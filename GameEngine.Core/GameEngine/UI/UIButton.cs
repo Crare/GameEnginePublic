@@ -125,21 +125,19 @@ namespace GameEngine.Core.GameEngine.UI
             {
                 AudioManager.Instance.PlaySound(SoundEffectIndex);
             }
-            //var handler = OnPressedDown;
-            //if (handler != null)
-            //{
-            //    handler(this, EventArgs.Empty);
-            //}
+            if (IsDisabled)
+            {
+                return;
+            }
             OnPressCallback?.Invoke();
         }
 
         private void InvokeOnPressRelease()
         {
-            //var handler = OnPressRelease;
-            //if (handler != null)
-            //{
-            //    handler(this, EventArgs.Empty);
-            //}
+            if (IsDisabled)
+            {
+                return;
+            }
             OnPressReleasedCallback?.Invoke();
         }
     }

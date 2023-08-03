@@ -190,6 +190,26 @@ namespace Pacman.GameObjects
                         Position = targetNode.Position;
                         path.RemoveAt(0);
                     }
+
+                    // check looping over level edge. horizontal
+                    if (Position.X / Globals.PACMAN_TILESIZE >= Pathfinding.PathNodes.GetUpperBound(0))
+                    {
+                        Position = new Vector2(0 * Globals.PACMAN_TILESIZE, Position.Y);
+                    }
+                    else if (Position.X / Globals.PACMAN_TILESIZE <= 0)
+                    {
+                        Position = new Vector2(Pathfinding.PathNodes.GetUpperBound(0) * Globals.PACMAN_TILESIZE, Position.Y);
+                    }
+                    // check looping over level edge. vertical
+                    if (Position.Y  / Globals.PACMAN_TILESIZE >= Pathfinding.PathNodes.GetUpperBound(1))
+                    {
+                        Position = new Vector2(Position.X, 0 * Globals.PACMAN_TILESIZE);
+                    }
+                    else if (Position.Y/ Globals.PACMAN_TILESIZE <= 0)
+                    {
+                        Position = new Vector2(Position.X, Pathfinding.PathNodes.GetUpperBound(1) * Globals.PACMAN_TILESIZE);
+                    }
+
                     BoundingBox = new Rectangle(
                         (int)Position.X - BoundingBox.Width / 2,
                         (int)Position.Y - BoundingBox.Height / 2,
