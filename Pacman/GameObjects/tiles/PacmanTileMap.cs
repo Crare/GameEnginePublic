@@ -4,6 +4,7 @@ using GameEngine.Core.GameEngine.TileMap;
 using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Pacman.GameObjects.tiles
@@ -14,6 +15,7 @@ namespace Pacman.GameObjects.tiles
         private string[] Levels;
         private Rectangle[] textureSources;
         private EntityManager EntityManager;
+        private List<Entity> tileMapEntities = new();
 
         public PacmanTileMap(EntityManager entityManager) : base(19, 21, Globals.PACMAN_TILESIZE)
         {
@@ -40,6 +42,15 @@ namespace Pacman.GameObjects.tiles
 
         public void LoadLevel(int level)
         {
+            if (Tiles != null)
+            {
+                tileMapEntities.ForEach(entity =>
+                    EntityManager.RemoveEntity(entity.Id)
+                );
+                tileMapEntities = new();
+                Tiles = new PacmanTile[Width, Height];
+            }
+
             var defaultWallTileTexture = new Rectangle(16, 16, Globals.PACMAN_TILESIZE, Globals.PACMAN_TILESIZE);
             var defaultFloorTileTexture = new Rectangle(48, 64, Globals.PACMAN_TILESIZE, Globals.PACMAN_TILESIZE);
             var defaultGateTileTexture = new Rectangle(64, 64, Globals.PACMAN_TILESIZE, Globals.PACMAN_TILESIZE);
@@ -97,6 +108,7 @@ namespace Pacman.GameObjects.tiles
                         var dotSmall2 = dotSmall.Copy();
                         dotSmall2.Position = new Vector2(x * TileSize, y * TileSize);
                         EntityManager.AddEntity(dotSmall2);
+                        tileMapEntities.Add(dotSmall2);
                         dotSmall2.BoundingBox = new Rectangle((int)dotSmall2.Position.X - dotSmall2.BoundingBox.Width / 2, (int)dotSmall2.Position.Y - dotSmall2.BoundingBox.Height / 2, dotSmall2.BoundingBox.Width, dotSmall2.BoundingBox.Height);
                     }
                     else if (data == "C")
@@ -104,6 +116,7 @@ namespace Pacman.GameObjects.tiles
                         var dotBig2 = dotBig.Copy();
                         dotBig2.Position = new Vector2(x * TileSize, y * TileSize);
                         EntityManager.AddEntity(dotBig2);
+                        tileMapEntities.Add(dotBig2);
                         dotBig2.BoundingBox = new Rectangle((int)dotBig2.Position.X - dotBig2.BoundingBox.Width / 2, (int)dotBig2.Position.Y - dotBig2.BoundingBox.Height / 2, dotBig2.BoundingBox.Width, dotBig2.BoundingBox.Height);
                     }
                     else if (data == "R")
@@ -144,8 +157,8 @@ namespace Pacman.GameObjects.tiles
                 }
             }
 
-            EntityManager.RemoveEntity(dotSmall.Id);
-            EntityManager.RemoveEntity(dotBig.Id);
+            //EntityManager.RemoveEntity(dotSmall.Id);
+            //EntityManager.RemoveEntity(dotBig.Id);
 
             // then check wall tile textures.
             for (var x = 0; x < Width; x++)

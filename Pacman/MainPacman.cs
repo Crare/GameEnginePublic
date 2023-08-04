@@ -213,13 +213,15 @@ namespace Pacman
 
             // assign entities
             var smallDot = new SmallDot(
-                new Vector2(_window.RenderTarget.Width / 2, _window.RenderTarget.Height / 2),
+                // original reference entity, position off the screen
+                new Vector2(_window.RenderTarget.Width, _window.RenderTarget.Height),
                 dotTexture
                 );
             _entityManager.AddEntity(smallDot);
 
             var bigDot = new BigDot(
-                new Vector2(_window.RenderTarget.Width / 2, _window.RenderTarget.Height / 2),
+                // original reference entity, position off the screen
+                new Vector2(_window.RenderTarget.Width, _window.RenderTarget.Height),
                 dotTexture
                 );
             _entityManager.AddEntity(bigDot);
