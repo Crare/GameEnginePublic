@@ -385,7 +385,7 @@ namespace Pacman
                     );
             }
 
-            _UIManager.UpdateUIElements(gameTime, _currentGameState, _camera);
+            _UIManager.UpdateUIElements(gameTime, _currentGameState);
 
             _lastKeyboardState = _keyboardState;
             base.Update(gameTime);
@@ -422,7 +422,7 @@ namespace Pacman
             if (Globals.DEBUG_DRAW)
             {
                 //_UIManager.DebugDrawUIElements(_debugTexture, _debugColor, _debugColor2);
-                _UIManager.DebugDrawUIElements(_currentGameState, _debugTexture, _debugColor, _debugColor2, _camera);
+                _UIManager.DebugDrawUIElements(_currentGameState, _debugTexture, _debugColor, _debugColor2);
             }
 
             // end of UI-draw code
