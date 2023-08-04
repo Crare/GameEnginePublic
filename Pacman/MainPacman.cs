@@ -1,12 +1,12 @@
 ﻿using GameEngine.Core.EntityManagement;
 using GameEngine.Core.GameEngine.Audio;
+using GameEngine.Core.GameEngine.CameraView;
 using GameEngine.Core.GameEngine.FileManagement;
 using GameEngine.Core.GameEngine.Particles;
 using GameEngine.Core.GameEngine.UI;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.GameEngine.Window;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Pacman.GameObjects;
@@ -32,6 +32,7 @@ namespace Pacman
         private KeyboardState _keyboardState;
         private KeyboardState _lastKeyboardState;
         private PacmanUIManager _UIManager;
+        private Camera _camera;
 
         // game specific stuff
         private Texture2D _debugTexture;
@@ -173,6 +174,15 @@ namespace Pacman
 
             ParticleSystem.Instance.Init(_spriteBatch, _graphics);
             GameStats.Instance.LoadHighScores();
+
+            _camera = new()
+            {
+                // center tilemap to view
+                Pos = new Vector2(
+                    (int)(_gameResolution.X / 2 - (_tileMap.Width / 1.2f) * _tileMap.TileSize),
+                    (int)(_gameResolution.Y / 2 - (_tileMap.Height / 3) * _tileMap.TileSize)
+                    )
+            };
 
             base.Initialize();
             Debug.WriteLine("Initialization done!");
@@ -327,7 +337,55 @@ namespace Pacman
                 ParticleSystem.Instance.Update(gameTime);
             }
 
-            _UIManager.UpdateUIElements(gameTime, _currentGameState);
+            if (_keyboardState.IsKeyDown(Keys.NumPad7))
+            {
+                _camera.Zoom += 0.01f;
+            }
+            if (_keyboardState.IsKeyDown(Keys.NumPad9))
+            {
+                _camera.Zoom -= 0.01f;
+            }
+
+            if (_keyboardState.IsKeyDown(Keys.NumPad8))
+            {
+                _camera.Move(new Vector2(0, -1f));
+            }
+            if (_keyboardState.IsKeyDown(Keys.NumPad2))
+            {
+                _camera.Move(new Vector2(0, 1f));
+            }
+            if (_keyboardState.IsKeyDown(Keys.NumPad6))
+            {
+                _camera.Move(new Vector2(1f, 0));
+            }
+            if (_keyboardState.IsKeyDown(Keys.NumPad4))
+            {
+                _camera.Move(new Vector2(-1f, 0));
+            }
+            if (_keyboardState.IsKeyDown(Keys.NumPad5) && !_lastKeyboardState.IsKeyDown(Keys.NumPad5))
+            {
+                Debug.WriteLine(
+                    $"camera pos: '{_camera.Pos}'\n"+
+                    $"camera Zoom: '{_camera.Zoom}'\n"+
+                    $"camera transform.Translation: '{_camera._transform.Translation}'\n" + 
+                    $"camera rotation: '{_camera.Rotation}'\n"
+                    );
+            }
+            if (_keyboardState.IsKeyDown(Keys.NumPad1) && !_lastKeyboardState.IsKeyDown(Keys.NumPad1))
+            {
+                // reset zoom
+                _camera.Zoom = 1f;
+            }
+            if (_keyboardState.IsKeyDown(Keys.NumPad3) && !_lastKeyboardState.IsKeyDown(Keys.NumPad3))
+            {
+                // center tilemap to view
+                _camera.Pos = new Vector2(
+                    (int)(_gameResolution.X / 2 - (_tileMap.Width / 1.2f) * _tileMap.TileSize),
+                    (int)(_gameResolution.Y / 2 - (_tileMap.Height / 3) * _tileMap.TileSize)
+                    );
+            }
+
+            _UIManager.UpdateUIElements(gameTime, _currentGameState, _camera);
 
             _lastKeyboardState = _keyboardState;
             base.Update(gameTime);
@@ -335,7 +393,7 @@ namespace Pacman
 
         protected override void Draw(GameTime gameTime)
         {
-            _window.StartDrawToRenderTarget(_spriteBatch);
+            _window.StartDrawToRenderTarget(_spriteBatch, _camera);
             // draw code below
 
             if (_currentGameState ==  Globals.PacmanGameState.GameLoop
@@ -355,15 +413,20 @@ namespace Pacman
                 //_pathfinding.DrawDebugPath();
             }
 
+            // end of draw code
+            _window.EndDrawToRenderTarget(_spriteBatch, true);
+            _window.StartDrawUIToRenderTarget(_spriteBatch);
+            // UI-draw code below
+
             _UIManager.DrawUIElements(_currentGameState, gameTime);
             if (Globals.DEBUG_DRAW)
             {
                 //_UIManager.DebugDrawUIElements(_debugTexture, _debugColor, _debugColor2);
-                _UIManager.DebugDrawUIElements(_currentGameState, _debugTexture, _debugColor, _debugColor2);
+                _UIManager.DebugDrawUIElements(_currentGameState, _debugTexture, _debugColor, _debugColor2, _camera);
             }
 
-            // end of draw code
-            _window.EndDrawToRenderTarget(_spriteBatch);
+            // end of UI-draw code
+            _window.EndDrawUIToRenderTarget(_spriteBatch);
             _window.DrawToDestination(_spriteBatch);
             base.Draw(gameTime);
         }

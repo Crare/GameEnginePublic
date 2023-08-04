@@ -10,9 +10,6 @@ just a space to concentrate on what needs to be done next:
 
 ## general
 
-- refactor:
-  - Camera-class: offset rendertarget inside the window.
-
 - scaleable windowed mode: https://community.monogame.net/t/handling-user-controlled-window-resizing/7828
   - keeping aspect ratio
   - free aspect ratio mode?

@@ -4,8 +4,6 @@
 
 ## DOING:
 
-- center pacman game / move the level in  center of view (camera offset?)
-
 - more levels: LevelManager to handle loading and saving levels and changing them.
 - change level
 

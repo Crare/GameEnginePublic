@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GameEngine.Core.GameEngine.CameraView;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace GameEngine.Core.GameEngine.Window
@@ -35,14 +36,48 @@ namespace GameEngine.Core.GameEngine.Window
             return RenderTarget.Height / 2;
         }
 
-        public void StartDrawToRenderTarget(SpriteBatch spriteBatch)
+        /// <summary>
+        /// Start draw to render target with camera translation matrix.
+        /// </summary>
+        public void StartDrawToRenderTarget(SpriteBatch spriteBatch, Camera camera = null)
         {
             Graphics.GraphicsDevice.SetRenderTarget(RenderTarget);
             Graphics.GraphicsDevice.Clear(LetterBoxingColor);
+            if (camera != null)
+            {
+                spriteBatch.Begin(SpriteSortMode.BackToFront,
+                        BlendState.AlphaBlend,
+                        null,
+                        null,
+                        null,
+                        null,
+                        camera.get_transformation(RenderTarget.Width, RenderTarget.Height));
+                return;
+            } 
             spriteBatch.Begin();
         }
 
-        public void EndDrawToRenderTarget(SpriteBatch spriteBatch)
+        public void EndDrawToRenderTarget(SpriteBatch spriteBatch, bool drawUIAfter = false)
+        {
+            spriteBatch.End();
+            if (!drawUIAfter)
+            {
+                Graphics.GraphicsDevice.SetRenderTarget(null);
+                Graphics.GraphicsDevice.Clear(LetterBoxingColor);
+            }
+        }
+
+        /// <summary>
+        /// Start draw UI over screen. doesn't use camera translation matrix.
+        /// </summary>
+        public void StartDrawUIToRenderTarget(SpriteBatch spriteBatch)
+        {
+            Graphics.GraphicsDevice.SetRenderTarget(RenderTarget);
+            //Graphics.GraphicsDevice.Clear(LetterBoxingColor);
+            spriteBatch.Begin();
+        }
+
+        public void EndDrawUIToRenderTarget(SpriteBatch spriteBatch)
         {
             spriteBatch.End();
             Graphics.GraphicsDevice.SetRenderTarget(null);
