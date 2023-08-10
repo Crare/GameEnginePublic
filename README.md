@@ -8,9 +8,11 @@ Contains a game of Pong and a core code that is suppose to work for other games 
 
 gameplay. Entities, collision, particles, sounds, particle physics.
 
-![screenshot of pong game with gameplay shown](https://github.com/Crare/GameEnginePublic/blob/main/screenshots/screenshot_pong2.PNG)
+![pong](https://github.com/Crare/GameEnginePublic/blob/main/screenshots/pong_game.gif)
 
-highscores, saving and loading to json when new score is added.
 
-![screenshot of pong game with highscores shown](https://github.com/Crare/GameEnginePublic/blob/main/screenshots/screenshot_pong1.PNG)
+### Pacman
+all previous features as in Pon and tilemap, pathfinding and ui elements.
+
+![pacman](https://github.com/Crare/GameEnginePublic/blob/main/screenshots/pacman1.gif)
 
