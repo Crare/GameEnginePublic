@@ -1,16 +1,17 @@
 ﻿using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.Collision;
+using GameEngine.Core.GameEngine.Sprites;
 using GameEngine.Core.SpriteManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using static Pong.Globals;
 
 namespace Pong
 {
     public class PlayerPaddle : Paddle
     {
         public PlayerPaddle(Sprite sprite, Vector2 position) 
-            : base(sprite, position, PongTags.leftPaddle)
+            : base(sprite, position, Globals.PongTags.leftPaddle)
         {
         }
 
@@ -36,30 +37,30 @@ namespace Pong
 
             // keep in window limits
             float yPos = Position.Y;
-            if (Position.Y > renderTarget2D.Height - BoundingBox.Height / 2)
+            if (Position.Y > renderTarget2D.Height - Collider.BoundingBox.Height / 2)
             {
-                yPos = renderTarget2D.Height - BoundingBox.Height / 2;
+                yPos = renderTarget2D.Height - Collider.BoundingBox.Height / 2;
             }
-            else if (Position.Y < BoundingBox.Height / 2)
+            else if (Position.Y < Collider.BoundingBox.Height / 2)
             {
-                yPos = BoundingBox.Height / 2;
+                yPos = Collider.BoundingBox.Height / 2;
             }
             Position = new Vector2(Position.X, yPos);
 
-            BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width/2, (int)Position.Y- BoundingBox.Height/2, BoundingBox.Width, BoundingBox.Height);
+            Collider.UpdatePosition(Position);
         }
     }
 
     public class AIPaddle : Paddle
     {
         public AIPaddle(Sprite sprite, Vector2 position)
-            : base(sprite, position, PongTags.rightPaddle)
+            : base(sprite, position, Globals.PongTags.rightPaddle)
         {
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
-            var ball = entityManager.GetEntityByTag<Ball>((int)PongTags.ball);
+            var ball = entityManager.GetEntityByTag<Ball>((int)Globals.PongTags.ball);
             if (ball != null)
             {
                 if (ball.Velocity.X > 0) // this is assuming right paddle is AI always. otherwise needs more checks.
@@ -67,11 +68,11 @@ namespace Pong
                     var newPosY = Position.Y;
                     // coming towards right paddle, start moving.
                     var yVelocity = 0;
-                    if (ball.Position.Y > Position.Y + BoundingBox.Height / 2 + 5)
+                    if (ball.Position.Y > Position.Y + Collider.BoundingBox.Height / 2 + 5)
                     {
                         yVelocity = 1;
                     }
-                    if (ball.Position.Y < Position.Y + BoundingBox.Height / 2 - 5)
+                    if (ball.Position.Y < Position.Y + Collider.BoundingBox.Height / 2 - 5)
                     {
                         yVelocity = -1;
                     }
@@ -81,16 +82,16 @@ namespace Pong
 
                     // keep in window limits
                     float yPos = Position.Y;
-                    if (Position.Y > renderTarget2D.Height - BoundingBox.Height / 2)
+                    if (Position.Y > renderTarget2D.Height - Collider.BoundingBox.Height / 2)
                     {
-                        yPos = renderTarget2D.Height - BoundingBox.Height / 2;
+                        yPos = renderTarget2D.Height - Collider.BoundingBox.Height / 2;
                     }
-                    else if (Position.Y < BoundingBox.Height / 2)
+                    else if (Position.Y < Collider.BoundingBox.Height / 2)
                     {
-                        yPos = BoundingBox.Height / 2;
+                        yPos = Collider.BoundingBox.Height / 2;
                     }
                     Position = new Vector2(Position.X, yPos);
-                    UpdateBoundingBoxPosition();
+                    Collider.UpdatePosition(Position);
                 }
                 else
                 {
@@ -108,28 +109,37 @@ namespace Pong
 
                     newPosY = newPosY + yVelocity * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     Position = new Vector2(Position.X, newPosY);
-                    UpdateBoundingBoxPosition();
+                    Collider.UpdatePosition(Position);
                 }
             }
         }
     }
 
-    public class Paddle : Entity
+    public class Paddle : Entity, IHasSprite, ICollidable
     {
         internal Vector2 startingPosition;
+        public Sprite Sprite { get; set; }
+        public bool HorizontalFlipped { get; set; }
+        public BoxCollider Collider { get; set; }
+        public float DepthLayer { get ; set; }
+        public float Speed { get; set; }
 
-        public Paddle(Sprite sprite, Vector2 position, PongTags tag)
-            : base(position, new Rectangle((int)position.X - 8, (int)position.Y - 48, 16, 96), (float)SpriteLayers.PLAYER, PADDLE_BASE_SPEED, sprite, (int)tag)
+        public Paddle(Sprite sprite, Vector2 position, Globals.PongTags tag)
+            : base(position, (int)tag)
         {
             startingPosition = position;
+            Collider = new BoxCollider(new Rectangle((int)position.X, (int)position.Y, 16, 96));
+            Sprite = sprite;
+            Speed = Globals.PADDLE_BASE_SPEED;
 
             PongEventSystem.OnGameOver += OnGameOver;
+            DepthLayer = (float)Globals.SpriteLayers.PLAYER;
         }
 
         private void OnGameOver()
         {
             Position = startingPosition;
-            BoundingBox =new Rectangle((int)Position.X - 8, (int)Position.Y - 48, 16, 96);
+            Collider.UpdatePosition(Position);
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -141,9 +151,13 @@ namespace Pong
                 HorizontalFlipped);
         }
 
-        internal void UpdateBoundingBoxPosition()
+        public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
-            BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width / 2, (int)Position.Y - BoundingBox.Height / 2, BoundingBox.Width, BoundingBox.Height);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Color debugColor)
+        {
+            Collider.DebugDraw(spriteBatch, debugColor);
         }
     }
 }

@@ -56,13 +56,6 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/File.spritefont;Fonts/Arial.spritefont
 
-#begin Fonts/File.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Fonts/File.spritefont;Fonts/Arial.spritefont
-
 #begin sprites/pacman_dot.png
 /importer:TextureImporter
 /processor:TextureProcessor

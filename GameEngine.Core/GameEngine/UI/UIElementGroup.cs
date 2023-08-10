@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameEngine.Core.GameEngine.CameraView;
 using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,9 +22,9 @@ namespace GameEngine.Core.GameEngine.UI
 			UIElements.ForEach(e => e.Draw(spriteBatch, textDrawer,  gameTime));
 		}
 
-		public void Update(GameTime gameTime)
+		public void Update(GameTime gameTime, Camera camera)
 		{
-			UIElements.ForEach(e => e.Update(gameTime));
+			UIElements.ForEach(e => e.Update(gameTime, camera));
 		}
 
 		public void DebugDraw(SpriteBatch spriteBatch, TextDrawer textDrawer, Texture2D debugTexture, Color debugColor, Color debugColor2)

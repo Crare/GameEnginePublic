@@ -25,12 +25,13 @@ namespace Pacman
         private SpriteBatch _spriteBatch;
 
         // common core stuff
-        public Window _window;
-        Point _gameResolution = new(800, 480);
+        public GameEngine.Core.GameEngine.Window.GameWindow _window;
+        Point _gameResolution = new(960, 540);
         private EntityManager _entityManager;
         private TextDrawer _textDrawer;
         private KeyboardState _keyboardState;
         private KeyboardState _lastKeyboardState;
+        private MouseState _mouseState;
         private PacmanUIManager _UIManager;
         private Camera _camera;
 
@@ -40,6 +41,7 @@ namespace Pacman
         private readonly Color _debugColor2 = new(1f, 1f, 1f, 0.5f);
         private PacmanTileMap _tileMap;
         private PacmanPathfinding _pathfinding;
+        private string[] levels;
         private readonly UITheme _theme = new()
         {
             Button = new UIElementTheme()
@@ -118,17 +120,33 @@ namespace Pacman
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            Window.IsBorderless = true; // TODO add settings for window layouts
 
             PacmanEventSystem.OnExitGame += OnExitGame;
             PacmanEventSystem.OnGameOver += OnGameOver;
             PacmanEventSystem.OnNewGame += OnNewGame;
             PacmanEventSystem.OnGameStateChanged += OnGameStateChanged;
+            PacmanEventSystem.OnLevelLoaded += OnLevelLoaded;
+            PacmanEventSystem.OnLoadLevel += OnLoadLevel;
+        }
+
+        private void OnLoadLevel(int level)
+        {
+            _tileMap.LoadLevel(level);
+        }
+
+        private void OnLevelLoaded(int level)
+        {
+            if (level == 0)
+            {
+                PacmanEventSystem.NewGame();
+            }
+            // else TODO!
         }
 
         private void OnNewGame()
         {
             Globals.GHOSTS_MOVING = false;
-            _tileMap.LoadLevel(0);
             PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.GameLoop);
         }
 
@@ -158,13 +176,13 @@ namespace Pacman
         protected override void Initialize()
         {
             Debug.WriteLine("Initializing...");
-            _window = new Window(_gameResolution,
+            _window = new GameEngine.Core.GameEngine.Window.GameWindow(_gameResolution,
                     new RenderTarget2D(GraphicsDevice, _gameResolution.X, _gameResolution.Y),
                     _graphics
                 );
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _entityManager = new EntityManager(_spriteBatch, _window.RenderTarget);
-            _tileMap = new PacmanTileMap(_entityManager);
+            _tileMap = new PacmanTileMap(_entityManager, _spriteBatch);
 
             var openTileTypes = new int[3];
             openTileTypes[0] = (int)Globals.PacmanTiles.FLOOR;
@@ -175,7 +193,7 @@ namespace Pacman
             ParticleSystem.Instance.Init(_spriteBatch, _graphics);
             GameStats.Instance.LoadHighScores();
 
-            _camera = new()
+            _camera = new(_window)
             {
                 // center tilemap to view
                 Pos = new Vector2(
@@ -195,7 +213,7 @@ namespace Pacman
             var font = Content.Load<SpriteFont>("Fonts/Arial");
             var defaultTextColor = Color.White;
             _textDrawer = new TextDrawer(_spriteBatch, font, defaultTextColor);
-            _UIManager = new PacmanUIManager(_theme, _spriteBatch, _textDrawer, _graphics.GraphicsDevice, _window);
+            _UIManager = new PacmanUIManager(_theme, _spriteBatch, _textDrawer, _graphics.GraphicsDevice, _window, _camera);
 
             // load textures
             _debugTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
@@ -208,7 +226,7 @@ namespace Pacman
             var dotTexture = Content.Load<Texture2D>("sprites/pacman_dot");
 
             // load levels
-            var levels = new string[1];
+            levels = new string[1];
             levels[0] = FileSystem.LoadFromFileOrThrowException("levels/level0.csv");
 
             // assign entities
@@ -259,7 +277,7 @@ namespace Pacman
 
             // init tilemap
             _tileMap.Initialize(tilesTexture, levels);
-            _tileMap.LoadLevel(0);
+            //_tileMap.LoadLevel(0);
 
             //init pathfinding
             _pathfinding.Init();
@@ -296,6 +314,7 @@ namespace Pacman
         protected override void Update(GameTime gameTime)
         {
             _keyboardState = Keyboard.GetState();
+            _mouseState = Mouse.GetState();
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
                 || (_keyboardState.IsKeyDown(Keys.Escape) && !_lastKeyboardState.IsKeyDown(Keys.Escape)))
@@ -310,23 +329,14 @@ namespace Pacman
                 }
             }
 
-            if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11)
-                || _keyboardState.IsKeyDown(Keys.I) && !_lastKeyboardState.IsKeyDown(Keys.I))
+            if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11))
             {
                 _window.ToggleFullScreen();
             }
 
 #if DEBUG
-            // Toggle Debug mode: ctrl + shift + D
-            if (_keyboardState.IsKeyDown(Keys.D)
-                && (_keyboardState.IsKeyDown(Keys.LeftShift) || _keyboardState.IsKeyDown(Keys.RightShift))
-                && (_keyboardState.IsKeyDown(Keys.LeftControl) || _keyboardState.IsKeyDown(Keys.RightControl))
-                &&
-                    !(_lastKeyboardState.IsKeyDown(Keys.D)
-                    && (_lastKeyboardState.IsKeyDown(Keys.LeftShift) || _lastKeyboardState.IsKeyDown(Keys.RightShift))
-                    && (_lastKeyboardState.IsKeyDown(Keys.LeftControl) || _lastKeyboardState.IsKeyDown(Keys.RightControl))
-                    )
-                )
+            // Toggle Debug mode
+            if (_keyboardState.IsKeyDown(Keys.F1) && !_lastKeyboardState.IsKeyDown(Keys.F1))
             {
                 ToggleDebugMode();
             }
@@ -401,7 +411,7 @@ namespace Pacman
             if (_currentGameState ==  Globals.PacmanGameState.GameLoop
                 || _currentGameState == Globals.PacmanGameState.GameOver)
             {
-                _tileMap.DrawTiles(_spriteBatch);
+                _tileMap.DrawTiles();
                 _entityManager.DrawEntities(gameTime);
                 ParticleSystem.Instance.Draw();
             }
@@ -409,7 +419,7 @@ namespace Pacman
             if (Globals.DEBUG_DRAW)
             {
                 //_tileMap.DebugDrawTiles(_spriteBatch, _textDrawer);
-                _entityManager.DebugDrawEntities(_debugTexture, _debugColor, _debugColor2);
+                _entityManager.DebugDrawEntities(_debugColor);
                 //_pathfinding.DrawDebugNodes(false);
                 //_pathfinding.DrawDebugConnections();
                 //_pathfinding.DrawDebugPath();
@@ -425,6 +435,7 @@ namespace Pacman
             {
                 //_UIManager.DebugDrawUIElements(_debugTexture, _debugColor, _debugColor2);
                 _UIManager.DebugDrawUIElements(_currentGameState, _debugTexture, _debugColor, _debugColor2);
+                GameDebug.DebugMousePosition(_mouseState, _debugColor, _debugColor2, _camera);
             }
 
             // end of UI-draw code
@@ -436,15 +447,6 @@ namespace Pacman
         private void ToggleDebugMode()
         {
             Globals.DEBUG_DRAW = !Globals.DEBUG_DRAW;
-        }
-
-        private void OnPressReleaseButton(object sender, EventArgs e)
-        {
-            Debug.WriteLine("OnPressReleaseButton");
-        }
-        private void OnPressedDownButton(object sender, EventArgs e)
-        {
-            Debug.WriteLine("OnPressedDownButton");
         }
     }
 }

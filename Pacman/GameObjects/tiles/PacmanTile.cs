@@ -33,5 +33,9 @@ namespace Pacman.GameObjects.tiles
         {
             Sprite.SourceRectangle = sourceRectangle;
         }
+
+        public override void Update(GameTime gameTime)
+        {
+        }
     }
 }

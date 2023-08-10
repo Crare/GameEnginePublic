@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GameEngine.Core.GameEngine.TileMap
 {
-    public class Tile
+    public abstract class Tile
     {
         public int TileType;
         public Vector2 Position;
@@ -17,21 +17,8 @@ namespace GameEngine.Core.GameEngine.TileMap
             DepthLayer = depthLayer;
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
-        {
-
-        }
-
-        public virtual void DebugDraw(SpriteBatch spriteBatch, TextDrawer textDrawer)
-        {
-            //textDrawer.Draw($"{Position.X}, {Position.Y}",
-            //    Position,
-            //    Alignment.Center);
-        }
-
-        public virtual void Update(GameTime gameTime)
-        {
-
-        }
+        public abstract void Draw(SpriteBatch spriteBatch);
+        public abstract void DebugDraw(SpriteBatch spriteBatch, TextDrawer textDrawer);
+        public abstract void Update(GameTime gameTime);
     }
 }

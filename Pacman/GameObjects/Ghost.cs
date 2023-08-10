@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameEngine.Core.EntityManagement;
+using GameEngine.Core.GameEngine.Collision;
 using GameEngine.Core.GameEngine.Particles;
 using GameEngine.Core.GameEngine.Pathfinding;
 using GameEngine.Core.GameEngine.Sprites;
@@ -311,9 +312,15 @@ namespace Pacman.GameObjects
         }
     }
 
-    public class Ghost : Entity
+    public class Ghost : Entity, IHasSpriteAnimation, IHasSprite, ICollidable
     {
-        private SpriteAnimation Animation;
+        public BoxCollider Collider { get; set; }
+        public SpriteAnimation Animation { get; set; }
+        public bool HorizontalFlipped { get; set; }
+        public float DepthLayer { get; set; }
+        public float Speed { get; set; }
+        public Sprite Sprite { get; set; }
+
         private Color ColorTint;
         private Color ColorVulnerable;
         internal PacmanPathfinding Pathfinding;
@@ -327,29 +334,42 @@ namespace Pacman.GameObjects
         internal Particle particle;
 
         public Ghost(Vector2 position, Texture2D texture, Color colorTint, PacmanPathfinding pathfinding, EntityManager entityManager, Globals.PacmanTags tag)
-            : base(position, new Rectangle((int)position.X, (int)position.Y, 10, 10), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.GHOST_SPEED, null, (int)tag)
+            : base(position, (int)tag)
         {
+            Collider = new BoxCollider(new Rectangle((int)position.X, (int)position.Y, 10, 10));
+            DepthLayer = (float)Globals.SpriteLayers.MIDDLEGROUND;
+            Speed = Globals.GHOST_SPEED;
+
             ColorTint = colorTint;
             ColorVulnerable = new Color(0.5f, 0, 0.9f);
+
             var anim = new Rectangle[4];
             anim[0] = new Rectangle(0, 0, 16, 16);
             anim[1] = new Rectangle(16, 0, 16, 16);
             anim[2] = new Rectangle(32, 0, 16, 16);
             anim[3] = new Rectangle(48, 0, 16, 16);
-            Sprite = new Sprite(texture, new Rectangle(64, 0, 16, 16));
             Animation = new SpriteAnimation(texture, 0, 10, true, anim);
+
+            Sprite = new Sprite(texture, new Rectangle(64, 0, 16, 16));
+
             Pathfinding = pathfinding;
             EntityManager = entityManager;
             particle = new Particle(1, texture, new Vector2(4, 4), Position, ColorTint, DepthLayer, anim[0]);
 
             PacmanEventSystem.OnBigDotPicked += OnBigDotPicked;
             PacmanEventSystem.OnNewGame += OnNewGame;
+            PacmanEventSystem.OnGameOver += OnGameOver;
+        }
+
+        private void OnGameOver()
+        {
+            path = null;
         }
 
         private void OnNewGame()
         {
             Position = new Vector2(StartingPoint.X * Globals.PACMAN_TILESIZE, StartingPoint.Y * Globals.PACMAN_TILESIZE);
-            BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width / 2, (int)Position.Y - BoundingBox.Height / 2, BoundingBox.Width, BoundingBox.Height);
+            Collider.UpdatePosition(Position);
             Restart();
             path = null;
         }
@@ -424,7 +444,7 @@ namespace Pacman.GameObjects
             {
                 return;
             }
-            BoundingBox = new Rectangle((int)Position.X - BoundingBox.Width / 2, (int)Position.Y - BoundingBox.Height / 2, BoundingBox.Width, BoundingBox.Height);
+            Collider.UpdatePosition(Position);
             Animation.Update(gameTime);
             if (timeout > 0)
             {
@@ -471,9 +491,9 @@ namespace Pacman.GameObjects
             Position += velocity * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
-        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D debugTexture, Color debugColor, Color debugColor2)
+        public override void DebugDraw(SpriteBatch spriteBatch, Color debugColor)
         {
-            base.DebugDraw(spriteBatch, debugTexture, debugColor, debugColor2);
+            Collider.DebugDraw(spriteBatch, debugColor);
 
             if (path != null)
             {

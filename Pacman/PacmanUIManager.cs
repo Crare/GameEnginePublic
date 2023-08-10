@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GameEngine.Core.GameEngine.CameraView;
 using GameEngine.Core.GameEngine.UI;
 using GameEngine.Core.GameEngine.Utils;
 using GameEngine.Core.GameEngine.Window;
@@ -25,9 +26,9 @@ namespace Pacman
         private UITextElement HighscoresText3;
 
         public PacmanUIManager(UITheme theme, SpriteBatch spriteBatch, TextDrawer textDrawer, GraphicsDevice graphics,
-            Window window
+            GameEngine.Core.GameEngine.Window.GameWindow window, Camera camera
             )
-            : base(spriteBatch, textDrawer)
+            : base(spriteBatch, textDrawer, camera)
         {
             Theme = theme;
             var mainMenuElements = new List<UIElement>()
@@ -54,7 +55,7 @@ namespace Pacman
                     Theme,
                     (float)Globals.SpriteLayers.UI,
                     null,
-                    PacmanEventSystem.NewGame,
+                    () => PacmanEventSystem.LoadLevel(0),
                     (int)Globals.PacmanSoundEffects.buttonClick
                 ),
                 new UIButton(
@@ -336,7 +337,7 @@ namespace Pacman
 
         public void UpdateUIElements(GameTime gameTime, Globals.PacmanGameState currentGameState)
         {
-            ElementGroups[currentGameState].Update(gameTime);
+            ElementGroups[currentGameState].Update(gameTime, Camera);
             UpdateTimeText();
         }
 

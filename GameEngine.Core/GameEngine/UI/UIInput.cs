@@ -1,4 +1,5 @@
 ﻿using System;
+using GameEngine.Core.GameEngine.CameraView;
 using GameEngine.Core.GameEngine.InputManagement;
 using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
@@ -7,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameEngine.Core.GameEngine.UI
 {
-    public class UIInput : UIElement
+    public class UIInput : UIInteractableElement
     {
         public string InputText;
         internal string Placeholder;
@@ -122,13 +123,13 @@ namespace GameEngine.Core.GameEngine.UI
             return text;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, Camera camera)
         {
             var lastKeyboardState = KeyboardState;
             var lastPressState = IsPressed;
             var mState = Mouse.GetState();
             KeyboardState = Keyboard.GetState();
-            IsHover = IsColliding(mState);
+            IsHover = IsMouseOver(mState, camera);
 
             if (IsHover && mState.LeftButton == ButtonState.Pressed)
             {
@@ -185,15 +186,6 @@ namespace GameEngine.Core.GameEngine.UI
         private void InvokeOnInputTextChanged(string text)
         {
             OnInputTextChangedCallback?.Invoke(text);
-        }
-
-        private bool IsColliding(MouseState mouseState)
-        {
-            if (Container.Left < mouseState.X && mouseState.X < Container.Right && Container.Top < mouseState.Y)
-            {
-                return mouseState.Y < Container.Bottom;
-            }
-            return false;
         }
     }
 }

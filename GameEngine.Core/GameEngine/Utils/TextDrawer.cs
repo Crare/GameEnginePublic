@@ -26,18 +26,35 @@ namespace GameEngine.Core.GameEngine.Utils
             DefaultColor = defaultColor;
         }
 
+        /// <summary>
+        /// Draws without trying to align text
+        /// </summary>
+        public void Draw2(string text, Vector2 position, Color color, float scale = 1.0f)
+        {
+            SpriteBatch.DrawString(Font, text, position, color, 0f, Vector2.One, scale, SpriteEffects.None, 0);
+        }
+
+        /// <summary>
+        /// draws with alignment
+        /// </summary>
         public void Draw(string text, Vector2 position, HorizontalAlignment hAlign = HorizontalAlignment.Right, VerticalAlignment vAlign = VerticalAlignment.Bottom)
         {
             position = Align(text, position, hAlign, vAlign);
             SpriteBatch.DrawString(Font, text, position, DefaultColor);
         }
 
+        /// <summary>
+        /// draws with alignment
+        /// </summary>
         public void Draw(string text, Vector2 position, Color color, HorizontalAlignment hAlign = HorizontalAlignment.Right, VerticalAlignment vAlign = VerticalAlignment.Bottom)
         {
             position = Align(text, position, hAlign, vAlign);
             SpriteBatch.DrawString(Font, text, position, color);
         }
 
+        /// <summary>
+        /// draws with alignment
+        /// </summary>
         public void Draw(string text, Vector2 position, Color color, float scale, HorizontalAlignment hAlign = HorizontalAlignment.Right, VerticalAlignment vAlign = VerticalAlignment.Bottom)
         {
             position = Align(text, position, hAlign, vAlign);

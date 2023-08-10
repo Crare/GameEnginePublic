@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GameEngine.Core.GameEngine.Collision;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -28,7 +29,7 @@ namespace GameEngine.Core.EntityManagement
         {
             entity.Id = NewEntityId();
             entities.Add(entity);
-            entities = entities.OrderBy(e => e.DepthLayer).ToList();
+            //entities = entities.OrderBy(e => e.DepthLayer).ToList();
         }
 
         public long NewEntityId()
@@ -58,30 +59,49 @@ namespace GameEngine.Core.EntityManagement
             });
         }
 
-        public void DebugDrawEntities(Texture2D debugTexture, Color debugColor, Color debugColor2)
+        public void DebugDrawEntities(Color debugColor)
         {
             entities.ForEach(e =>
             {
-                e.DebugDraw(SpriteBatch, debugTexture, debugColor, debugColor2);
+                e.DebugDraw(SpriteBatch, debugColor);
             });
         }
 
         public bool IsColliding(Entity current, int[] tags, out Entity collidedEntity)
         {
+            if (current is not ICollidable)
+            {
+                collidedEntity = null;
+                return false;
+            }
+            var curCol = current as ICollidable;
             collidedEntity = entities.FirstOrDefault(e =>
-                tags.Contains(e.Tag)
-                && current.BoundingBox.Intersects(e.BoundingBox)
+            {
+                if (tags.Contains(e.Tag))
+                {
+
+                    if (e is ICollidable)
+                    {
+                        var col = e as ICollidable;
+                        if (curCol.Collider.IsColliding(col.Collider))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
             );
             return collidedEntity != null;
         }
 
         public bool IsColliding(Entity current, int tag, out Entity collidedEntity)
         {
-            collidedEntity = entities.FirstOrDefault(e =>
-                e.Tag == tag
-                && current.BoundingBox.Intersects(e.BoundingBox)
-            );
-            return collidedEntity != null;
+            var tags = new int[1]
+            {
+                tag
+            };
+            return IsColliding(current, tags, out collidedEntity);
         }
 
         public TEntity GetEntityByTag<TEntity>(int tag) where TEntity : Entity

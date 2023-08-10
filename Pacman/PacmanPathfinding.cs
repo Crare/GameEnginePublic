@@ -10,6 +10,12 @@ namespace Pacman
 		public PacmanPathfinding(PacmanTileMap tileMap, int[] openTileTypes)
             : base(tileMap, openTileTypes)
 		{
+            PacmanEventSystem.OnLevelLoaded += OnLevelLoaded;
+        }
+
+        private void OnLevelLoaded(int level)
+        {
+            Init();
         }
     }
 }

@@ -14,6 +14,12 @@ namespace Pacman
         public static event Action OnGameOver;
         public static void GameOver() => OnGameOver?.Invoke();
 
+        public static event Action<int> OnLoadLevel;
+        public static void LoadLevel(int level) => OnLoadLevel?.Invoke(level);
+
+        public static event Action<int> OnLevelLoaded;
+        public static void LevelLoaded(int level) => OnLevelLoaded?.Invoke(level);
+
         public static event Action OnNewGame;
         public static void NewGame() => OnNewGame?.Invoke();
 

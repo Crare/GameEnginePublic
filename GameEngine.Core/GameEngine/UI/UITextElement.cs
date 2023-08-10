@@ -1,4 +1,5 @@
 ﻿using System;
+using GameEngine.Core.GameEngine.CameraView;
 using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -58,10 +59,6 @@ namespace GameEngine.Core.GameEngine.UI
                 );
         }
 
-        public override void Update(GameTime gameTime)
-        {
-
-        }
     }
 }
 

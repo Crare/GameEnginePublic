@@ -24,7 +24,7 @@ namespace Pong
         private SpriteBatch _spriteBatch;
 
         // common core stuff
-        public Window _window;
+        public GameEngine.Core.GameEngine.Window.GameWindow _window;
         Point _gameResolution = new Point(800, 480);
         private EntityManager _entityManager;
         private TextDrawer _textDrawer;
@@ -54,7 +54,7 @@ namespace Pong
         protected override void Initialize()
         {
             Debug.WriteLine("Initializing...");
-            _window = new Window(_gameResolution,
+            _window = new GameEngine.Core.GameEngine.Window.GameWindow(_gameResolution,
                     new RenderTarget2D(GraphicsDevice, _gameResolution.X, _gameResolution.Y),
                     _graphics
                 );
@@ -78,6 +78,9 @@ namespace Pong
             _textDrawer = new TextDrawer(_spriteBatch, font, defaultTextColor);
 
             // load textures
+            _debugTexture = new Texture2D(_graphics.GraphicsDevice, 1, 1);
+            _debugTexture.SetData(new Color[] { Color.White });
+            GameDebug.Init(_spriteBatch, _textDrawer, _debugTexture);
             //var ballTexture = Content.Load<Texture2D>("Sprites/ball");
             //var paddleTexture = Content.Load<Texture2D>("Sprites/paddle");
             _pongSpritesheet = Content.Load<Texture2D>("Sprites/pong_spritesheet");
@@ -177,22 +180,13 @@ namespace Pong
             }
 #if DEBUG
             // Toggle Debug mode: ctrl + shift + D
-            if (_keyboardState.IsKeyDown(Keys.D) 
-                && (_keyboardState.IsKeyDown(Keys.LeftShift) || _keyboardState.IsKeyDown(Keys.RightShift))
-                && (_keyboardState.IsKeyDown(Keys.LeftControl) || _keyboardState.IsKeyDown(Keys.RightControl))
-                &&
-                    !(_lastKeyboardState.IsKeyDown(Keys.D) 
-                    && (_lastKeyboardState.IsKeyDown(Keys.LeftShift) || _lastKeyboardState.IsKeyDown(Keys.RightShift))
-                    && (_lastKeyboardState.IsKeyDown(Keys.LeftControl) || _lastKeyboardState.IsKeyDown(Keys.RightControl))
-                    )
-                )
+            if (_keyboardState.IsKeyDown(Keys.F1) && !_lastKeyboardState.IsKeyDown(Keys.F1))
             {
                 ToggleDebugMode();
             }
 #endif
 
-            if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11)
-                || _keyboardState.IsKeyDown(Keys.I) && !_lastKeyboardState.IsKeyDown(Keys.I))
+            if (_keyboardState.IsKeyDown(Keys.F11) && !_lastKeyboardState.IsKeyDown(Keys.F11))
             {
                 _window.ToggleFullScreen();
             }
@@ -275,7 +269,7 @@ namespace Pong
 
                 if (Globals.DEBUG_DRAW)
                 {
-                    _entityManager.DebugDrawEntities(_debugTexture, _debugColor, _debugColor2);
+                    _entityManager.DebugDrawEntities(_debugColor);
                 }
 
                 DrawCurrentScore();

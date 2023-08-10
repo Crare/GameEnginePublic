@@ -2,6 +2,9 @@
 
 make game collection screen to choose game from?
 
+## FIX:
+
+
 ## DOING NOW / NEXT:
 just a space to concentrate on what needs to be done next:
 

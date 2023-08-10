@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.GameEngine.Utils;
+﻿using GameEngine.Core.GameEngine.CameraView;
+using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -16,10 +17,12 @@ namespace GameEngine.Core.GameEngine.UI
 
         public SpriteBatch SpriteBatch;
         public TextDrawer TextDrawer;
+        public Camera Camera;
 
-        public UIManager(SpriteBatch spriteBatch, TextDrawer textDrawer) {
+        public UIManager(SpriteBatch spriteBatch, TextDrawer textDrawer, Camera camera) {
             SpriteBatch = spriteBatch;
             TextDrawer = textDrawer;
+            Camera = camera;
         }
 
         public void AddUIElement(UIElement element)
@@ -34,11 +37,11 @@ namespace GameEngine.Core.GameEngine.UI
             uiElements = uiElements.Where(e => e.Id != element.Id).ToList();
         }
 
-        public virtual void UpdateUIElements(GameTime gameTime)
+        public virtual void UpdateUIElements(GameTime gameTime, Camera camera)
         {
             uiElements.ForEach(uiElement =>
             {
-                uiElement.Update(gameTime);
+                uiElement.Update(gameTime, camera);
             });
         }
 

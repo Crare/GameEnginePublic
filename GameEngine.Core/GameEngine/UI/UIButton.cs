@@ -1,4 +1,5 @@
 ﻿using GameEngine.Core.GameEngine.Audio;
+using GameEngine.Core.GameEngine.CameraView;
 using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,7 +8,7 @@ using System;
 
 namespace GameEngine.Core.GameEngine.UI
 {
-    public class UIButton : UIElement
+    public class UIButton : UIInteractableElement
     {
         internal string Text;
 
@@ -88,11 +89,11 @@ namespace GameEngine.Core.GameEngine.UI
             IsDisabled = disabled;
         }
 
-        override public void Update(GameTime gameTime)
+        override public void Update(GameTime gameTime, Camera camera)
         {
             var lastPressState = IsPressed;
             var mState = Mouse.GetState();
-            IsHover = IsColliding(mState);
+            IsHover = IsMouseOver(mState, camera);
 
             if (IsHover && mState.LeftButton == ButtonState.Pressed)
             {
@@ -109,14 +110,6 @@ namespace GameEngine.Core.GameEngine.UI
             {
                 InvokeOnPressRelease();
             }
-        }
-
-        private bool IsColliding(MouseState mouseState) {
-            if (Container.Left < mouseState.X && mouseState.X < Container.Right && Container.Top < mouseState.Y)
-            {
-                return mouseState.Y < Container.Bottom;
-            }
-            return false;
         }
 
         private void InvokeOnPressedDown()

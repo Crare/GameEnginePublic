@@ -1,5 +1,6 @@
 ﻿using GameEngine.Core.EntityManagement;
 using GameEngine.Core.GameEngine.Audio;
+using GameEngine.Core.GameEngine.Collision;
 using GameEngine.Core.GameEngine.Particles;
 using GameEngine.Core.GameEngine.Sprites;
 using GameEngine.Core.SpriteManagement;
@@ -20,7 +21,7 @@ namespace Pacman.GameObjects
             anim[1] = new Rectangle(16, 0, 16, 16);
             anim[2] = new Rectangle(32, 0, 16, 16);
             anim[3] = new Rectangle(48, 0, 16, 16);
-            SpriteAnimation = new SpriteAnimation(texture, 0, 10, true, anim);
+            Animation = new SpriteAnimation(texture, 0, 10, true, anim);
             particle = new Particle(1, texture, new Vector2(4, 4), Position, Color.White, DepthLayer, anim[0]);
         }
 
@@ -38,7 +39,7 @@ namespace Pacman.GameObjects
 
         public SmallDot Copy()
         {
-            return new SmallDot(Position, SpriteAnimation.Texture);
+            return new SmallDot(Position, Animation.Texture);
         }
     }
 
@@ -51,7 +52,7 @@ namespace Pacman.GameObjects
             anim[0] = new Rectangle(64, 0, 16, 16);
             anim[1] = new Rectangle(80, 0, 16, 16);
             anim[2] = new Rectangle(96, 0, 16, 16);
-            SpriteAnimation = new SpriteAnimation(texture, 0, 5, true, anim);
+            Animation = new SpriteAnimation(texture, 0, 5, true, anim);
             particle = new Particle(1, texture, new Vector2(4, 4), Position, Color.White, DepthLayer, anim[0]);
         }
 
@@ -69,28 +70,41 @@ namespace Pacman.GameObjects
 
         public BigDot Copy()
         {
-            return new BigDot(Position, SpriteAnimation.Texture);
+            return new BigDot(Position, Animation.Texture);
         }
     }
 
-    public class Dot : Entity
+    public class Dot : Entity, ICollidable, IHasSpriteAnimation
     {
-        internal SpriteAnimation SpriteAnimation;
         internal Particle particle;
+        public BoxCollider Collider { get; set; }
+
+        public SpriteAnimation Animation { get; set; }
+
+        public bool HorizontalFlipped { get; set; }
+        public float DepthLayer { get; set; }
 
         public Dot(Vector2 position, Rectangle boundingBox, Globals.PacmanTags tag)
-            : base(position, boundingBox, (float)Globals.SpriteLayers.BACKGROUND, 0, null, (int)tag)
+            : base(position, (int)tag)
         {
+            Collider = new BoxCollider(boundingBox);
+            DepthLayer = (int)Globals.SpriteLayers.BACKGROUND;
+        }
+
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Color debugColor)
+        {
+            Collider.DebugDraw(spriteBatch, debugColor);
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            SpriteAnimation.Draw(spriteBatch, Position, false, DepthLayer);
+            Animation.Draw(spriteBatch, Position, false, DepthLayer);
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
         {
-            SpriteAnimation.Update(gameTime);
+            Animation.Update(gameTime);
         }
 
         internal void SpawnParticlesAtPosition(Vector2 position, int amount)

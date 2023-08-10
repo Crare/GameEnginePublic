@@ -1,5 +1,6 @@
 ﻿using GameEngine.Core.EntityManagement;
 using GameEngine.Core.GameEngine.Audio;
+using GameEngine.Core.GameEngine.Collision;
 using GameEngine.Core.GameEngine.Pathfinding;
 using GameEngine.Core.GameEngine.Sprites;
 using Microsoft.Xna.Framework;
@@ -20,7 +21,7 @@ namespace Pacman.GameObjects
         up = 3
     }
 
-    public class PacmanEntity : Entity
+    public class PacmanEntity : Entity, ICollidable
     {
         SpriteAnimation EatAnimation;
         SpriteAnimation DeathAnimation;
@@ -34,10 +35,20 @@ namespace Pacman.GameObjects
         private float invulnerable = 0f;
         private Point StartingPoint;
 
+        public bool HorizontalFlipped { get; set; }
+
+        public BoxCollider Collider { get; set; }
+        public float DepthLayer { get; set; }
+        public float Speed { get; set; }
+
         public PacmanEntity(Vector2 position, Texture2D texture, PacmanPathfinding pathfinding) 
-            : base(position, new Rectangle((int)position.X, (int)position.Y, 10, 10), (float)Globals.SpriteLayers.MIDDLEGROUND, Globals.PACMAN_SPEED, null, (int)Globals.PacmanTags.Pacman)
+            : base(position, (int)Globals.PacmanTags.Pacman)
         {
+            Collider = new BoxCollider(new Rectangle((int)position.X, (int)position.Y, 10, 10));
+            DepthLayer = (float)Globals.SpriteLayers.MIDDLEGROUND;
             Pathfinding = pathfinding;
+            Speed = Globals.PACMAN_SPEED;
+
             var pacmanEat = new Rectangle[3];
             pacmanEat[0] = new Rectangle(0, 0, 16, 16);
             pacmanEat[1] = new Rectangle(16, 0, 16, 16);
@@ -95,13 +106,12 @@ namespace Pacman.GameObjects
             }
         }
 
-        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D debugTexture, Color debugColor, Color debugColor2)
+        public override void DebugDraw(SpriteBatch spriteBatch, Color debugColor)
         {
             if (path != null && path.Any())
             {
                 Pathfinding.DrawPath(path);
             }
-            base.DebugDraw(spriteBatch, debugTexture, debugColor, debugColor2);
         }
 
         public override void Update(GameTime gameTime, KeyboardState keyboardState, RenderTarget2D renderTarget2D, EntityManager entityManager)
@@ -221,11 +231,7 @@ namespace Pacman.GameObjects
                         Position = new Vector2(Position.X, Pathfinding.PathNodes.GetUpperBound(1) * Globals.PACMAN_TILESIZE);
                     }
 
-                    BoundingBox = new Rectangle(
-                        (int)Position.X - BoundingBox.Width / 2,
-                        (int)Position.Y - BoundingBox.Height / 2,
-                        BoundingBox.Width,
-                        BoundingBox.Height);
+                    Collider.UpdatePosition(Position);
                 }
             }
 

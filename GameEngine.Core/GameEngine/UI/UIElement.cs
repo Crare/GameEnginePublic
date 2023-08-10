@@ -1,4 +1,5 @@
-﻿using GameEngine.Core.GameEngine.Utils;
+﻿using GameEngine.Core.GameEngine.CameraView;
+using GameEngine.Core.GameEngine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -55,7 +56,7 @@ namespace GameEngine.Core.GameEngine.UI
             );
         }
 
-        public virtual void Update(GameTime gameTime) { 
+        public virtual void Update(GameTime gameTime, Camera camera) { 
             
         }
     }
