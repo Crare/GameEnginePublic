@@ -45,13 +45,10 @@
             GATE
         }
 
-        public enum SpriteLayers
-        {
-            BACKGROUND,
-            MIDDLEGROUND,
-            FOREGROUND,
-            UI
-        }
+        public static readonly float SPRITE_LAYER_UI = 0f;
+        public static readonly float SPRITE_LAYER_FOREGROUND = 0.1f;
+        public static readonly float SPRITE_LAYER_MIDDLEGROUND = 0.5f;
+        public static readonly float SPRITE_LAYER_BACKGROUND = 1f;
 
         public enum PacmanTags
         {

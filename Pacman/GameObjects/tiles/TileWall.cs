@@ -10,7 +10,7 @@ namespace Pacman.GameObjects.tiles
         public int WallNeighbourIndex = -1;
 
         public TileWall(Vector2 position, Sprite sprite)
-            : base(Globals.PacmanTiles.WALL, Globals.SpriteLayers.BACKGROUND, position, sprite)
+            : base(Globals.PacmanTiles.WALL, Globals.SPRITE_LAYER_BACKGROUND, position, sprite)
         {
 
         }

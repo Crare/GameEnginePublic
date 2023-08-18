@@ -42,8 +42,26 @@ namespace GameEngine.Core.GameEngine.Window
         /// <summary>
         /// Start draw to render target with camera translation matrix.
         /// </summary>
-        public void StartDrawToRenderTarget(SpriteBatch spriteBatch, Camera camera = null)
+        public void StartDrawToRenderTarget(SpriteBatch spriteBatch, Camera camera = null, Effect shader = null)
         {
+            //if (shader != null)
+            //{
+            //    Matrix view = Matrix.Identity;
+            //    //Matrix view =
+            //    //    Matrix.CreateScale(2f, 3f, 1f) *
+            //    //    Matrix.CreateRotationZ(MathHelper.PiOver4) *
+            //    //    Matrix.CreateTranslation(400, 50, 0);
+
+            //    //int width = Graphics.GraphicsDevice.Viewport.Width;
+            //    //int height = Graphics.GraphicsDevice.Viewport.Height;
+            //    int width = RenderTarget.Width;
+            //    int height = RenderTarget.Height;
+            //    Matrix projection = Matrix.CreateOrthographicOffCenter(0, width, height, 0, 0, 1);
+
+            //    shader.Parameters["view_projection"]?.SetValue(view * projection);
+            //}
+
+
             Graphics.GraphicsDevice.SetRenderTarget(RenderTarget);
             Graphics.GraphicsDevice.Clear(LetterBoxingColor);
             if (camera != null)
@@ -53,11 +71,11 @@ namespace GameEngine.Core.GameEngine.Window
                         null,
                         null,
                         null,
-                        null,
+                        shader,
                         camera.get_transformation(RenderTarget.Width, RenderTarget.Height));
                 return;
             } 
-            spriteBatch.Begin();
+            spriteBatch.Begin(effect: shader);
         }
 
         public void EndDrawToRenderTarget(SpriteBatch spriteBatch, bool drawUIAfter = false)
@@ -87,10 +105,10 @@ namespace GameEngine.Core.GameEngine.Window
             Graphics.GraphicsDevice.Clear(LetterBoxingColor);
         }
 
-        public void DrawToDestination(SpriteBatch spriteBatch)
+        public void DrawToDestination(SpriteBatch spriteBatch, Effect shader = null)
         {
             //spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null);
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp); // renders clear pixels, no antialiasing
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, effect: shader); // renders clear pixels, no antialiasing
             //spriteBatch.Begin();
             spriteBatch.Draw(RenderTarget, RenderTargetDestination, Color.White);
             spriteBatch.End();

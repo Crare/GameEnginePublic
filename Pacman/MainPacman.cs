@@ -181,8 +181,10 @@ namespace Pacman
                     _graphics
                 );
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            CoreGlobals.SpriteBatch = _spriteBatch;
+            CoreGlobals.GraphicsDevice = GraphicsDevice;
             _entityManager = new EntityManager(_spriteBatch, _window.RenderTarget);
-            _tileMap = new PacmanTileMap(_entityManager, _spriteBatch);
+            _tileMap = new PacmanTileMap(_entityManager);
 
             var openTileTypes = new int[3];
             openTileTypes[0] = (int)Globals.PacmanTiles.FLOOR;

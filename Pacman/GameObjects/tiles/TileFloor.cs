@@ -7,7 +7,7 @@ namespace Pacman.GameObjects.tiles
     public class TileFloor : PacmanTile
     {
         public TileFloor(Vector2 position, Sprite sprite)
-            : base(Globals.PacmanTiles.FLOOR, Globals.SpriteLayers.BACKGROUND, position, sprite)
+            : base(Globals.PacmanTiles.FLOOR, Globals.SPRITE_LAYER_BACKGROUND, position, sprite)
         {
 
         }

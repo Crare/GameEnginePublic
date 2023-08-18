@@ -109,3 +109,6 @@ UpgradeLog*.XML
 .vs/
 .user
 .vscode/
+
+# so I dont accidently add projects I don't want to:
+Private/

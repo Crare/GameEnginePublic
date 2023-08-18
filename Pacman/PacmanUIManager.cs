@@ -42,7 +42,7 @@ namespace Pacman
                         (int)window.GetVerticalCenter()  - 80,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI
+                    (float)Globals.SPRITE_LAYER_UI
                 ),
                 new UIButton(
                     graphics,
@@ -53,7 +53,7 @@ namespace Pacman
                         100, 40
                         ),
                     Theme,
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     null,
                     () => PacmanEventSystem.LoadLevel(0),
                     (int)Globals.PacmanSoundEffects.buttonClick
@@ -67,7 +67,7 @@ namespace Pacman
                         100, 40
                         ),
                     Theme,
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     null,
                     () => PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.Highscores),
                     (int)Globals.PacmanSoundEffects.buttonClick
@@ -81,7 +81,7 @@ namespace Pacman
                         100, 40
                         ),
                     Theme,
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     null,
                     PacmanEventSystem.ExitGame,
                     (int)Globals.PacmanSoundEffects.buttonClick
@@ -97,7 +97,7 @@ namespace Pacman
                     20,
                     100, 40
                 ),
-                (float)Globals.SpriteLayers.UI
+                (float)Globals.SPRITE_LAYER_UI
             );
             TimeText = new UITextElement(
                 "Time: 00:00:00",
@@ -108,7 +108,7 @@ namespace Pacman
                     40,
                     100, 40
                 ),
-                (float)Globals.SpriteLayers.UI
+                (float)Globals.SPRITE_LAYER_UI
             );
 
             var gameLoopElements = new List<UIElement>() {
@@ -129,7 +129,7 @@ namespace Pacman
                         150,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI
+                    (float)Globals.SPRITE_LAYER_UI
                 ),
                 new UITextElement(
                 "Press Escape to go back to menu",
@@ -140,7 +140,7 @@ namespace Pacman
                     100,
                     100, 40
                 ),
-                (float)Globals.SpriteLayers.UI
+                (float)Globals.SPRITE_LAYER_UI
             )
         };
 
@@ -153,7 +153,7 @@ namespace Pacman
                         140,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     HorizontalAlignment.Right,
                     VerticalAlignment.Bottom
                 );
@@ -166,7 +166,7 @@ namespace Pacman
                         140,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     HorizontalAlignment.Right,
                     VerticalAlignment.Bottom
                 );
@@ -179,7 +179,7 @@ namespace Pacman
                         140,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     HorizontalAlignment.Right,
                     VerticalAlignment.Bottom
                 );
@@ -195,7 +195,7 @@ namespace Pacman
                         100,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI
+                    (float)Globals.SPRITE_LAYER_UI
                 ),
                 HighscoresText1,
                 HighscoresText2,
@@ -209,7 +209,7 @@ namespace Pacman
                         100, 40
                         ),
                     Theme,
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     null,
                     () => PacmanEventSystem.GameStateChanged(Globals.PacmanGameState.MainMenu),
                     (int)Globals.PacmanSoundEffects.buttonClick
@@ -228,7 +228,7 @@ namespace Pacman
                         (int)window.GetVerticalCenter(),
                         200,
                         40),
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     UpdateInputText
                 );
 
@@ -241,7 +241,7 @@ namespace Pacman
                             200,
                             40),
                     theme,
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     null,
                     SaveNewScore,
                     (int)Globals.PacmanSoundEffects.buttonClick,
@@ -259,7 +259,7 @@ namespace Pacman
                         70,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     HorizontalAlignment.Center,
                     VerticalAlignment.Middle
                 ),
@@ -274,7 +274,7 @@ namespace Pacman
                         160,
                         100, 40
                     ),
-                    (float)Globals.SpriteLayers.UI,
+                    (float)Globals.SPRITE_LAYER_UI,
                     HorizontalAlignment.Right,
                     VerticalAlignment.Middle
                 ),

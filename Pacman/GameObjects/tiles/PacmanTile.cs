@@ -11,8 +11,8 @@ namespace Pacman.GameObjects.tiles
     {
         private Sprite Sprite;
 
-        public PacmanTile(PacmanTiles tileType, SpriteLayers layer, Vector2 position, Sprite sprite)
-            : base((int)tileType, position, (float)layer, PACMAN_TILESIZE)
+        public PacmanTile(PacmanTiles tileType, float layer, Vector2 position, Sprite sprite)
+            : base((int)tileType, position, layer, PACMAN_TILESIZE)
         {
             Sprite = sprite;
         }

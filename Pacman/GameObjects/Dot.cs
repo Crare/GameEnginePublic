@@ -88,7 +88,7 @@ namespace Pacman.GameObjects
             : base(position, (int)tag)
         {
             Collider = new BoxCollider(boundingBox);
-            DepthLayer = (int)Globals.SpriteLayers.BACKGROUND;
+            DepthLayer = (int)Globals.SPRITE_LAYER_BACKGROUND;
         }
 
 

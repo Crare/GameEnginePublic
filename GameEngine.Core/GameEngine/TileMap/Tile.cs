@@ -7,6 +7,10 @@ namespace GameEngine.Core.GameEngine.TileMap
     public abstract class Tile
     {
         public int TileType;
+        public int X, Y;
+        /// <summary>
+        /// Tile's world position
+        /// </summary>
         public Vector2 Position;
         public float DepthLayer;
 
@@ -14,6 +18,17 @@ namespace GameEngine.Core.GameEngine.TileMap
         {
             TileType = tileType;
             Position = new Vector2 (position.X * tileSize, position.Y * tileSize);
+            X = (int)position.X;
+            Y = (int)position.Y;
+            DepthLayer = depthLayer;
+        }
+
+        public Tile(int tileType, int x, int y, float depthLayer, int tileSize)
+        {
+            TileType = tileType;
+            Position = new Vector2(x * tileSize, y * tileSize);
+            X = x;
+            Y = y;
             DepthLayer = depthLayer;
         }
 

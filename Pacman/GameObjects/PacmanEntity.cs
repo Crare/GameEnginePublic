@@ -45,7 +45,7 @@ namespace Pacman.GameObjects
             : base(position, (int)Globals.PacmanTags.Pacman)
         {
             Collider = new BoxCollider(new Rectangle((int)position.X, (int)position.Y, 10, 10));
-            DepthLayer = (float)Globals.SpriteLayers.MIDDLEGROUND;
+            DepthLayer = (float)Globals.SPRITE_LAYER_MIDDLEGROUND;
             Pathfinding = pathfinding;
             Speed = Globals.PACMAN_SPEED;
 

@@ -88,10 +88,10 @@ namespace GameEngine.Core.GameEngine.Particles
                 var velY = randY < particle.Position.Y ? -momentum : momentum;
 
                 var newParticle = particle.Copy();
+                newParticle.Index = GetNewParticleIndex();
                 newParticle.Position = new Vector2(randX, randY);
                 newParticle.Velocity = new Vector2(velX, velY);
 
-                newParticle.Index = GetNewParticleIndex();
                 Particles[newParticle.Index] = newParticle;
                 ActiveParticles.Add(newParticle.Index);
             }

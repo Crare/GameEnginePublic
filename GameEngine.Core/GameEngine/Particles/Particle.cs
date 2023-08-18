@@ -68,7 +68,8 @@ namespace GameEngine.Core.GameEngine.Particles
 
         public Particle Copy()
         {
-            return new Particle(LifeTime, Texture, Size, Position, Color, DepthLayer, SourceRect);
+            return (Particle)MemberwiseClone();
+            //return new Particle(LifeTime, Texture, Size, Position, Color, DepthLayer, SourceRect);
         }
 
         public virtual void Update(GameTime gameTime, Vector2 gravity)

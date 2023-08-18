@@ -337,7 +337,7 @@ namespace Pacman.GameObjects
             : base(position, (int)tag)
         {
             Collider = new BoxCollider(new Rectangle((int)position.X, (int)position.Y, 10, 10));
-            DepthLayer = (float)Globals.SpriteLayers.MIDDLEGROUND;
+            DepthLayer = (float)Globals.SPRITE_LAYER_MIDDLEGROUND;
             Speed = Globals.GHOST_SPEED;
 
             ColorTint = colorTint;

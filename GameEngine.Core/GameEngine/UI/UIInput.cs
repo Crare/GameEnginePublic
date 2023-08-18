@@ -127,23 +127,29 @@ namespace GameEngine.Core.GameEngine.UI
         {
             var lastKeyboardState = KeyboardState;
             var lastPressState = IsPressed;
+            var pressedOutside = false;
             var mState = Mouse.GetState();
             KeyboardState = Keyboard.GetState();
             IsHover = IsMouseOver(mState, camera);
 
-            if (IsHover && mState.LeftButton == ButtonState.Pressed)
+            if (mState.LeftButton == ButtonState.Pressed)
             {
-                IsPressed = true;
+                if (IsHover)
+                {
+                    IsPressed = true;
+                }
+                else
+                {
+                    IsPressed = false;
+                    pressedOutside = true;
+                }
             }
-            else
-            {
-                IsPressed = false;
-            }
+            
 
-            if (lastPressState && !IsPressed && IsHover)
+            if (!lastPressState && IsPressed && IsHover)
             {
                 IsActive = true;
-            } else if (lastPressState && !IsPressed && !IsHover)
+            } else if (pressedOutside && !IsHover)
             {
                 IsActive = false; // pressed outside input element
             }

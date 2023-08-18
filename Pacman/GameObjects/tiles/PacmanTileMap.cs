@@ -18,8 +18,8 @@ namespace Pacman.GameObjects.tiles
         private EntityManager EntityManager;
         private List<Entity> tileMapEntities = new();
 
-        public PacmanTileMap(EntityManager entityManager, SpriteBatch spriteBatch) 
-            : base(19, 21, Globals.PACMAN_TILESIZE, spriteBatch)
+        public PacmanTileMap(EntityManager entityManager) 
+            : base(19, 21, Globals.PACMAN_TILESIZE)
         {
             EntityManager = entityManager;
             PacmanEventSystem.OnGameOver += OnGameOver;
@@ -191,6 +191,7 @@ namespace Pacman.GameObjects.tiles
                 }
             }
 
+            PreRenderTileMap();
             PacmanEventSystem.LevelLoaded(level);
         }
 
